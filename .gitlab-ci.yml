@@ -1,0 +1,57 @@
+image: ubuntu:14.04
+# It might be a good idea to switch to a different base image and so avoid installing packages for each commit. 
+
+stages:
+    - test
+    - pages
+    - release
+
+before_script:
+    - apt-get update
+    - apt-get install -y software-properties-common
+    - apt-add-repository universe
+    - apt-get update
+    - apt-get install -y python-pip make
+    - pip install --upgrade sphinx sphinx-argparse sphinx_rtd_theme pytest pycmd 
+
+  
+do_testing:
+  stage: test
+  script:
+    - make test
+  except:
+    - tags
+    
+pages:
+  stage: pages
+  script: 
+    - pip install -e ./
+    - make docs
+    - mv docs/_build/html public
+  artifacts:
+    paths:
+    - public/
+  only:
+    - master
+  except:
+    - tags
+
+
+do_release:
+  stage: release
+  script:
+      #  Build project
+      - python setup.py sdist
+      #  Going to push project via ssh.
+      #  PYPI_KEY and PYPI_HOST should set up as project variables on Gitlab
+      #  PYPI_KEY is private key produced by ssh-keygen
+      - apt-get install -y openssh-client
+      - eval $(ssh-agent -s)
+      - ssh-add <(set +x; echo "$PYPI_KEY")
+      - scp -o StrictHostKeyChecking=no dist/* gitlab-ci-pypi@${PYPI_HOST}:/opt/ont-pypi/site-packages/
+  only:
+      #  Only do a release of tags marked explicit as release (match this regular expression)
+      - /^release_.*$/
+  except:
+      #  Do look for tags in branches
+      - branches
