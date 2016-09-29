@@ -13,6 +13,7 @@ before_script:
     - apt-get update
     - apt-get install -y python-pip make
     - pip install --upgrade sphinx sphinx-argparse sphinx_rtd_theme pytest pycmd 
+    - pip install -e ./
 
   
 do_testing:
@@ -25,7 +26,6 @@ do_testing:
 pages:
   stage: pages
   script: 
-    - pip install -e ./
     - make docs
     - mv docs/_build/html public
   artifacts:

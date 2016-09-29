@@ -31,7 +31,7 @@ project_root = os.path.dirname(cwd)
 sys.path.insert(0, project_root)
 
 MODULE='wub'
-TITLE='Wub package Documentation'
+TITLE='Wub package documentation'
 DESCRIPTION='Tools and software library developed by the ONT Applications group.'
 
 import wub
