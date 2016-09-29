@@ -2,6 +2,8 @@
 
 from Bio import SeqIO
 from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 
 
 """ Utilities manipulating biological sequences and formats. Extensions to biopython functionality.
@@ -24,3 +26,14 @@ def mock_qualities(record, mock_qual):
     rec_copy = record[:]
     rec_copy.letter_annotations["phred_quality"] = [mock_qual] * len(rec_copy)
     return rec_copy
+
+def new_dna_record(sequence, name):
+    """Create a new SeqRecord object using IUPACUnambiguousDNA and the specified sequence.
+
+    :param sequence: The sequence.
+    :param name: Record identifier.
+    :returns: The SeqRecord object.
+    :rtype: SeqRecord
+
+    """
+    return SeqRecord(Seq(sequence, IUPACUnambiguousDNA), id=name, description="")
