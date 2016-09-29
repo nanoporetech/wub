@@ -2,6 +2,6 @@
 Usage
 =====
 
-To use Python Boilerplate in a project::
+To use wub package in a project::
 
     import wub

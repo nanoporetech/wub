@@ -58,7 +58,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Python Boilerplate'
+project = TITLE
 copyright = u"2016, Oxford Nanopore Technologies Ltd."
 
 # The version info for the project you're documenting, acts as replacement
