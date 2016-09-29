@@ -8,11 +8,12 @@ with open('README.md') as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    # TODO: put package requirements here
+        'biopython',
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
+    'pytest',
+    'pycmd',
 ]
 
 setup(
