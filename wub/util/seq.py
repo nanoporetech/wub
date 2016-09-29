@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from Bio import SeqIO
+from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
+
 
 """ Utilities manipulating biological sequences and formats. Extensions to biopython functionality.
 """
+
+# Shortcut to the list of DNA bases:
+bases = sorted(list(IUPACUnambiguousDNA().letters))
+ambiguous_bases = sorted(list(IUPACAmbiguousDNA().letters))
 
 
 def mock_qualities(record, mock_qual):
@@ -18,5 +24,3 @@ def mock_qualities(record, mock_qual):
     rec_copy = record[:]
     rec_copy.letter_annotations["phred_quality"] = [mock_qual] * len(rec_copy)
     return rec_copy
-
-
