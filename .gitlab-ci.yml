@@ -1,4 +1,4 @@
-image: ubuntu:14.04
+image: docker-registry.oxfordnanolabs.local:5000/ont-base-ofan-dev:14.04
 # It might be a good idea to switch to a different base image and so avoid installing packages for each commit. 
 
 stages:
