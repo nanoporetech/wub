@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from glob import glob
 
 with open('README.md') as readme_file:
@@ -9,6 +9,8 @@ with open('README.md') as readme_file:
 
 requirements = [
         'biopython',
+        'numpy',
+        'matplotlib',
 ]
 
 test_requirements = [
@@ -24,9 +26,7 @@ setup(
     author="ONT Applications Group",
     author_email='Apps@nanoporetech.com',
     url='',
-    packages=[
-        'wub',
-    ],
+    packages=find_packages(exclude=["scripts"])
     package_dir={'wub':
                  'wub'},
     include_package_data=True,
