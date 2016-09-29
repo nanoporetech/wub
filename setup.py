@@ -26,7 +26,7 @@ setup(
     author="ONT Applications Group",
     author_email='Apps@nanoporetech.com',
     url='',
-    packages=find_packages(exclude=["scripts"])
+    packages=find_packages(exclude=["scripts"]),
     package_dir={'wub':
                  'wub'},
     include_package_data=True,
