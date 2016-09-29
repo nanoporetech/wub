@@ -6,6 +6,7 @@ import numpy as np
 
 def sample_trunc_gamma(mean, shape, low=None, high=None):
     """A naive rejection approach to sample from truncated gamma distribution.
+    Note that truncation points ae included in the sample.
    
     :param mean: Mean of the distribution.
     :param shape: Shape parameter.
