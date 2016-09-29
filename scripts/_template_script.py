@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" Template script.
-"""
 
 import argparse
 import sys
 
-"""
-Parse command line arguments.
-"""
+# Parse command line arguments:
 parser = argparse.ArgumentParser(
     description='Template script.')
 parser.add_argument(
