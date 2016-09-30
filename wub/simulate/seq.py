@@ -41,7 +41,7 @@ def simulate_sequence(length, probs=uniform_probs):
     
     :param length: Length of simulated sequence.
     :param probs: Base composition vector in the ACGT order.
-    :returns: Simulate sequence.
+    :returns: Simulated sequence.
     :rtype: str
     """
     return ''.join(np.random.choice(seq_util.bases, size=length, p=probs))
