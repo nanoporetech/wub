@@ -27,16 +27,20 @@ def mock_qualities(record, mock_qual):
     rec_copy.letter_annotations["phred_quality"] = [mock_qual] * len(rec_copy)
     return rec_copy
 
-def new_dna_record(sequence, name):
+def new_dna_record(sequence, name, qualities=None):
     """Create a new SeqRecord object using IUPACUnambiguousDNA and the specified sequence.
 
     :param sequence: The sequence.
     :param name: Record identifier.
+    :param qualities: List of base qualities.
     :returns: The SeqRecord object.
     :rtype: SeqRecord
 
     """
-    return SeqRecord(Seq(sequence, IUPACUnambiguousDNA), id=name, description="", name="")
+    seq_record = SeqRecord(Seq(sequence, IUPACUnambiguousDNA), id=name, description="", name="")
+    if qualities is not None:
+        seq_record.letter_annotations["phred_quality"] = qualities
+    return seq_record
 
 def write_seq_records(records_iterator, output_file, format='fasta'):
     """Write out SeqRecord objects to a file from an iterator in the specified format.
