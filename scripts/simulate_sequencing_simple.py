@@ -18,16 +18,14 @@ parser.add_argument(
 parser.add_argument('-m', metavar='mean_length', type=int,
                     help="Mean read length (5000).", default=5000)
 parser.add_argument(
-        '-a', metavar='gamma_shape', type=float, help="Read length distribution: gamma shape parameter (1).", default=1.0)
+    '-a', metavar='gamma_shape', type=float, help="Read length distribution: gamma shape parameter (1).", default=1.0)
 parser.add_argument(
-        '-l', metavar='low_trunc', type=int, help="Read length distribution: lower truncation point (None).", default=None)
+    '-l', metavar='low_trunc', type=int, help="Read length distribution: lower truncation point (None).", default=None)
 parser.add_argument(
-        '-u', metavar='high_trunc', type=int, help="Read length distribution: upper truncation point (None).", default=None)
-parser.add_argument('-b', metavar='base_freqs', type=str,
-                    help="Relative base frequencies in A,C,G,T order (1,1,1,1).", default="1,1,1,1")
+    '-e', metavar='error_rate', type=float, help="Total rate of substitutions insertions and deletions (0.1).", default=0.1)
+parser.add_argument('-w', metavar='error_weights', type=str,
+                    help="Relative frequency of substitutions,insertions,deletions (1,1,4).", default="1,1,4")
 
 
 if __name__ == '__main__':
     args = parser.parse_args()
-
-
