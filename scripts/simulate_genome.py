@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     base_frequencies = np.array(parse_util.separated_list_to_floats(args.b))
     # Normalise relative base frequencies to probabilities:
-    base_frequencies = base_frequencies / np.sum(base_frequencies)
+    base_frequencies = parse_util.normalise_array(base_frequencies)
 
     simulation_iterator = sim_genome.simulate_genome(
         args.n, args.m, args.a, args.l, args.u, base_frequencies)
