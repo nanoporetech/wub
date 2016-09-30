@@ -36,4 +36,17 @@ def new_dna_record(sequence, name):
     :rtype: SeqRecord
 
     """
-    return SeqRecord(Seq(sequence, IUPACUnambiguousDNA), id=name, description="")
+    return SeqRecord(Seq(sequence, IUPACUnambiguousDNA), id=name, description="", name="")
+
+def write_seq_records(records_iterator, output_file, format='fasta'):
+    """Write out SeqRecord objects to a file from an iterator in the specified format.
+
+    :param records_iterator: An iterator of SeqRecord objects.
+    :param output_file: Output file.
+    :param format: Output format (fasta by default).
+    :returns: None
+    :rtype: object
+
+    """
+    with open(output_file, 'w') as output_handle:
+        SeqIO.write(records_iterator, output_handle, format)
