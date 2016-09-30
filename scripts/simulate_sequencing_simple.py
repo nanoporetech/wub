@@ -12,7 +12,7 @@ from wub.util import parse as parse_util
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
-    description='Simulate genome sequence with the specified number of chromosomes, length distribution (truncated gamma) and base composition. Output is fasta to the standard output.')
+    description='Sample fragments from the input genome and simulate sequencing errors.')
 parser.add_argument(
     '-n', metavar='nr_reads', type=int, help="Number of simulated reads (1).", default=1)
 parser.add_argument('-m', metavar='mean_length', type=int,
@@ -25,7 +25,12 @@ parser.add_argument(
     '-e', metavar='error_rate', type=float, help="Total rate of substitutions insertions and deletions (0.1).", default=0.1)
 parser.add_argument('-w', metavar='error_weights', type=str,
                     help="Relative frequency of substitutions,insertions,deletions (1,1,4).", default="1,1,4")
+parser.add_argument('input_fasta', nargs='?', help='Input genome in fasta format (default: stdin).', type=argparse.FileType('r'), default=sys.stdin)
+parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdout)', type=argparse.FileType('w'), default=sys.stdout)
 
 
 if __name__ == '__main__':
     args = parser.parse_args()
+
+    for line in args.input_fasta:
+        print line
