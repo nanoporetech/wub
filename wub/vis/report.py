@@ -63,7 +63,7 @@ class Report:
         self._set_properties_and_close(fig, title, xlab, ylab)
 
     def plot_heatmap(self, data_matrix, title="", xlab="", ylab="", colormap=plt.cm.jet):
-        """Utility method to set title, axis labels and close the figure.
+        """Plot heatmap of data matrix.
 
         :param self: object.
         :param data_matrix: 2D array to be plotted.
