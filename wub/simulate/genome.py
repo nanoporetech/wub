@@ -7,6 +7,8 @@ from wub.util import seq as seq_util
 from wub.simulate import seq as sim_seq
 from wub.simulate import dist
 
+Fragment = namedtuple('Fragment', 'chrom uid start end seq')
+
 
 def simulate_genome(number_chromosomes, mean_length, gamma_shape, low_truncation, high_truncation, base_frequencies):
     """Generator function for simulating chromosomes in a genome. Chromosome lengths are sampled from a truncated gamma distribution.
@@ -64,7 +66,6 @@ def simulate_fragment(chromosome, mean_length, gamma_shape, low_truncation, high
         start = np.random.randint(0, upper_boundary)
         end = start + fragment_length
     fragment_sequence = chromosome.seq[start:end]
-    Fragment = namedtuple('Fragment', 'chrom uid start end seq')
     return Fragment(chromosome.id, fragment_number, start, end, fragment_sequence)
 
 
