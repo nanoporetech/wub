@@ -40,6 +40,13 @@ parser.add_argument('input_fasta', nargs='?', help='Input genome in fasta format
 parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdout)',
                     type=argparse.FileType('w'), default=sys.stdout)
 
+# Possible extension to sequencing error simulation:
+# - Save true alignment in SAM format.
+# - Biased error probabilities and biased insert composition.
+# - Simulate insert length from distribution.
+# - Save simulation details to CSV file.
+# - Simulate deletions longer than one? Does it make sense? Might be challenging.
+
 
 def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation, high_truncation, mock_quality, number_reads):
     """Simulate sequenceing.
