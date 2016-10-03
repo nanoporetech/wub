@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from collections import namedtuple
 
 from wub.util import seq as seq_util
 
 uniform_probs = [0.25, 0.25, 0.25, 0.25]
+
+MutatedSeq = namedtuple('MutatedSeq', 'seq real_qual real_subst real_del real_ins')
 
 
 def random_base(probs=uniform_probs):
@@ -38,10 +41,61 @@ def random_base_except(excluded, probs=uniform_probs):
 
 def simulate_sequence(length, probs=uniform_probs):
     """Simulate sequence of specified length and base composition.
-    
+
     :param length: Length of simulated sequence.
     :param probs: Base composition vector in the ACGT order.
     :returns: Simulated sequence.
     :rtype: str
     """
     return ''.join(np.random.choice(seq_util.bases, size=length, p=probs))
+
+
+def sample_error_type(error_weights):
+    """Sample error type from error weights dictionary.
+
+    :param error_weights: A dcitionary with (type, probability) pairs.
+    :returns: Error type
+    :rtype: str
+    """
+    return np.random.choice(error_weights.keys(), p=error_weights.values())
+
+
+def simulate_sequencing_errors(sequence, error_rate, error_weights):
+    """Simulate substitutions, deletions and insertions.
+
+    :param sequence: Input sequence.
+    :param error_rate: Total error rate.
+    :param error_weights: A dictionary with error types as keys and probabilities as values. The possible error types are: substitution, deletion, insertion.
+    :returns: A named tuple with elements: mutated sequence, realised quality, number of realised substitutions, number of realised deletions, number of realised insertions.
+    :rtype: namedtuple
+    """
+    new_bases = []
+
+    realised_substitutions = 0
+    realised_deletions = 0
+    realised_insertions = 0
+
+    for position, base in enumerate(sequence):
+        if np.random.uniform() < error_rate:
+            error_type = sample_error_type(error_weights)
+            if error_type == 'substitution':
+                new_base = random_base_except(base)
+                realised_substitutions += 1
+            elif error_type == 'deletion':
+                new_base = ''
+                realised_deletions += 1
+            elif error_type == 'insertion':
+                new_base = base + random_base()
+                realised_insertions += 1
+            else:
+                raise Exception("Unhandled error type: {}".format(error_type))
+        else:
+            new_base = base
+        new_bases.append(new_base)
+
+    new_sequence = ''.join(new_bases)
+    realised_events = realised_substitutions + realised_deletions + realised_insertions
+    realised_quality = seq_util.prob_to_phred(round(float(realised_events) / float(len(new_sequence)), 3))
+    mutated_record = MutatedSeq(
+        new_sequence, realised_quality, realised_substitutions, realised_deletions, realised_insertions)
+    return mutated_record
