@@ -43,6 +43,7 @@ parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdo
 # Possible extension to sequencing error simulation:
 # - Save true alignment in SAM format.
 # - Biased error probabilities and biased insert composition.
+# - Suggestion by cwright: simulate non-uniformity of errors.
 # - Simulate insert length from distribution.
 # - Save simulation details to CSV file.
 # - Simulate deletions longer than one? Does it make sense? Might be challenging.
