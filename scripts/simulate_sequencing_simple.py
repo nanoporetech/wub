@@ -15,10 +15,9 @@ from wub.util import seq as seq_util
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
     description="""Sample fragments from the input genome and simulate sequencing errors. Read lengths are drawn from the specified truncated gamma distribution. Chromosomes are sampled randomly for each read.
-    
+
     The format of the read names is the following:
-    r<unique_id>_<chromosome>_<frag_start>_<frag_end>/q<realised_quality>/s<realised_substiutions>/d<realised_deletions>/i<relaised_insertions>
-    
+    r<unique_id>_<chromosome>_<frag_start>_<frag_end>/q<realised_quality>/s<realised_substiutions>/d<realised_deletions>/i<realised_insertions>
     """)
 parser.add_argument(
     '-n', metavar='nr_reads', type=int, help="Number of simulated reads (1).", default=1)
@@ -59,7 +58,8 @@ def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation, h
         # Construct read name:
         read_name = "r{}_{}_{}_{}".format(
             fragment.uid, fragment.chrom, fragment.start, fragment.end)
-        read_name = "{}/q{}/s{}/d{}/i{}".format(read_name, mutated_record.real_qual, mutated_record.real_subst, mutated_record.real_del, mutated_record.real_ins)
+        read_name = "{}/q{}/s{}/d{}/i{}".format(read_name, mutated_record.real_qual,
+                                                mutated_record.real_subst, mutated_record.real_del, mutated_record.real_ins)
 
         yield seq_util.new_dna_record(mutated_record.seq, read_name, [mock_quality] * len(mutated_record.seq))
 
