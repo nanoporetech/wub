@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import numpy as np
 from Bio import SeqIO
 from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
 from Bio.Seq import Seq
@@ -74,3 +75,25 @@ def read_seq_records(input_object, format='fasta'):
     if type(handle) != file:
         handle = open(handle, "rU")
     return SeqIO.parse(handle, format)
+
+
+def prob_to_phred(error_prob, max_q=42):
+    """Convert error probability into phred score.
+
+    :param error_prob: Base error probability.
+    :param max_q: Maximum quality value.
+    :returns: Phred score.
+    :rtype: int
+    """
+    q = int(-10 * np.log10(error_prob))
+    return min(max_q, q)
+
+
+def phred_to_prob(phred):
+    """Convert phred score into error probability.
+
+    :param phred: Phred quality score.
+    :returns: Error probability.
+    :rtype: float
+    """
+    return np.power(10, -phred/10.0)
