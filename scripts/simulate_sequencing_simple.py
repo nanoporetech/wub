@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
     # Process error weights:
     error_weights = np.array(parse_util.separated_list_to_floats(args.w))
-    # Normalise relative base frequencies to probabilities:
+    # Normalise error weights to probabilities:
     error_weights = parse_util.normalise_array(error_weights)
     error_weights = dict(
         zip(['substitution', 'insertion', 'deletion'], error_weights))
