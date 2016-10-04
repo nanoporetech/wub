@@ -4,15 +4,16 @@
 import argparse
 import sys
 
-from Bio import SeqIO
 import numpy as np
 
 from wub.simulate import genome as sim_genome
 from wub.util import parse as parse_util
+from wub.util import seq as seq_util
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
-    description="""Simulate genome sequence with the specified number of chromosomes, length distribution (truncated gamma) and base composition.""")
+    description="""Simulate genome sequence with the specified number of chromosomes,
+    length distribution (truncated gamma) and base composition.""")
 parser.add_argument(
     '-n', metavar='nr_chrom', type=int, help="Number of chromosomes (23).", default=23)
 parser.add_argument('-m', metavar='mean_length', type=int,
@@ -25,6 +26,8 @@ parser.add_argument(
     '-u', metavar='high_trunc', type=int, help="Upper truncation point (None).", default=None)
 parser.add_argument('-b', metavar='base_freqs', type=str,
                     help="Relative base frequencies in A,C,G,T order (1,1,1,1).", default="1,1,1,1")
+parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdout)',
+                    type=argparse.FileType('w'), default=sys.stdout)
 
 
 if __name__ == '__main__':
@@ -36,4 +39,4 @@ if __name__ == '__main__':
 
     simulation_iterator = sim_genome.simulate_genome(
         args.n, args.m, args.a, args.l, args.u, base_frequencies)
-    SeqIO.write(simulation_iterator, sys.stdout, 'fasta')
+    seq_util.write_seq_records(simulation_iterator, args.output_fastq, format='fasta')
