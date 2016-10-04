@@ -3,6 +3,7 @@
 
 from distutils.spawn import find_executable as exefind_distutils
 
+
 def find_executable(command):
     """Find executable in path corresponding to a command.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import numpy as np
+# import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
@@ -78,7 +78,7 @@ class Report:
         """
         fig = plt.figure()
 
-        p = plt.contourf(z)
+        p = plt.contourf(data_matrix)
         plt.colorbar(p, orientation='vertical', cmap=colormap)
 
         self._set_properties_and_close(fig, title, xlab, ylab)

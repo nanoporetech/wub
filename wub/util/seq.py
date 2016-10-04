@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import numpy as np
 from Bio import SeqIO
 from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
@@ -23,7 +24,7 @@ bases = sorted(list(IUPACUnambiguousDNA().letters))
 ambiguous_bases = sorted(list(IUPACAmbiguousDNA().letters))
 
 
-def com(k):
+def base_complement(k):
     """ Return complement of base.
 
     Performs the subsitutions: A<=>T, C<=>G, X=>X for both upper and lower
@@ -50,7 +51,7 @@ def reverse_complement(seq):
     :rtype: str
 
     """
-    return reduce(lambda x, y: x + y, map(com, seq[::-1]))
+    return reduce(lambda x, y: x + y, map(base_complement, seq[::-1]))
 
 
 def mock_qualities(record, mock_qual):
@@ -97,7 +98,7 @@ def write_seq_records(records_iterator, output_object, format='fasta'):
     if type(output_object) == file:
         SeqIO.write(records_iterator, output_object, format)
     else:
-        with open(output_file, 'w') as output_handle:
+        with open(output_object, 'w') as output_handle:
             SeqIO.write(records_iterator, output_handle, format)
 
 
@@ -137,6 +138,7 @@ def phred_to_prob(phred):
     :rtype: float
     """
     return np.power(10, -phred / 10.0)
+
 
 def mean_qscore(scores):
     """ Returns the phred score corresponding to the mean of the probabilities

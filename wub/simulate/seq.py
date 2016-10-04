@@ -65,8 +65,10 @@ def simulate_sequencing_errors(sequence, error_rate, error_weights):
 
     :param sequence: Input sequence.
     :param error_rate: Total error rate.
-    :param error_weights: A dictionary with error types as keys and probabilities as values. The possible error types are: substitution, deletion, insertion.
-    :returns: A named tuple with elements: mutated sequence, realised quality, number of realised substitutions, number of realised deletions, number of realised insertions.
+    :param error_weights: A dictionary with error types as keys and probabilities as values.
+    The possible error types are: substitution, deletion, insertion.
+    :returns: A named tuple with elements: mutated sequence, realised quality, number of realised substitutions,
+    number of realised deletions, number of realised insertions.
     :rtype: namedtuple
     """
     new_bases = []
