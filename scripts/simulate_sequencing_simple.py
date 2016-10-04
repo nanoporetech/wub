@@ -79,6 +79,11 @@ def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation,
         mutated_record = sim_seq.simulate_sequencing_errors(
             frag_seq, error_rate, error_weights)
 
+        # Special case:
+        if len(mutated_record.seq) == 0:
+            sys.stderr.write(
+                "The length of fragment {} is 0 after simulating sequencing errors!".format(fragment.uid))
+
         # Construct read name:
         read_name = "r{}_{}_{}_{}_{}".format(
             fragment.uid, fragment.chrom, fragment.start, fragment.end, direction)
