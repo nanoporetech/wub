@@ -16,10 +16,13 @@ parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdo
                     type=argparse.FileType('w'), default=sys.stdout)
 
 def reverse_seq_records(input_iterator):
-    """
+    """Reverse SeqRecord objects.
+
+    :param input_iterator: Iterator of SeqRecord objects.
+    :returns: Generator of reversed SeqRecord objects.
+    :rtype: generator
     """
     for record in input_iterator:
-        print record
         yield record[::-1]
 
 if __name__ == '__main__':
