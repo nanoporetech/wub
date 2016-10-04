@@ -4,7 +4,6 @@
 import argparse
 import sys
 
-from Bio import SeqIO
 import numpy as np
 
 from wub.simulate import seq as sim_seq
@@ -14,7 +13,9 @@ from wub.util import seq as seq_util
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
-    description="""Sample fragments from the input genome and simulate sequencing errors. Read lengths are drawn from the specified truncated gamma distribution. Chromosomes are sampled randomly for each read.
+    description="""Sample fragments from the input genome and simulate sequencing errors.
+    Read lengths are drawn from the specified truncated gamma distribution. Chromosomes are sampled randomly
+    for each read.
 
     The format of the read names is the following:
     r<unique_id>_<chromosome>_<frag_start>_<frag_end>/q<realised_quality>/s<realised_substiutions>/d<realised_deletions>/i<realised_insertions>
@@ -30,7 +31,8 @@ parser.add_argument(
 parser.add_argument(
     '-u', metavar='high_trunc', type=int, help="Read length distribution: upper truncation point (None).", default=None)
 parser.add_argument(
-    '-e', metavar='error_rate', type=float, help="Total rate of substitutions insertions and deletions (0.1).", default=0.1)
+    '-e', metavar='error_rate', type=float,
+    help="Total rate of substitutions insertions and deletions (0.1).", default=0.1)
 parser.add_argument('-w', metavar='error_weights', type=str,
                     help="Relative frequency of substitutions,insertions,deletions (1,1,4).", default="1,1,4")
 parser.add_argument(
@@ -49,7 +51,8 @@ parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdo
 # - Simulate deletions longer than one? Does it make sense? Might be challenging.
 
 
-def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation, high_truncation, mock_quality, number_reads):
+def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation,
+                        high_truncation, mock_quality, number_reads):
     """Simulate sequenceing.
     :param chromosomes: Input chromosomes (list of SeqRecord obejcts).
     :param mean_length: Mean read length.
@@ -59,7 +62,8 @@ def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation, h
     :param mock_quality: Mock base quality for fastq output.
     :param number_reads: Number of reads to simulate.
     """
-    for fragment in sim_genome.simulate_fragments(chromosomes, mean_length, gamma_shape, low_truncation, high_truncation, number_reads):
+    for fragment in sim_genome.simulate_fragments(chromosomes, mean_length, gamma_shape,
+                                                  low_truncation, high_truncation, number_reads):
         # Simulate sequenceing errors:
         mutated_record = sim_seq.simulate_sequencing_errors(
             fragment.seq, args.e, error_weights)
@@ -67,7 +71,8 @@ def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation, h
         read_name = "r{}_{}_{}_{}".format(
             fragment.uid, fragment.chrom, fragment.start, fragment.end)
         read_name = "{}/q{}/s{}/d{}/i{}".format(read_name, mutated_record.real_qual,
-                                                mutated_record.real_subst, mutated_record.real_del, mutated_record.real_ins)
+                                                mutated_record.real_subst, mutated_record.real_del,
+                                                mutated_record.real_ins)
 
         yield seq_util.new_dna_record(mutated_record.seq, read_name, [mock_quality] * len(mutated_record.seq))
 
