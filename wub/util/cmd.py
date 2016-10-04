@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Utilities related to running external commands."""
 
-from distutils.spawn import find_executable.
+from distutils.spawn import find_executable as exefind_distutils
 
 def find_executable(command):
     """Find executable in path corresponding to a command.
@@ -12,4 +12,4 @@ def find_executable(command):
     """
     # In the future we might want to eliminate the dependency of
     # distutils.
-    return find_executable(command)
+    return exefind_distutils(command)
