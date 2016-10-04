@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import numpy as np
 from collections import OrderedDict, namedtuple
 
@@ -25,7 +26,8 @@ def simulate_genome(number_chromosomes, mean_length, gamma_shape, low_truncation
 
     """
     chrom_info = OrderedDict(
-        ('chr' + str(i), int(dist.sample_truncated_gamma(mean_length, gamma_shape, low_truncation, high_truncation)))
+        ('chr' + str(i),
+         int(dist.sample_truncated_gamma(mean_length, gamma_shape, low_truncation, high_truncation)))
         for i in xrange(number_chromosomes))
     sim_iter = (seq_util.new_dna_record(sim_seq.simulate_sequence(length, base_frequencies), name)
                 for name, length in chrom_info.iteritems())
@@ -83,6 +85,16 @@ def simulate_fragments(chromosomes, mean_length, gamma_shape, low_truncation, hi
     :returns: An iterator named tuples with chromosome id, fragment number, start, end and sequence.
     :rtype: generator
     """
-    for fragment_uid in xrange(number_fragments):
+    fragment_uid = 0
+    while True:
+        if fragment_uid >= number_fragments:
+            break
         chromosome = sample_chromosome(chromosomes)
-        yield simulate_fragment(chromosome, mean_length, gamma_shape, low_truncation, high_truncation, fragment_uid)
+        fragment = simulate_fragment(
+            chromosome, mean_length, gamma_shape, low_truncation, high_truncation, fragment_uid)
+        if (fragment.end - fragment.start) > 0:
+            fragment_uid += 1
+            yield fragment
+        else:
+            sys.stderr.write(
+                "Skipped zero length fragment! Consider increase minimum read length!\n")
