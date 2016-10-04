@@ -18,6 +18,7 @@ test_requirements = [
     'pytest',
     'pycmd',
     'editdistance',
+    'numpy',
 ]
 
 setup(
