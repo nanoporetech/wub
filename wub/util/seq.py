@@ -138,6 +138,21 @@ def phred_to_prob(phred):
     """
     return np.power(10, -phred / 10.0)
 
+def mean_qscore(scores):
+    """ Returns the phred score corresponding to the mean of the probabilities
+    associated with the phred scores provided.
+    :param scores: Iterable of phred scores.
+    :returns: Phred score corresponding to the average error rate, as
+        estimated from the input phred scores.
+    """
+    if len(scores) == 0:
+        return 0.0
+    sum_prob = 0.0
+    for val in scores:
+        sum_prob += phred_to_prob()
+    mean_prob = sum_prob / float(len(scores))
+    return prob_to_phred(mean_prob)
+
 
 def read_alignment(input_file, format='fasta'):
     """
