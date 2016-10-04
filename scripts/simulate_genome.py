@@ -12,7 +12,7 @@ from wub.util import parse as parse_util
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
-    description='Simulate genome sequence with the specified number of chromosomes, length distribution (truncated gamma) and base composition. Output is fasta to the standard output.')
+    description="""Simulate genome sequence with the specified number of chromosomes, length distribution (truncated gamma) and base composition.""")
 parser.add_argument(
     '-n', metavar='nr_chrom', type=int, help="Number of chromosomes (23).", default=23)
 parser.add_argument('-m', metavar='mean_length', type=int,
