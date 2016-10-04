@@ -7,7 +7,14 @@ from wub.util import seq as seq_util
 
 uniform_probs = [0.25, 0.25, 0.25, 0.25]
 
-MutatedSeq = namedtuple('MutatedSeq', 'seq real_qual real_subst real_del real_ins')
+strand_directions = ['+', '-']
+
+MutatedSeq = namedtuple(
+    'MutatedSeq', 'seq real_qual real_subst real_del real_ins')
+
+
+def sample_direction(forward_prob):
+    return np.random.choice(strand_directions, p=[forward_prob, 1 - forward_prob])
 
 
 def random_base(probs=uniform_probs):
@@ -31,7 +38,8 @@ def random_base_except(excluded, probs=uniform_probs):
     if len(probs) != len(seq_util.bases):
         raise ValueError('Probability vector has wrong length!')
     # Filter out excluded base:
-    bp_dict = dict((x, y) for x, y in zip(seq_util.bases, probs) if x != excluded)
+    bp_dict = dict((x, y)
+                   for x, y in zip(seq_util.bases, probs) if x != excluded)
     filtered_bases = bp_dict.keys()
     norm_probs = np.array(bp_dict.values(), dtype=float)
     # Re-normalise probabilities:
@@ -71,6 +79,9 @@ def simulate_sequencing_errors(sequence, error_rate, error_weights):
     number of realised deletions, number of realised insertions.
     :rtype: namedtuple
     """
+    if len(sequence) == 0:
+        raise Exception('Cannot simulate sequencing errors on empty sequence!')
+
     new_bases = []
 
     realised_substitutions = 0
@@ -96,8 +107,10 @@ def simulate_sequencing_errors(sequence, error_rate, error_weights):
         new_bases.append(new_base)
 
     new_sequence = ''.join(new_bases)
-    realised_events = realised_substitutions + realised_deletions + realised_insertions
-    realised_quality = seq_util.prob_to_phred(round(float(realised_events) / float(len(new_sequence)), 3))
+    realised_events = realised_substitutions + \
+        realised_deletions + realised_insertions
+    realised_quality = seq_util.prob_to_phred(
+        round(float(realised_events) / float(len(sequence)), 3))
     mutated_record = MutatedSeq(
         new_sequence, realised_quality, realised_substitutions, realised_deletions, realised_insertions)
     return mutated_record

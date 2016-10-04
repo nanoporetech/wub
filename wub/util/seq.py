@@ -51,6 +51,8 @@ def reverse_complement(seq):
     :rtype: str
 
     """
+    if len(seq) == 0:
+        return seq
     return reduce(lambda x, y: x + y, map(base_complement, seq[::-1]))
 
 
