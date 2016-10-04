@@ -5,6 +5,7 @@ from Bio import SeqIO
 from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
+from Bio import AlignIO
 
 
 """ Utilities manipulating biological sequences and formats. Extensions to biopython functionality.
@@ -76,7 +77,8 @@ def new_dna_record(sequence, name, qualities=None):
     :rtype: SeqRecord
 
     """
-    seq_record = SeqRecord(Seq(sequence, IUPACUnambiguousDNA), id=name, description="", name="")
+    seq_record = SeqRecord(
+        Seq(sequence, IUPACUnambiguousDNA), id=name, description="", name="")
     if qualities is not None:
         seq_record.letter_annotations["phred_quality"] = qualities
     return seq_record
@@ -134,4 +136,17 @@ def phred_to_prob(phred):
     :returns: Error probability.
     :rtype: float
     """
-    return np.power(10, -phred/10.0)
+    return np.power(10, -phred / 10.0)
+
+
+def read_alignment(input_file, format='fasta'):
+    """
+    Load multiple alignment from file.
+
+    :param input_file: Input file name.
+    :returns: The alignment read from the input file.
+    :rtype: MultipleSeqAlignment
+
+    """
+    msa = AlignIO.read(input_file, format)
+    return msa
