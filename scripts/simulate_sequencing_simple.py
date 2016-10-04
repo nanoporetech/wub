@@ -27,7 +27,7 @@ parser.add_argument('-m', metavar='mean_length', type=int,
 parser.add_argument(
     '-a', metavar='gamma_shape', type=float, help="Read length distribution: gamma shape parameter (1).", default=1.0)
 parser.add_argument(
-    '-l', metavar='low_trunc', type=int, help="Read length distribution: lower truncation point (None).", default=None)
+    '-l', metavar='low_trunc', type=int, help="Read length distribution: lower truncation point (100).", default=100)
 parser.add_argument(
     '-u', metavar='high_trunc', type=int, help="Read length distribution: upper truncation point (None).", default=None)
 parser.add_argument(
