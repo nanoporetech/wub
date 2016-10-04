@@ -1,8 +1,8 @@
 import unittest
 
 import editdistance
+import numpy as np
 from wub.simulate import seq as sim_seq
-from Bio.SeqRecord import SeqRecord
 
 
 class TestSimulateSeq(unittest.TestCase):
@@ -17,6 +17,7 @@ class TestSimulateSeq(unittest.TestCase):
         mutated_record = sim_seq.simulate_sequencing_errors(sequence, error_rate, error_weights)
         distance = editdistance.eval(sequence, mutated_record.seq)
         expected_errors = len(sequence) * error_rate
-        errors_sd = len(sequence) * error_rate * (1 - error_rate)
-        self.assertTrue(expected_errors - errors_sd < distance < expected_errors + errors_sd, msg="expected: {} realised:{}".format(expected_errors, distance))
-
+        errors_sd = np.sqrt(len(sequence) * error_rate * (1 - error_rate))
+        # Should pass 0.9973 proportion of cases:
+        self.assertTrue(expected_errors - errors_sd * 3 < distance < expected_errors +
+                        errors_sd * 3, msg="expected: {} realised:{}".format(expected_errors, distance))
