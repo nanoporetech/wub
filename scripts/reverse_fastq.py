@@ -9,7 +9,7 @@ from Bio import SeqIO
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
-    description='Reverse sequences and qualities in fastq file.')
+    description='Reverse (but not complement!) sequences and qualities in fastq file.')
 parser.add_argument('input_fastq', nargs='?', help='Input fastq (default: stdin).',
                     type=argparse.FileType('r'), default=sys.stdin)
 parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdout)',
