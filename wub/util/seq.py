@@ -126,8 +126,8 @@ def prob_to_phred(error_prob, max_q=42):
     :rtype: int
     """
     # Not sure what the maximum allowed quality value should be!
-    q = int(-10 * np.log10(error_prob))
-    return min(max_q, q)
+    q = -10 * np.log10(error_prob)
+    return int(min(max_q, q))
 
 
 def phred_to_prob(phred):
