@@ -119,7 +119,7 @@ def read_seq_records(input_object, format='fasta'):
     return SeqIO.parse(handle, format)
 
 
-def prob_to_phred(error_prob, max_q=42):
+def prob_to_phred(error_prob, max_q=93):
     """Convert error probability into phred score.
 
     :param error_prob: Base error probability.
@@ -127,7 +127,6 @@ def prob_to_phred(error_prob, max_q=42):
     :returns: Phred score.
     :rtype: int
     """
-    # Not sure what the maximum allowed quality value should be!
     if error_prob == 0:
         return max_q
     q = -10 * np.log10(error_prob)
