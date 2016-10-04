@@ -40,7 +40,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 
 lint: ## check style with flake8
-	flake8 $(MODULE)
+	flake8 --max-line-length=120 $(MODULE)
 
 test: ## run tests quickly with the default Python
 	py.test
