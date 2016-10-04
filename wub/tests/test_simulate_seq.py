@@ -7,7 +7,7 @@ from wub.simulate import seq as sim_seq
 
 class TestSimulateSeq(unittest.TestCase):
 
-    """Test sequence utilities."""
+    """Test sequence simulation utilities."""
 
     def test_simulate_sequencing_errors(self):
         """Test function simulating sequencing errors."""
@@ -17,7 +17,7 @@ class TestSimulateSeq(unittest.TestCase):
                          'deletion': 4.0 / 6}
         sequence = sim_seq.simulate_sequence(5000)
         mutated_record = sim_seq.simulate_sequencing_errors(
-                        sequence, error_rate, error_weights)
+            sequence, error_rate, error_weights)
         distance = editdistance.eval(sequence, mutated_record.seq)
         expected_errors = len(sequence) * error_rate
         errors_sd = np.sqrt(len(sequence) * error_rate * (1 - error_rate))
