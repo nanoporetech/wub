@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(
     for each read.
 
     The format of the read names is the following:
-    r<unique_id>_<chromosome>_<frag_start>_<frag_end>/q<realised_quality>/s<realised_substiutions>/d<realised_deletions>/i<realised_insertions>
+    r<unique_id>_<chromosome>_<frag_start>_<frag_end>_<strand>/q<realised_quality>/s<realised_substiutions>/d<realised_deletions>/i<realised_insertions>
     """)
 parser.add_argument(
     '-n', metavar='nr_reads', type=int, help="Number of simulated reads (1).", default=1)
@@ -36,6 +36,8 @@ parser.add_argument(
 parser.add_argument('-w', metavar='error_weights', type=str,
                     help="Relative frequency of substitutions,insertions,deletions (1,1,4).", default="1,1,4")
 parser.add_argument(
+    '-b', metavar='strand_bias', type=float, help="Strand bias: the ratio of forward and reverse reads (0.5).", default=0.5)
+parser.add_argument(
     '-q', metavar='mock_quality', type=int, help="Mock base quality for fastq output (40).", default=40)
 parser.add_argument('input_fasta', nargs='?', help='Input genome in fasta format (default: stdin).',
                     type=argparse.FileType('r'), default=sys.stdin)
@@ -52,24 +54,34 @@ parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdo
 
 
 def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation,
-                        high_truncation, mock_quality, number_reads):
+                        high_truncation, error_rate, error_weights, strand_bias, mock_quality, number_reads):
     """Simulate sequenceing.
     :param chromosomes: Input chromosomes (list of SeqRecord obejcts).
     :param mean_length: Mean read length.
     :param gamma_shape: Shape paramter of the read length distribution.
     :param low_truncation: Minimum read length.
     :param high_truncation: Maximum read length.
+    :param error_rate: Total error rate.
+    :param error_weights: "Relative frequency of substitutions,insertions,deletions.
+    :param strand_bias: Strand bias: the ratio of forward and reverse reads.
     :param mock_quality: Mock base quality for fastq output.
     :param number_reads: Number of reads to simulate.
     """
     for fragment in sim_genome.simulate_fragments(chromosomes, mean_length, gamma_shape,
                                                   low_truncation, high_truncation, number_reads):
-        # Simulate sequenceing errors:
+        frag_seq = fragment.seq
+        # Sample read direction:
+        direction = sim_seq.sample_direction(strand_bias)
+        if direction == '-':
+            frag_seq = seq_util.reverse_complement(frag_seq)
+
+        # Simulate sequencing errors:
         mutated_record = sim_seq.simulate_sequencing_errors(
-            fragment.seq, args.e, error_weights)
+            frag_seq, error_rate, error_weights)
+
         # Construct read name:
-        read_name = "r{}_{}_{}_{}".format(
-            fragment.uid, fragment.chrom, fragment.start, fragment.end)
+        read_name = "r{}_{}_{}_{}_{}".format(
+            fragment.uid, fragment.chrom, fragment.start, fragment.end, direction)
         read_name = "{}/q{}/s{}/d{}/i{}".format(read_name, mutated_record.real_qual,
                                                 mutated_record.real_subst, mutated_record.real_del,
                                                 mutated_record.real_ins)
@@ -90,7 +102,7 @@ if __name__ == '__main__':
         zip(['substitution', 'insertion', 'deletion'], error_weights))
 
     simulation_iterator = simulate_sequencing(
-        chromosomes, args.m, args.a, args.l, args.u, args.q, args.n)
+        chromosomes, args.m, args.a, args.l, args.u, args.e, error_weights, args.b, args.q, args.n)
 
     seq_util.write_seq_records(
         simulation_iterator, args.output_fastq, format='fastq')
