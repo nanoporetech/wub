@@ -50,7 +50,8 @@ Contributing
 
 TODO
 ----
-
+- a QUAST wrapper.
+- re-use code from other projects for small tools for length/quality histograms
 
 ### What is a wub anyway?
 
