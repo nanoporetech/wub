@@ -47,7 +47,7 @@ def lastdb(self, ref_dir, ref_name, ref, executable='lastdb', **kwargs):
             raise IOError('Reference not found: {}'.format(ref))
         elif not utilities.find_executable(executable):
             raise IOError('Executable not found: {}'.format(executable))
-        elif self._check_lastdb_file(ref_dir, ref_name):
+        elif self.check_lastdb_file(ref_dir, ref_name):
             raise e
 
     return successful
