@@ -1,11 +1,12 @@
 import os
 import re
-from collections import namedtuple, OrderedDict
+import pandas as pd
+from collections import namedtuple, OrderedDict, defaultdict
 import subprocess
 from subprocess import Popen, PIPE, STDOUT
 from Bio import SeqIO
 
-from wub.util import seq as seq_utils
+from wub.util import seq as seq_util
 
 lastdb_suffixes = ['bck', 'des', 'prj', 'sds', 'ssp', 'suf', 'tis']
 
@@ -158,12 +159,37 @@ def filter_top_per_query(records):
 
 
 def compare_genomes_lastal(ref_fasta, target_fasta, lastal_options, cleanup=True):
-    """
+    """Compare a refrence set of sequences to a target set os sequences using lastal alignment.
+
+    :param ref_fasta: Reference sequence set in fasta format.
+    :param target_fasta: Target sequence set in fasta format.
+    :param lastal_options: Options passed to lastal in a dictionary.
+    :param cleanup: If True then lastal database files will be deleted.
+    :returns: A pandas data frame with various per-alignment statistics.
+    :rtype: DataFrame
     """
     ref_fasta = os.path.abspath(ref_fasta)
     ref_dir, ref_name = os.path.split(ref_fasta)
     db = lastdb(ref_dir, ref_name, ref_fasta)
-    alignments = parse_lastal(lastal_align(db, target_fasta))
+    alignments = parse_lastal(lastal_align(db, target_fasta, **lastal_options))
     top_alignments = filter_top_per_query(alignments)
+
+    stats = defaultdict(list)
     for aln in top_alignments:
-        print seq_util.alignment_stats(aln.r_aln, q_aln)
+        coverage = aln.r_aln_len / float(aln.r_len)
+        aln_stats = seq_util.alignment_stats(aln.r_aln, aln.q_aln)
+        stats['reference'].append(aln.r_name)
+        stats['target'].append(aln.q_name)
+        stats['accuracy'].append(aln_stats.accuracy)
+        stats['coverage'].append(coverage)
+        stats['ref_len'].append(aln.r_len)
+        stats['ref_aln_len'].append(aln.r_aln_len)
+        stats['aln_length'].append(len(aln.r_aln))
+        stats['substitutions'].append(aln_stats.substitutions)
+        stats['deletions'].append(aln_stats.deletions)
+        stats['insertions'].append(aln_stats.insertions)
+    column_order = ['reference', 'target', 'accuracy',
+                    'coverage', 'ref_len', 'ref_aln_len', 'aln_length', 'substitutions', 'deletions', 'insertions']
+    stats_frame = pd.DataFrame(stats)
+    stats_frame = stats_frame[column_order]
+    return stats_frame
