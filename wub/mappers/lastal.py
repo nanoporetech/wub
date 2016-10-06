@@ -83,8 +83,7 @@ def check_lastdb_files(ref_dir, name):
 
 
 def lastal_align(database, query, executable='lastal', **kwargs):
-    """
-    Runs lastal via subprocess
+    """Runs lastal via subprocess.
 
     :param database: database prefix
     :param query: filepath for the query file
@@ -107,8 +106,8 @@ def lastal_align(database, query, executable='lastal', **kwargs):
 
 
 def parse_lastal(res):
-    """
-    Parse raw lastal output records.
+    """Parse raw lastal output records.
+
     :param res: Raw lastal results.
     :returns: Generator of lastal alignment records.
     :rtype: generator
