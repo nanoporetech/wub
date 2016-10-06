@@ -21,7 +21,7 @@ class TestMappersLastal(unittest.TestCase):
 
         self.ref = sim_seq.simulate_sequence(ref_length)
         nr_errors = int(len(self.ref) * error_rate)
-        self.target = self._add_errors(self.ref, nr_errors)
+        self.target = sim_seq.add_mismatches(self.ref, nr_errors)
 
         left_flanking = sim_seq.simulate_sequence(50)
         right_flanking = sim_seq.simulate_sequence(50)
@@ -40,14 +40,6 @@ class TestMappersLastal(unittest.TestCase):
     def tearDown(self):
         os.unlink(self.ref_fasta)
         os.unlink(self.target_fasta)
-
-    def _add_errors(self, seq, nr_errors):
-        seq = list(seq)
-        positions = np.random.choice(np.arange(len(seq)), size=nr_errors, replace=False)
-        for pos in positions:
-            old = seq[pos]
-            seq[pos] = sim_seq.random_base_except(seq[pos])
-        return ''.join(seq)
 
     def test_parse_lastal_identical(self):
         raw = """\

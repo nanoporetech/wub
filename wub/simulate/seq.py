@@ -114,3 +114,19 @@ def simulate_sequencing_errors(sequence, error_rate, error_weights):
     mutated_record = MutatedSeq(
         new_sequence, realised_quality, realised_substitutions, realised_deletions, realised_insertions)
     return mutated_record
+
+
+def add_mismatches(seq, nr_errors):
+    """Introduce a specified number of mismatches in the target sequence at random positions.
+
+    :param seq: Input DNA sequence.
+    :param nr_errors: Number of mismatches to introduce.
+    :returns: Mutated sequence.
+    :rtype: str
+    """
+    seq = list(seq)
+    positions = np.random.choice(np.arange(len(seq)), size=nr_errors, replace=False)
+    for pos in positions:
+        old = seq[pos]
+        seq[pos] = random_base_except(seq[pos])
+    return ''.join(seq)
