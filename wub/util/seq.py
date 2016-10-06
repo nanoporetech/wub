@@ -199,4 +199,4 @@ def alignment_stats(ref, query, gap_character='-'):
             else:
                 substitutions += 1
     accuracy = 1 - ((substitutions + deletions + insertions) / float(len(ref)))
-    return AlnStats(len(ref), subsitutions, deletions, insertions, accuracy)
+    return AlnStats(len(ref), substitutions, deletions, insertions, accuracy)
