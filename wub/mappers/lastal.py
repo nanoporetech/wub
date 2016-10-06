@@ -155,7 +155,7 @@ def filter_top_per_query(records):
     return top.values()
 
 
-def compare_genomes_lastal(ref_fasta, target_fasta, lastal_options, cleanup=True):
+def compare_genomes_lastal(ref_fasta, target_fasta, lastal_options=None, cleanup=True):
     """Compare a refrence set of sequences to a target set os sequences using lastal alignment.
 
     :param ref_fasta: Reference sequence set in fasta format.
@@ -165,6 +165,8 @@ def compare_genomes_lastal(ref_fasta, target_fasta, lastal_options, cleanup=True
     :returns: A pandas data frame with various per-alignment statistics.
     :rtype: DataFrame
     """
+    if lastal_options is None:
+        lastal_options = {}
     ref_fasta = os.path.abspath(ref_fasta)
     ref_dir, ref_name = os.path.split(ref_fasta)
     db = lastdb(ref_dir, ref_name, ref_fasta)
@@ -181,12 +183,14 @@ def compare_genomes_lastal(ref_fasta, target_fasta, lastal_options, cleanup=True
         stats['coverage'].append(coverage)
         stats['ref_len'].append(aln.r_len)
         stats['ref_aln_len'].append(aln.r_aln_len)
+        stats['target_len'].append(aln.q_len)
+        stats['target_aln_len'].append(aln.q_aln_len)
         stats['aln_length'].append(len(aln.r_aln))
         stats['substitutions'].append(aln_stats.substitutions)
         stats['deletions'].append(aln_stats.deletions)
         stats['insertions'].append(aln_stats.insertions)
     column_order = ['reference', 'target', 'accuracy',
-                    'coverage', 'ref_len', 'ref_aln_len', 'aln_length', 'substitutions', 'deletions', 'insertions']
+                    'coverage', 'ref_len', 'ref_aln_len', 'target_len', 'target_aln_len', 'aln_length', 'substitutions', 'deletions', 'insertions']
     stats_frame = pd.DataFrame(stats)
     stats_frame = stats_frame[column_order]
     return stats_frame
