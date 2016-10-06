@@ -55,10 +55,11 @@ parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdo
 
 def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation,
                         high_truncation, error_rate, error_weights, strand_bias, mock_quality, number_reads):
-    """Simulate sequenceing.
+    """Simulate sequencing.
+
     :param chromosomes: Input chromosomes (list of SeqRecord obejcts).
     :param mean_length: Mean read length.
-    :param gamma_shape: Shape paramter of the read length distribution.
+    :param gamma_shape: Shape parameter of the read length distribution.
     :param low_truncation: Minimum read length.
     :param high_truncation: Maximum read length.
     :param error_rate: Total error rate.
