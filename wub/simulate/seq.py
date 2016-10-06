@@ -127,6 +127,5 @@ def add_mismatches(seq, nr_errors):
     seq = list(seq)
     positions = np.random.choice(np.arange(len(seq)), size=nr_errors, replace=False)
     for pos in positions:
-        old = seq[pos]
         seq[pos] = random_base_except(seq[pos])
     return ''.join(seq)
