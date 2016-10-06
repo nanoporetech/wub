@@ -1,6 +1,6 @@
 import os
 import re
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 import subprocess
 from subprocess import Popen, PIPE, STDOUT
 from Bio import SeqIO
@@ -137,3 +137,18 @@ def parse_lastal(res):
             record = LastRecord(score, ref_name, ref_start, ref_aln_len, ref_strand, ref_len,
                                 ref_aln, q_name, q_start, q_aln_len, q_strand, q_len, q_aln)
             yield record
+
+def filter_top_per_query(records):
+    """Filter lastal alignment records keeping the best scoring one per query.
+
+    :param records: A collection of LastRecord named tuples.
+    :returns: A list of LastRecord named tuples.
+    :rtype: list
+    """
+    top = OrderedDict()
+    for alignment in records:
+        if alignment.q_name not in top:
+            top[alignment.q_name] = alignment
+        elif alignment.score > top[alignment.q_name].score:
+            top[alignment.q_name] = alignment
+    return top.values()
