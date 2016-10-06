@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+from itertools import izip
 import numpy as np
 from Bio import SeqIO
 from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
@@ -170,3 +171,30 @@ def read_alignment(input_file, format='fasta'):
     """
     msa = AlignIO.read(input_file, format)
     return msa
+
+
+def alignment_stats(ref, query, gap_character='-'):
+    """
+    Calculate statistics from two aligned sequences.
+
+    :param ref: Reference sequence.
+    :param query: Query sequence.
+    :returns: AlnStats namedtuple.
+    :rtype: namedtuple
+    """
+    if len(ref) != len(query):
+        raise Exception('Aligned sequences differ in length!')
+    AlnStats = namedtuple('AlnStats', 'length substitutions deletions insertions accuracy')
+    substitutions = 0
+    deletions = 0
+    insertions = 0
+    for ref_sym, query_sym in izip(ref, query):
+        if ref_sym != query_sym:
+            if query_sym == gap_character:
+                deletions += 1
+            elif ref_sym = gap_character:
+                insertions += 1
+            else:
+                substitutions += 1
+    accuracy = 1 - ((subsitutions + deletions + insertions) / float(len(ref)))
+    return AlnStats(len(ref), subsitutions, deletions, insertions, accuracy)
