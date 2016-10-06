@@ -12,6 +12,7 @@ requirements = [
     'numpy',
     'matplotlib',
     'editdistance',
+    'pandas',
 ]
 
 test_requirements = [
