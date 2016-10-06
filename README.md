@@ -50,6 +50,8 @@ Contributing
 
 TODO
 ----
+- mummer wrapper to compare genomes.
+- mummer wrapper to generate mummerplots.
 - a QUAST wrapper.
 - re-use code from other projects for small tools for length/quality histograms
 
