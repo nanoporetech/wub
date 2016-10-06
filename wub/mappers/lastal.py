@@ -5,6 +5,8 @@ import subprocess
 from subprocess import Popen, PIPE, STDOUT
 from Bio import SeqIO
 
+from wub.util import seq as seq_utils
+
 lastdb_suffixes = ['bck', 'des', 'prj', 'sds', 'ssp', 'suf', 'tis']
 
 record_template = 'score r_name r_start r_aln_len r_strand r_len r_aln '
@@ -138,6 +140,7 @@ def parse_lastal(res):
                                 ref_aln, q_name, q_start, q_aln_len, q_strand, q_len, q_aln)
             yield record
 
+
 def filter_top_per_query(records):
     """Filter lastal alignment records keeping the best scoring one per query.
 
@@ -152,3 +155,15 @@ def filter_top_per_query(records):
         elif alignment.score > top[alignment.q_name].score:
             top[alignment.q_name] = alignment
     return top.values()
+
+
+def compare_genomes_lastal(ref_fasta, target_fasta, lastal_options, cleanup=True):
+    """
+    """
+    ref_fasta = os.path.abspath(ref_fasta)
+    ref_dir, ref_name = os.path.split(ref_fasta)
+    db = lastdb(ref_dir, ref_name, ref_fasta)
+    alignments = parse_lastal(lastal_align(db, target_fasta))
+    top_alignments = filter_top_per_query(alignments)
+    for aln in top_alignments:
+        print seq_util.alignment_stats(aln.r_aln, q_aln)

@@ -179,6 +179,7 @@ def alignment_stats(ref, query, gap_character='-'):
 
     :param ref: Reference sequence.
     :param query: Query sequence.
+    :param gap_character: Gap symbol.
     :returns: AlnStats namedtuple.
     :rtype: namedtuple
     """
@@ -192,7 +193,7 @@ def alignment_stats(ref, query, gap_character='-'):
         if ref_sym != query_sym:
             if query_sym == gap_character:
                 deletions += 1
-            elif ref_sym = gap_character:
+            elif ref_sym == gap_character:
                 insertions += 1
             else:
                 substitutions += 1
