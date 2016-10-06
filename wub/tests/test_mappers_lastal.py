@@ -1,11 +1,11 @@
 import unittest
 import tempfile
 import os
-import numpy as np
 
 from wub.mappers import lastal
 from wub.util import seq as seq_util
 from wub.simulate import seq as sim_seq
+from wub.util import cmd as cmd_util
 
 error_rate = 0.1
 ref_length = 1000
@@ -75,6 +75,8 @@ s tig00000000 0 23 + 23 ATGCGGGGGATAGGACCATATCT
         acc = seq_util.alignment_stats(parsed.r_aln, parsed.q_aln).accuracy
         self.assertAlmostEqual(acc, 0.0, places=3)
 
+    @unittest.skipIf(not cmd_util.find_executable('lastal'),
+                     "Lastal binary not found, skipping integration tests.")
     def test_lastal_compare(self):
         substs = lastal.compare_genomes_lastal(
             self.ref_fasta, self.target_fasta)['substitutions'][0]
