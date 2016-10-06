@@ -1,13 +1,18 @@
 import os
 import re
+from collections import namedtuple
 import subprocess
 from subprocess import Popen, PIPE, STDOUT
 from Bio import SeqIO
 
 lastdb_suffixes = ['bck', 'des', 'prj', 'sds', 'ssp', 'suf', 'tis']
 
+record_template = 'score r_name r_start r_aln_len r_strand r_len r_aln '
+record_template += 'q_name q_start q_aln_len q_strand q_len q_aln'
+LastRecord = namedtuple('LastRecord', record_template)
 
-def lastdb(self, ref_dir, ref_name, ref, executable='lastdb', **kwargs):
+
+def lastdb(ref_dir, ref_name, ref, executable='lastdb', **kwargs):
     """
     Runs lastdb on ref within ref_dir using the label ref_name if
     any errors thrown during runtime, files are checked for existence
@@ -25,6 +30,7 @@ def lastdb(self, ref_dir, ref_name, ref, executable='lastdb', **kwargs):
     :raises: `subprocess.CalledProcessError` for errors during runtime
     """
     # taken from metrichor-bio/alignment:
+
     ref_dir = os.path.abspath(ref_dir)
     ref = os.path.abspath(ref)
     chdir = 'cd {}'.format(ref_dir)
@@ -50,7 +56,7 @@ def lastdb(self, ref_dir, ref_name, ref, executable='lastdb', **kwargs):
         elif self.check_lastdb_file(ref_dir, ref_name):
             raise e
 
-    return successful
+    return os.path.join(ref_dir, ref_name)
 
 
 def check_lastdb_files(ref_dir, name):
@@ -73,36 +79,36 @@ def check_lastdb_files(ref_dir, name):
     return missing
 
 
-def lastal_align(ref_dir, ref_name, query, **kwargs):
+def lastal_align(database, query, executable='lastal', **kwargs):
     """
     Runs lastal via subprocess
 
-    :param ref_dir: directory to run the alignment inside
-    :param ref_name: lastdb file names e.g. 'a' for a.prj...
+    :param database: database prefix
     :param query: filepath for the query file
     :param kwargs: -[args] wanted for lastal e.g. v='' for verbosity
-    :return: alignment output, command that was run
+    :return: alignment output
     """
     # some code taken from metrichor-bio/alignment:
+    ref_dir, ref_name = os.path.split(database)
     chdir_cmd = 'cd {}'.format(ref_dir)
     kwargs = ['-{} {}'.format(a, b) for a, b in kwargs.items()]
     kwargs_str = ' '.join(kwargs)
 
-    cmd = ' '.join([self.executable, kwargs_str, ref_name, query])
+    cmd = ' '.join([executable, kwargs_str, ref_name, query])
     command = '{}; {}'.format(chdir_cmd, cmd)
 
     p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 
-    return p.stdout
+    # FIXME: reading whole alignment in memory, might not always be a good idea:
+    return p.stdout.read()
 
 
-def parse_lastal(res, min_length=0):
+def parse_lastal(res):
     """
     Parse raw lastal output records.
     :param res: Raw lastal results.
-    :param min_length: Minimum alignment length to report.
-    :returns: Generator of accuracies.
-    :rtype: object
+    :returns: Generator of lastal alignment records.
+    :rtype: generator
     """
     lines = [l for l in res.split('\n') if not l.startswith('#')]
     re_score = re.compile('\s|=')
@@ -127,5 +133,7 @@ def parse_lastal(res, min_length=0):
             q_strand = tmp[3]
             q_len = int(tmp[4])
             q_aln = tmp[5]
-            if len(q_aln) > min_length:
-                yield (ref_aln, q_aln, len(q_aln))  # FIXME
+            # Yield record:
+            record = LastRecord(score, ref_name, ref_start, ref_aln_len, ref_strand, ref_len,
+                                ref_aln, q_name, q_start, q_aln_len, q_strand, q_len, q_aln)
+            yield record
