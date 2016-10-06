@@ -4,9 +4,9 @@ import pandas as pd
 from collections import namedtuple, OrderedDict, defaultdict
 import subprocess
 from subprocess import Popen, PIPE, STDOUT
-from Bio import SeqIO
 
 from wub.util import seq as seq_util
+from wub.util import cmd as cmd_util
 
 lastdb_suffixes = ['bck', 'des', 'prj', 'sds', 'ssp', 'suf', 'tis']
 
@@ -47,16 +47,14 @@ def lastdb(ref_dir, ref_name, ref, executable='lastdb', **kwargs):
         raise IOError('Directory not found: {}'.format(ref_dir))
 
     try:
-        _ = subprocess.check_output(command, shell=True,
-                                    stderr=subprocess.STDOUT)
-        successful = True
+        tmp = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
+        tmp = tmp
     except subprocess.CalledProcessError as e:
-        successful = False
         if not os.path.exists(ref):
             raise IOError('Reference not found: {}'.format(ref))
-        elif not utilities.find_executable(executable):
+        elif not cmd_util.find_executable(executable):
             raise IOError('Executable not found: {}'.format(executable))
-        elif self.check_lastdb_file(ref_dir, ref_name):
+        elif check_lastdb_files(ref_dir, ref_name):
             raise e
 
     return os.path.join(ref_dir, ref_name)
