@@ -2,6 +2,7 @@
 
 import sys
 from itertools import izip
+from collections import namedtuple
 import numpy as np
 from Bio import SeqIO
 from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
