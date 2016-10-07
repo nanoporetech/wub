@@ -41,7 +41,7 @@ class Report:
         self.pages.savefig(fig)
         plt.close(fig)
 
-    def plot_arrays(self, data_map, title="", xlab="", ylab="", marker='.', legend_loc='upper right'):
+    def plot_arrays(self, data_map, title="", xlab="", ylab="", marker='.', legend_loc='upper right', legend=True):
         """Plot multiple pairs of data arrays.
 
         :param self: object.
@@ -51,6 +51,7 @@ class Report:
         :param ylab: Y axis label.
         :param marker: Marker passed to the plot function.
         :param legend_loc: Location of legend.
+        :param legend: Plot legend if True
         :returns: None
         :rtype: object
         """
@@ -59,7 +60,8 @@ class Report:
         for label, data_arrays in data_map.iteritems():
             plt.plot(data_arrays[0], data_arrays[1], marker, label=label)
 
-        plt.legend(loc=legend_loc)
+        if legend:
+            plt.legend(loc=legend_loc)
         self._set_properties_and_close(fig, title, xlab, ylab)
 
     def plot_heatmap(self, data_matrix, title="", xlab="", ylab="", colormap=plt.cm.jet):

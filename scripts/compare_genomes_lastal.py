@@ -6,6 +6,7 @@ import argparse
 
 from wub.mappers import lastal
 from wub.util import parse
+from wub.vis import report
 import pandas as pd
 
 # Parse command line arguments:
@@ -22,6 +23,8 @@ parser.add_argument(
     '-l', metavar='lastal_args', type=str, help="Parameters passed to lastal in the <arg>:value,... format.", default="")
 parser.add_argument(
     '-t', metavar='details_tsv', type=str, help="Save details of lastal alignment in this tab-separated file (None).", default=None)
+parser.add_argument(
+    '-r', metavar='report_pdf', type=str, help="Report with alignment details plot (None).", default=None)
 parser.add_argument('ref', metavar='reference_fasta', type=str, help="Reference fasta.")
 parser.add_argument('target', metavar='target_fasta', type=str, help="Target fasta.")
 
@@ -43,3 +46,9 @@ if __name__ == '__main__':
 
     if args.t is not None:
         stats.to_csv(args.t, sep='\t')
+
+    if args.r is not None:
+        plotter = report.Report(args.r)
+        data = {'': (stats['coverage'], stats['accuracy'])}
+        plotter.plot_arrays(data, title="Alignment properties", xlab='Coverage', ylab='Accuracy', legend=False)
+        plotter.close()
