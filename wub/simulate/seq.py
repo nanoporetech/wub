@@ -116,8 +116,8 @@ def simulate_sequencing_errors(sequence, error_rate, error_weights):
     return mutated_record
 
 
-def add_mismatches(seq, nr_errors):
-    """Introduce a specified number of mismatches in the target sequence at random positions.
+def add_errors(seq, nr_errors, error_type):
+    """Introduce a specified number of errors in the target sequence at random positions.
 
     :param seq: Input DNA sequence.
     :param nr_errors: Number of mismatches to introduce.
@@ -126,6 +126,15 @@ def add_mismatches(seq, nr_errors):
     """
     seq = list(seq)
     positions = np.random.choice(np.arange(len(seq)), size=nr_errors, replace=False)
-    for pos in positions:
-        seq[pos] = random_base_except(seq[pos])
+    if error_type == 'substitution':
+        for pos in positions:
+            seq[pos] = random_base_except(seq[pos])
+    elif error_type == 'deletion':
+        for pos in positions:
+            seq[pos] = ''
+    elif error_type == 'insertion':
+        for pos in positions:
+            seq[pos] = seq[pos] + random_base()
+    else:
+        raise Exception('Invalid error type')
     return ''.join(seq)
