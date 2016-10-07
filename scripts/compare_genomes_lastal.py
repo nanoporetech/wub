@@ -19,6 +19,11 @@ parser = argparse.ArgumentParser(
 parser.add_argument('ref', metavar='reference_fasta', type=str, help="Reference fasta.")
 parser.add_argument('target', metavar='target_fasta', type=str, help="Target fasta.")
 
+# TODO:
+# - database cleanup
+# - custom parameter handling
+# - plot suggested by Amber.
+# - save details in csv
 
 if __name__ == '__main__':
     args = parser.parse_args()

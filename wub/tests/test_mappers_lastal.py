@@ -77,7 +77,7 @@ s tig00000000 0 23 + 23 ATGCGGGGGATAGGACCATATCT
 
     @unittest.skipIf(not cmd_util.find_executable('lastal'),
                      "Lastal binary not found, skipping integration tests.")
-    def test_lastal_compare(self):
+    def test_lastal_compare_genomes(self):
         substs = lastal.compare_genomes_lastal(
             self.ref_fasta, self.target_fasta)['substitutions'][0]
         self.assertEqual(int(ref_length * error_rate), substs)
