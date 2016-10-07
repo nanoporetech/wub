@@ -6,6 +6,7 @@ import argparse
 
 from wub.mappers import lastal
 from wub.util import parse
+import pandas as pd
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
@@ -18,19 +19,18 @@ parser = argparse.ArgumentParser(
      alignments might be discarded causing an underestimation of coverage.
     """)
 parser.add_argument(
-        '-l', metavar='lastal_args', type=str, help="Parameters passed to lastal in the <arg>:value,... format.", default="")
+    '-l', metavar='lastal_args', type=str, help="Parameters passed to lastal in the <arg>:value,... format.", default="")
+parser.add_argument(
+    '-t', metavar='details_tsv', type=str, help="Save details of lastal alignment in this tab-separated file (None).", default=None)
 parser.add_argument('ref', metavar='reference_fasta', type=str, help="Reference fasta.")
 parser.add_argument('target', metavar='target_fasta', type=str, help="Target fasta.")
 
 # TODO:
-# - database cleanup
-# - custom parameter handling
 # - plot suggested by Amber.
-# - save details in csv
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    
+
     lastal_args = parse.args_string__to_dict(args.l)
     stats = lastal.compare_genomes_lastal(args.ref, args.target, lastal_args, cleanup=True)
 
@@ -40,3 +40,6 @@ if __name__ == '__main__':
 
     sys.stdout.write("Accuracy\tCoverage\n")
     sys.stdout.write("{}\t{}\n".format(global_accuracy, global_coverage))
+
+    if args.t is not None:
+        stats.to_csv(args.t, sep='\t')

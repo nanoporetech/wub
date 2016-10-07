@@ -113,7 +113,6 @@ def lastal_align(database, query, executable='lastal', **kwargs):
 
     cmd = ' '.join([executable, kwargs_str, ref_name, query])
     command = '{}; {}'.format(chdir_cmd, cmd)
-    print command
 
     p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 
