@@ -16,6 +16,23 @@ def separated_list_to_floats(separated_list, separator=","):
     return [float(element) for element in separated_list.split(separator)]
 
 
+def args_string__to_dict(args_string, elements_separator=",", keyvalue_separator=":"):
+    """ Convert a two-level separated list into a dictionary.
+
+    :param args_string: Two-level separated string.
+    :param elements_separator: Separator between elements.
+    :param keyvalue_separator: Separator between key/value pairs.
+    :returns: dict
+    :rtype: dict
+    """
+    if len(args_string) == 0:
+        return {}
+    pairs = [pair.strip() for pair in args_string.split(elements_separator)]
+    elements = dict(pair.split(keyvalue_separator) for pair in pairs)
+    parsed = dict((k.strip(), v.strip()) for k, v in elements.iteritems())
+    return parsed
+
+
 def normalise_array(array):
     """ Normalise numpy array so the elments sum to 1.0.
 

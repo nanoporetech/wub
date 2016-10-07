@@ -5,6 +5,7 @@ import sys
 import argparse
 
 from wub.mappers import lastal
+from wub.util import parse
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
@@ -16,6 +17,8 @@ parser = argparse.ArgumentParser(
      - The lastal alignments are filtered so only the best scoring alignment is kept per query. Hence some shorter valid
      alignments might be discarded causing an underestimation of coverage.
     """)
+parser.add_argument(
+        '-l', metavar='lastal_args', type=str, help="Parameters passed to lastal in the <arg>:value,... format.", default="")
 parser.add_argument('ref', metavar='reference_fasta', type=str, help="Reference fasta.")
 parser.add_argument('target', metavar='target_fasta', type=str, help="Target fasta.")
 
@@ -27,8 +30,9 @@ parser.add_argument('target', metavar='target_fasta', type=str, help="Target fas
 
 if __name__ == '__main__':
     args = parser.parse_args()
-
-    stats = lastal.compare_genomes_lastal(args.ref, args.target, {}, cleanup=True)
+    
+    lastal_args = parse.args_string__to_dict(args.l)
+    stats = lastal.compare_genomes_lastal(args.ref, args.target, lastal_args, cleanup=True)
 
     global_accuracy = (stats['aln_length'].sum() - stats['substitutions'].sum() -
                        stats['deletions'].sum() - stats['insertions'].sum()) / float(stats['aln_length'].sum())

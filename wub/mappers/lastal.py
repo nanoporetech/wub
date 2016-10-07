@@ -79,6 +79,7 @@ def check_lastdb_files(ref_dir, name):
             missing.append(suffix)
     return missing
 
+
 def clean_lastdb_files(ref_dir, name):
     """
     Remove lastdb files having prefix `name` in `ref_dir`.
@@ -112,6 +113,7 @@ def lastal_align(database, query, executable='lastal', **kwargs):
 
     cmd = ' '.join([executable, kwargs_str, ref_name, query])
     command = '{}; {}'.format(chdir_cmd, cmd)
+    print command
 
     p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 
