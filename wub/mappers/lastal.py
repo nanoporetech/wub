@@ -79,6 +79,22 @@ def check_lastdb_files(ref_dir, name):
             missing.append(suffix)
     return missing
 
+def clean_lastdb_files(ref_dir, name):
+    """
+    Remove lastdb files having prefix `name` in `ref_dir`.
+
+    :param ref_dir: directory to check for lastdb files
+    :param name: label to search for e.g. 'a' for a.prj
+    :returns: None
+    :rtype: object
+    """
+    # taken from metrichor-bio/alignment:
+    for suffix in lastdb_suffixes:
+        lastdb_file = '.'.join([name, suffix])
+        lastdb_path = os.path.join(ref_dir, lastdb_file)
+        if os.path.exists(lastdb_path):
+            os.unlink(lastdb_path)
+
 
 def lastal_align(database, query, executable='lastal', **kwargs):
     """Runs lastal via subprocess.
@@ -193,4 +209,9 @@ def compare_genomes_lastal(ref_fasta, target_fasta, lastal_options=None, cleanup
                     'coverage', 'ref_len', 'ref_aln_len', 'target_len', 'target_aln_len', 'aln_length', 'substitutions', 'deletions', 'insertions']
     stats_frame = pd.DataFrame(stats)
     stats_frame = stats_frame[column_order]
+
+    # Cleanup:
+    if cleanup:
+        clean_lastdb_files(ref_dir, ref_name)
+
     return stats_frame
