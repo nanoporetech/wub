@@ -172,11 +172,12 @@ def filter_top_per_query(records):
     return top.values()
 
 
-def compare_genomes_lastal(ref_fasta, target_fasta, lastal_options=None, cleanup=True):
+def compare_genomes_lastal(ref_fasta, target_fasta, filter_alns=True, lastal_options=None, cleanup=True):
     """Compare a refrence set of sequences to a target set os sequences using lastal alignment.
 
     :param ref_fasta: Reference sequence set in fasta format.
     :param target_fasta: Target sequence set in fasta format.
+    :param filter_alns: Filter alignments if True.
     :param lastal_options: Options passed to lastal in a dictionary.
     :param cleanup: If True then lastal database files will be deleted.
     :returns: A pandas data frame with various per-alignment statistics.
@@ -188,7 +189,10 @@ def compare_genomes_lastal(ref_fasta, target_fasta, lastal_options=None, cleanup
     ref_dir, ref_name = os.path.split(ref_fasta)
     db = lastdb(ref_dir, ref_name, ref_fasta)
     alignments = parse_lastal(lastal_align(db, target_fasta, **lastal_options))
-    top_alignments = filter_top_per_query(alignments)
+    if filter_alns:
+        top_alignments = filter_top_per_query(alignments)
+    else:
+        top_alignments = alignments
 
     stats = defaultdict(list)
     for aln in top_alignments:

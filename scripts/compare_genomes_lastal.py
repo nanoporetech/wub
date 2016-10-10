@@ -25,6 +25,8 @@ parser.add_argument(
 parser.add_argument(
     '-t', metavar='details_tsv', type=str, help="Save details of lastal alignment in this tab-separated file (None).", default=None)
 parser.add_argument(
+    '-f', help="Do *not* filter for best alignment per query.", default=False, action="store_true")
+parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report with alignment details plot (None).", default=None)
 parser.add_argument('ref', metavar='reference_fasta', type=str, help="Reference fasta.")
 parser.add_argument('target', metavar='target_fasta', type=str, help="Target fasta.")
@@ -32,8 +34,9 @@ parser.add_argument('target', metavar='target_fasta', type=str, help="Target fas
 if __name__ == '__main__':
     args = parser.parse_args()
 
+    filter_alignments = not args.f
     lastal_args = parse.args_string__to_dict(args.l)
-    stats = lastal.compare_genomes_lastal(args.ref, args.target, lastal_args, cleanup=True)
+    stats = lastal.compare_genomes_lastal(args.ref, args.target, lastal_options=lastal_args, filter_alns=filter_alignments, cleanup=True)
 
     global_accuracy = (stats['aln_length'].sum() - stats['substitutions'].sum() -
                        stats['deletions'].sum() - stats['insertions'].sum()) / float(stats['aln_length'].sum())
