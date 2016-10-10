@@ -2,12 +2,18 @@
 """ Wrapper for mummer's dnadiff """
 
 import os
+import re
+from collections import defaultdict
+from collections import namedtuple
 import subprocess
 import tempfile
 from subprocess import STDOUT
 
 dnadiff_extensions = (
     '.1coords', '.1delta', '.delta', '.mcoords', '.mdelta', '.qdiff', '.rdiff', '.report', '.snps')
+
+Property = namedtuple('Property', 'ref query')
+PropertyWithPerc = namedtuple('PropertyWithPerc', 'ref ref_perc query query_perc')
 
 
 def dnadiff(reference, query, working_directory=None, cleanup=True):
@@ -28,22 +34,24 @@ def dnadiff(reference, query, working_directory=None, cleanup=True):
 
     old_dir = os.getcwd()
     os.chdir(work_dir)
-    print work_dir
 
     command = ['dnadiff', reference, query]
     try:
-        output = subprocess.check_output(command, stderr=STDOUT)
+        log = subprocess.check_output(command, stderr=STDOUT)
     finally:
         os.chdir(old_dir)
 
-    results = parse_dnadiff_report(os.path.join(work_dir, 'out.report'))
+    report_file = os.path.join(work_dir, 'out.report')
+    output = open(report_file, 'r').read()
+
+    results = parse_dnadiff_report(report_file)
 
     if cleanup:
         cleanup_dnadiff_report(work_dir)
         if working_directory is None:
             os.rmdir(work_dir)
 
-    return results, output
+    return results, output, log
 
 
 def cleanup_dnadiff_report(directory):
@@ -54,8 +62,83 @@ def cleanup_dnadiff_report(directory):
             os.unlink(path)
 
 
-def parse_dnadiff_report(report_file):
+def _parse_dnadiff_into_sections(report_file):
     report_fh = open(report_file, 'r')
-    for l in report_fh:
-        print l
-    pass
+    section = "NO_SECTION"
+    sections = defaultdict(list)
+    for line in report_fh:
+        line = line.strip()
+        if len(line) == 0:
+            continue
+        if line.startswith('/') or line.startswith('NUCMER') or line.startswith('[REF]'):
+            continue
+        if line.startswith('['):
+            section = line
+            section = section.replace('[', '')
+            section = section.replace(']', '')
+        else:
+            sections[section].append(line)
+    return sections
+
+
+def _parse_percent_field(field):
+    tmp = field.split('(')
+    perc = tmp[1].replace(')', '')
+    perc = perc.replace('%', '')
+    return float(tmp[0]), float(perc)
+
+
+def _parse_simple_section(lines):
+    results = {}
+    for line in lines:
+        tmp = re.split("\s+", line)
+        if '%' not in tmp[1] and '%' not in tmp[2]:
+            results[tmp[0]] = Property(float(tmp[1]), float(tmp[2]))
+        else:
+            ref_prop, ref_prop_perc = _parse_percent_field(tmp[1])
+            query_prop, query_prop_perc = _parse_percent_field(tmp[2])
+            results[tmp[0]] = PropertyWithPerc(ref_prop, ref_prop_perc, query_prop, query_prop_perc)
+    return results
+
+
+def _parse_complex_section(lines):
+    section = "NO_SECTION"
+    sections = defaultdict(list)
+    results = defaultdict(dict)
+    # Parse alignment section into subsections:
+    for line in lines:
+        if len(line) == 0:
+            continue
+        # FIXME: Very specific to current dnadiff output:
+        if line.startswith('1-to-1') or line.startswith('M-to-M') or line.startswith('Total'):
+            tmp = re.split("\s+", line)
+            section = tmp[0]
+            results[section]['Number'] = Property(float(tmp[1]), float(tmp[2]))
+        else:
+            sections[section].append(line)
+
+    # Parse subsections and update results dictionary:
+    for section, lines in sections.iteritems():
+        parsed = _parse_simple_section(lines)
+        for name, prop in parsed.iteritems():
+            results[section][name] = prop
+    return results
+
+
+def parse_dnadiff_report(report_file):
+    sections = _parse_dnadiff_into_sections(report_file)
+
+    results_sequences = _parse_simple_section(sections['Sequences'])
+    results_bases = _parse_simple_section(sections['Bases'])
+    results_features = _parse_simple_section(sections['Feature Estimates'])
+    results_alignments = _parse_complex_section(sections['Alignments'])
+    results_snps = _parse_complex_section(sections['SNPs'])
+
+    results = {
+        'Sequences': results_sequences,
+        'Bases': results_bases,
+        'Features': results_features,
+        'Alignments': results_alignments,
+        'SNPs': results_snps,
+    }
+    return results
