@@ -11,6 +11,7 @@ from wub.util import misc
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
     description="""Compare a set of reference sequences (genome) to another set (target assembly) using mummer's dnadiff.
+    It prints the alignment results to stdout. All parsed results can be saved in a pickle file.
     """)
 parser.add_argument(
     '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
