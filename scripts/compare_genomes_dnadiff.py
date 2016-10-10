@@ -23,8 +23,6 @@ parser.add_argument(
 parser.add_argument(
     '-v', action="store_true", help="Print out dnadiff output (False).", default=False)
 parser.add_argument(
-    '-t', metavar='details_tsv', type=str, help="Save details of dnadiff comparison in this tab-separated file (None).", default=None)
-parser.add_argument(
     'ref', metavar='reference_fasta', type=str, help="Reference fasta.")
 parser.add_argument(
     'target', metavar='target_fasta', type=str, help="Target fasta.")
