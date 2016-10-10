@@ -106,7 +106,7 @@ class Report:
         plt.legend(loc=legend_loc)
         self._set_properties_and_close(fig, title, xlab, ylab)
 
-    def plot_histograms(self, data_map, title="", xlab="", ylab="", bins=50, alpha=0.7, legend_loc='upper right', legene=True):
+    def plot_histograms(self, data_map, title="", xlab="", ylab="", bins=50, alpha=0.7, legend_loc='upper right', legend=True):
         """Plot histograms of multiple data arrays.
 
         :param self: object.
