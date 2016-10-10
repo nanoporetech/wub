@@ -6,6 +6,7 @@ import argparse
 
 from wub.mappers import lastal
 from wub.util import parse
+from wub.util import cmd as cmd_util
 from wub.vis import report
 
 # Parse command line arguments:
@@ -34,6 +35,9 @@ parser.add_argument(
 
 if __name__ == '__main__':
     args = parser.parse_args()
+
+    cmd_util.ensure_executable('lastal')
+    cmd_util.ensure_executable('lastdb')
 
     filter_alignments = not args.f
     lastal_args = parse.args_string__to_dict(args.l)
