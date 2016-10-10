@@ -129,7 +129,7 @@ def _parse_complex_section(lines):
         if len(line) == 0:
             continue
         # FIXME: Very specific to current dnadiff output:
-        if line.startswith('1-to-1') or line.startswith('M-to-M') or line.startswith('Total'):
+        if line.startswith('1-to-1') or line.startswith('M-to-M') or re.match("Total(S|G|I)", line):
             tmp = re.split("\s+", line)
             section = tmp[0]
             results[section]['Number'] = Property(float(tmp[1]), float(tmp[2]))
