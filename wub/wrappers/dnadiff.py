@@ -17,7 +17,13 @@ PropertyWithPerc = namedtuple('PropertyWithPerc', 'ref ref_perc query query_perc
 
 
 def dnadiff(reference, query, working_directory=None, cleanup=True):
+    """Run dnadiff on reference and query fasta and parse results.
 
+    :param reference: Reference fasta.
+    :param query: Query fasta.
+    :param working_directory: Write output in this directory if specified.
+    :param cleanup: Delete dnadiff output after parsing if True.
+    """
     reference = os.path.abspath(reference)
     query = os.path.abspath(query)
     work_dir = working_directory
@@ -54,15 +60,23 @@ def dnadiff(reference, query, working_directory=None, cleanup=True):
     return results, output, log
 
 
-def cleanup_dnadiff_report(directory):
+def cleanup_dnadiff_report(directory, prefix='out'):
+    """Cleanup dnadiff output files in the specified directory.
+
+    :param directory: Output directory.
+    :param prefix: Output prefix.
+    :returns: None
+    :rtype: object
+    """
     for ext in dnadiff_extensions:
-        name = 'out' + ext
+        name = prefix + ext
         path = os.path.join(directory, name)
         if os.path.exists(path):
             os.unlink(path)
 
 
 def _parse_dnadiff_into_sections(report_file):
+    """Parse dnadiff output lines into sections."""
     report_fh = open(report_file, 'r')
     section = "NO_SECTION"
     sections = defaultdict(list)
@@ -82,6 +96,7 @@ def _parse_dnadiff_into_sections(report_file):
 
 
 def _parse_percent_field(field):
+    """Parse dnadiff field with percent value."""
     tmp = field.split('(')
     perc = tmp[1].replace(')', '')
     perc = perc.replace('%', '')
@@ -89,6 +104,7 @@ def _parse_percent_field(field):
 
 
 def _parse_simple_section(lines):
+    """Parse a simple dnadiff report section."""
     results = {}
     for line in lines:
         tmp = re.split("\s+", line)
@@ -102,6 +118,7 @@ def _parse_simple_section(lines):
 
 
 def _parse_complex_section(lines):
+    """Parse a complex dnadiff report section."""
     section = "NO_SECTION"
     sections = defaultdict(list)
     results = defaultdict(dict)
@@ -126,6 +143,12 @@ def _parse_complex_section(lines):
 
 
 def parse_dnadiff_report(report_file):
+    """Parse dnadiff report file.
+
+    :param report_file: dnadiff report output.
+    :returns: Data structure with parsed results.
+    :rtype: dict
+    """
     sections = _parse_dnadiff_into_sections(report_file)
 
     results_sequences = _parse_simple_section(sections['Sequences'])
