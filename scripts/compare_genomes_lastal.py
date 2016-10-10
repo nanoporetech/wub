@@ -9,6 +9,12 @@ from wub.util import parse
 from wub.util import cmd as cmd_util
 from wub.vis import report
 
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    import seaborn as sns
+warnings.resetwarnings()
+
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
     description="""Compare a set of reference sequences (genome) to another set (target assembly) using lastal alignment.
