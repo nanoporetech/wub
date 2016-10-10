@@ -23,6 +23,8 @@ def dnadiff(reference, query, working_directory=None, cleanup=True):
     :param query: Query fasta.
     :param working_directory: Write output in this directory if specified.
     :param cleanup: Delete dnadiff output after parsing if True.
+    :returns: Parsed results, raw report and log.
+    :rtype: 3-tuple
     """
     reference = os.path.abspath(reference)
     query = os.path.abspath(query)
