@@ -8,7 +8,6 @@ import numpy as np
 from Bio.Seq import Seq
 
 from wub.simulate import seq as sim_seq
-from wub.simulate import genome as sim_genome
 from wub.util import parse as parse_util
 from wub.util import seq as seq_util
 

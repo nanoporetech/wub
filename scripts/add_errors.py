@@ -4,12 +4,9 @@
 import argparse
 import sys
 
-import numpy as np
 from Bio.Seq import Seq
 
 from wub.simulate import seq as sim_seq
-from wub.simulate import genome as sim_genome
-from wub.util import parse as parse_util
 from wub.util import seq as seq_util
 
 # Parse command line arguments:
@@ -18,7 +15,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-n', metavar='nr_errors', type=int,
                     help="Number of errors to introduce (0).", default=0)
 parser.add_argument('-t', metavar='error_type', type=str,
-        help="Error type: substitution, insertion or deletion.", choices=['substitution', 'insertion', 'deletion'], default='substitution')
+                    help="Error type: substitution, insertion or deletion.", choices=['substitution', 'insertion', 'deletion'], default='substitution')
 parser.add_argument('input_fasta', nargs='?', help='Input fasta (default: stdin).',
                     type=argparse.FileType('r'), default=sys.stdin)
 parser.add_argument('output_fasta', nargs='?', help='Output fasta (default: stdout)',
