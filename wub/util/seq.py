@@ -156,7 +156,7 @@ def mean_qscore(scores):
         return 0.0
     sum_prob = 0.0
     for val in scores:
-        sum_prob += phred_to_prob()
+        sum_prob += phred_to_prob(val)
     mean_prob = sum_prob / float(len(scores))
     return prob_to_phred(mean_prob)
 
