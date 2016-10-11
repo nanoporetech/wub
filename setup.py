@@ -11,7 +11,7 @@ requirements = [
     'biopython',
     'numpy',
     'matplotlib',
-    'seaborn'
+    'seaborn',
     'editdistance',
     'pandas',
 ]
