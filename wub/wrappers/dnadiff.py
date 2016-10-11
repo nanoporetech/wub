@@ -10,7 +10,7 @@ import tempfile
 from subprocess import STDOUT
 
 dnadiff_extensions = (
-    '.1coords', '.1delta', '.delta', '.mcoords', '.mdelta', '.qdiff', '.rdiff', '.report', '.snps')
+    '.1coords', '.1delta', '.delta', '.mcoords', '.mdelta', '.qdiff', '.rdiff', '.report', '.snps', '.unref', '.unqry')
 
 Property = namedtuple('Property', 'ref query')
 PropertyWithPerc = namedtuple('PropertyWithPerc', 'ref ref_perc query query_perc')
