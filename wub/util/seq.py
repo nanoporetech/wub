@@ -132,7 +132,7 @@ def prob_to_phred(error_prob, max_q=93):
     if error_prob == 0:
         return max_q
     q = -10 * np.log10(error_prob)
-    return int(min(max_q, q))
+    return int(round(min(max_q, q)))
 
 
 def phred_to_prob(phred):
@@ -158,7 +158,8 @@ def mean_qscore(scores):
     for val in scores:
         sum_prob += phred_to_prob(val)
     mean_prob = sum_prob / float(len(scores))
-    return prob_to_phred(mean_prob)
+    mean_phred = prob_to_phred(mean_prob)
+    return mean_phred
 
 
 def read_alignment(input_file, format='fasta'):
