@@ -26,7 +26,7 @@ parser.add_argument(
     '-u', metavar='high_trunc', type=int, help="Upper truncation point (None).", default=None)
 parser.add_argument('-b', metavar='base_freqs', type=str,
                     help="Relative base frequencies in A,C,G,T order (1,1,1,1).", default="1,1,1,1")
-parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdout)',
+parser.add_argument('output_fasta', nargs='?', help='Output fasta (default: stdout)',
                     type=argparse.FileType('w'), default=sys.stdout)
 
 
@@ -39,4 +39,4 @@ if __name__ == '__main__':
 
     simulation_iterator = sim_genome.simulate_genome(
         args.n, args.m, args.a, args.l, args.u, base_frequencies)
-    seq_util.write_seq_records(simulation_iterator, args.output_fastq, format='fasta')
+    seq_util.write_seq_records(simulation_iterator, args.output_fasta, format='fasta')
