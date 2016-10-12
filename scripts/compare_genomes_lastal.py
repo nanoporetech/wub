@@ -8,7 +8,7 @@ from wub.mappers import lastal
 from wub.util import parse
 from wub.util import cmd as cmd_util
 from wub.vis import report
-from wub.utils import misc
+from wub.util import misc
 
 import warnings
 with warnings.catch_warnings():
@@ -28,7 +28,7 @@ parser = argparse.ArgumentParser(
      - The estimated accuracy is dependent on the scoring of gaps and mismatches. By default gap open and gap extend penalties are set to equal.
     """)
 parser.add_argument(
-            '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
+    '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
 parser.add_argument(
     '-l', metavar='lastal_args', type=str, help="Parameters passed to lastal in the <arg>:value,... format (a:1,b:1).", default="a:1,b:1")
 parser.add_argument(
