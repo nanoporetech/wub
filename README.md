@@ -52,7 +52,6 @@ TODO
 ----
 - mummer wrapper to generate mummerplots.
 - a tool for claculating basic assembly statistics. N50, contig size distributions, GC content, etc.
-- a QUAST wrapper -  not sure about that.
 - **TESTING**, **TESTING**, **TESTING**
 
 ### What is a wub anyway?
