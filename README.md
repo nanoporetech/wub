@@ -5,9 +5,17 @@ Tools and software library developed by the ONT Applications group
 Installation
 ------------
 
-Install the package:
+Install the package via pip:
 
 ```
+pip install git+https://git.oxfordnanolabs.local/apps/wub.git
+```
+
+Or clone the repository and install using `setup.py`:
+
+```
+git clone https://git.oxfordnanolabs.local/apps/wub.git
+cd wub
 python setup.py install
 ```
 
