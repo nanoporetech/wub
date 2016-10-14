@@ -8,6 +8,8 @@ with open('README.md') as readme_file:
     readme = readme_file.read()
 
 requirements = [
+    'pytest',
+    'pycmd',
     'biopython',
     'numpy',
     'matplotlib',
