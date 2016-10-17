@@ -107,7 +107,7 @@ def write_seq_records(records_iterator, output_object, format='fasta'):
 
 
 def read_seq_records(input_object, format='fasta'):
-    """Read SeqRecord objects to a file in the specified format.
+    """Read SeqRecord objects from a file in the specified format.
 
     :param input_object: A file object or a file name.
     :param format: Input format (fasta by default).
@@ -118,10 +118,11 @@ def read_seq_records(input_object, format='fasta'):
     handle = input_object
     if type(handle) != file:
         handle = open(handle, "rU")
-    return SeqIO.to_dict(SeqIO.parse(handle, format))
+    return SeqIO.parse(handle, format)
+
 
 def read_seq_records_dict(input_object, format='fasta'):
-    """Write out SeqRecord objects to a file from an iterator in the specified format.
+    """Read SeqRecord objects to a dictionary from a file in the specified format.
 
     :param input_object: A file object or a file name.
     :param format: Input format (fasta by default).
@@ -132,7 +133,7 @@ def read_seq_records_dict(input_object, format='fasta'):
     handle = input_object
     if type(handle) != file:
         handle = open(handle, "rU")
-    return SeqIO.parse(handle, format)
+    return SeqIO.to_dict(SeqIO.parse(handle, format))
 
 
 def prob_to_phred(error_prob, max_q=93):
@@ -201,7 +202,8 @@ def alignment_stats(ref, query, gap_character='-'):
     """
     if len(ref) != len(query):
         raise Exception('Aligned sequences differ in length!')
-    AlnStats = namedtuple('AlnStats', 'length substitutions deletions insertions accuracy')
+    AlnStats = namedtuple(
+        'AlnStats', 'length substitutions deletions insertions accuracy')
     substitutions = 0
     deletions = 0
     insertions = 0
