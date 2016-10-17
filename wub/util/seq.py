@@ -107,6 +107,20 @@ def write_seq_records(records_iterator, output_object, format='fasta'):
 
 
 def read_seq_records(input_object, format='fasta'):
+    """Read SeqRecord objects to a file in the specified format.
+
+    :param input_object: A file object or a file name.
+    :param format: Input format (fasta by default).
+    :returns: A dictionary with the parsed SeqRecord objects.
+    :rtype: dict
+
+    """
+    handle = input_object
+    if type(handle) != file:
+        handle = open(handle, "rU")
+    return SeqIO.to_dict(SeqIO.parse(handle, format))
+
+def read_seq_records_dict(input_object, format='fasta'):
     """Write out SeqRecord objects to a file from an iterator in the specified format.
 
     :param input_object: A file object or a file name.
