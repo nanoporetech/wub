@@ -105,6 +105,9 @@ def lastal_align(database, query, executable='lastal', **kwargs):
     :param kwargs: -[args] wanted for lastal e.g. v='' for verbosity
     :return: alignment output
     """
+    # Make sure paths are absolute:
+    database = os.path.abspath(database)
+    query = os.path.abspath(query)
     # some code taken from metrichor-bio/alignment:
     ref_dir, ref_name = os.path.split(database)
     chdir_cmd = 'cd {}'.format(ref_dir)
