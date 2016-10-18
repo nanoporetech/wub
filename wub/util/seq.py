@@ -2,7 +2,7 @@
 
 import sys
 from itertools import izip
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 import numpy as np
 from Bio import SeqIO
 from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
@@ -135,6 +135,17 @@ def read_seq_records_dict(input_object, format='fasta'):
         handle = open(handle, "rU")
     return SeqIO.to_dict(SeqIO.parse(handle, format))
 
+def record_lengths(input_iter):
+    """Return lengths of SeqRecord obejcts in the input iterator.
+
+    :param input_iter: An iterator of SeqRecord objects.
+    :returns: An ordered dictionary with the lengths of the SeqRecord objects.
+    :rtype: OrderedDict
+
+    """
+    lengths = OrderedDict((record.id, len(record)) for record in input_iter)
+    return lengths
+
 
 def prob_to_phred(error_prob, max_q=93):
     """Convert error probability into phred score.
@@ -180,7 +191,7 @@ def mean_qscore(scores):
 def read_alignment(input_file, format='fasta'):
     """
     Load multiple alignment from file.
-
+, OrderedDict
     :param input_file: Input file name.
     :returns: The alignment read from the input file.
     :rtype: MultipleSeqAlignment
