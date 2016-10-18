@@ -62,7 +62,7 @@ if __name__ == '__main__':
     sys.stdout.write("{}\t{}\n".format(global_accuracy, global_coverage))
 
     if args.t is not None:
-        stats.to_csv(args.t, sep='\t')
+        stats.to_csv(args.t, sep='\t', index=False)
 
     if args.r is not None:
         plotter = report.Report(args.r)

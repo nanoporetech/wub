@@ -36,7 +36,7 @@ if __name__ == '__main__':
     data_frame = pd.DataFrame(data)
 
     if args.t is not None:
-        data_frame.to_csv(args.t, sep='\t')
+        data_frame.to_csv(args.t, sep='\t', index=False)
 
     if args.p is not None:
         misc.pickle_dump(data, args.p)
