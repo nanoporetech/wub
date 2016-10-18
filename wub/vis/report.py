@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# import numpy as np
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
@@ -62,6 +62,27 @@ class Report:
 
         if legend:
             plt.legend(loc=legend_loc)
+        self._set_properties_and_close(fig, title, xlab, ylab)
+
+    def plot_bars_simple(self, data_map, title="", xlab="", ylab="", alpha=0.6):
+        """Plot simple bar chart from input dictionary.
+
+        :param self: object.
+        :param data_map: A dictionary with labels as keys and data as values.
+        :param title: Figure title.
+        :param xlab: X axis label.
+        :param ylab: Y axis label.
+        :param alpha: Alpha value.
+        :returns: None
+        :rtype: object
+        """
+        fig = plt.figure()
+
+        labels = data_map.keys()
+        positions = np.arange(labels)
+        plt.bar(positions, data_map.values(), align='center', alpha=alpha)
+        plt.xticks(positions, labels)
+
         self._set_properties_and_close(fig, title, xlab, ylab)
 
     def plot_heatmap(self, data_matrix, title="", xlab="", ylab="", colormap=plt.cm.jet):
