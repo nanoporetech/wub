@@ -20,12 +20,18 @@ parser.add_argument(
 parser.add_argument(
     '-t', metavar='tsv_file', type=str, help="Save results in tsv format in this file (bam_count_reads.tsv).", default="bam_count_reads.tsv")
 parser.add_argument(
+    '-s', action="store_true", help="Sort results before saving in tsv format (False).", default=False)
+parser.add_argument(
     'bam', metavar='bam_file', type=str, help="Input BAM file.")
 
 if __name__ == '__main__':
     args = parser.parse_args()
 
     counts = read_counter.count_reads(args.bam, args.a)
+
+    if args.s:
+        counts = OrderedDict(sorted((item for item in counts.iteritems()), key=lambda x: x[1], reverse=True))
+
     data = OrderedDict([('Reference', counts.keys()), ('Count', counts.values())])
     data_frame = pd.DataFrame(data)
 
