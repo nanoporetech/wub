@@ -16,6 +16,8 @@ def count_reads(alignment_file, min_aln_qual=0):
     aln_iter = pysam.AlignmentFile(alignment_file, "rb")
 
     for segment in aln_iter:
+        if segment.is_unmapped:
+            continue
         if segment.mapping_quality >= min_aln_qual:
             counts[segment.reference_name] += 1
    
