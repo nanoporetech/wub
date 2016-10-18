@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from collections import OrderedDict
 
 """Utilities to parse strings into various data sructures."""
 
@@ -28,8 +29,8 @@ def args_string__to_dict(args_string, elements_separator=",", keyvalue_separator
     if len(args_string) == 0:
         return {}
     pairs = [pair.strip() for pair in args_string.split(elements_separator)]
-    elements = dict(pair.split(keyvalue_separator) for pair in pairs)
-    parsed = dict((k.strip(), v.strip()) for k, v in elements.iteritems())
+    elements = OrderedDict(pair.split(keyvalue_separator) for pair in pairs)
+    parsed = OrderedDict((k.strip(), v.strip()) for k, v in elements.iteritems())
     return parsed
 
 
