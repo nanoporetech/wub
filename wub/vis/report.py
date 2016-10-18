@@ -64,7 +64,7 @@ class Report:
             plt.legend(loc=legend_loc)
         self._set_properties_and_close(fig, title, xlab, ylab)
 
-    def plot_bars_simple(self, data_map, title="", xlab="", ylab="", alpha=0.6):
+    def plot_bars_simple(self, data_map, title="", xlab="", ylab="", alpha=0.6, xticks_rotation=0, auto_limit=False):
         """Plot simple bar chart from input dictionary.
 
         :param self: object.
@@ -73,15 +73,22 @@ class Report:
         :param xlab: X axis label.
         :param ylab: Y axis label.
         :param alpha: Alpha value.
+        :param xticks_rotation: Rotation value for x tick labels.
+        :param auto_limit: Set y axis limits automatically.
         :returns: None
         :rtype: object
         """
         fig = plt.figure()
 
         labels = data_map.keys()
-        positions = np.arange(labels)
-        plt.bar(positions, data_map.values(), align='center', alpha=alpha)
-        plt.xticks(positions, labels)
+        data = data_map.values()
+        positions = np.arange(len(labels))
+        plt.bar(positions, data, align='center', alpha=alpha)
+        plt.xticks(positions, labels, rotation=xticks_rotation)
+
+        if auto_limit:
+            low, high = min(data), max(data)
+            plt.ylim([(low - 0.5 * (high - low)), (high + 0.5 * (high - low))])
 
         self._set_properties_and_close(fig, title, xlab, ylab)
 
