@@ -6,7 +6,7 @@ from collections import defaultdict
 
 
 def count_reads(alignment_file, min_aln_qual=0):
-    """Copunt reads mapping to references in a BAM file.
+    """Count reads mapping to references in a BAM file.
 
     :param alignment_file: BAM file.
     :param min_aln_qual: Minimum mapping quality.
