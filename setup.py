@@ -16,6 +16,7 @@ requirements = [
     'seaborn',
     'editdistance',
     'pandas',
+    'pysam',
 ]
 
 test_requirements = [
