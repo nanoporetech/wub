@@ -4,6 +4,7 @@
 import pysam
 from collections import defaultdict
 
+
 def count_reads(alignment_file, min_aln_qual=0):
     """Copunt reads mapping to references in a BAM file.
 
@@ -20,7 +21,7 @@ def count_reads(alignment_file, min_aln_qual=0):
             continue
         if segment.mapping_quality >= min_aln_qual:
             counts[segment.reference_name] += 1
-   
+
     aln_iter.close()
 
     return dict(counts)
