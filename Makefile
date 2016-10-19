@@ -50,8 +50,8 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-		coverage run --source $(MODULE) --omit="*/tests/*,__init__.py" `which py.test`
-		coverage report -m --omit="*/tests/*,__init__.py"
+		coverage run --source $(MODULE) --omit="*/tests/*,*__init__.py" `which py.test`
+		coverage report -m --omit="*/tests/*,*__init__.py"
 		coverage html
 
 docs: ## generate Sphinx HTML documentation, including API docs
