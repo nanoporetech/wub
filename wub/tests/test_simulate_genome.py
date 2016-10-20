@@ -1,9 +1,6 @@
 import unittest
 
-import editdistance
-import numpy as np
 from wub.simulate import genome as sim_genome
-from wub.util import seq as seq_util
 
 
 class TestSimulateGenome(unittest.TestCase):
