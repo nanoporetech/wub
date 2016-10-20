@@ -48,3 +48,10 @@ class TestUtilSeq(unittest.TestCase):
         """Test mean q score calculation."""
         scores = [14, 10]
         self.assertEqual(seq.mean_qscore(scores), 12)
+
+    def test_alignment_stats(self):
+        """Test calculation of alignment statistics."""
+        seq1 = "ATGCTG-AAAAA"
+        seq2 = "TTG-TGCAAAAA"
+        self.assertEqual(
+            tuple(seq.alignment_stats(seq1, seq2)), (12, 1, 1, 1, 0.75))
