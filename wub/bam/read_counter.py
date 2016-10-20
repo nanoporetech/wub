@@ -20,9 +20,8 @@ def count_reads(alignment_file, in_format='BAM', min_aln_qual=0):
         mode = "r"
     else:
         raise Exception("Invalid format: {}".format(in_format))
-    
-    aln_iter = pysam.AlignmentFile(alignment_file, mode)
 
+    aln_iter = pysam.AlignmentFile(alignment_file, mode)
 
     for segment in aln_iter:
         if segment.is_unmapped:
