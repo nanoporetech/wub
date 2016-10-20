@@ -11,7 +11,7 @@ error_rate = 0.1
 ref_length = 5000
 
 
-class TestWrappersLastal(unittest.TestCase):
+class TestWrappersDnadiff(unittest.TestCase):
 
     """Test dnadiff wrapper."""
 
@@ -39,9 +39,12 @@ class TestWrappersLastal(unittest.TestCase):
         os.unlink(self.ref_fasta)
         os.unlink(self.target_fasta)
 
+    @unittest.skipIf(not cmd_util.find_executable('lastal'),
+                     "Dnadiff binary not found, skipping integration tests.")
     def test_dnadiff(self):
         """Test dnadiff wrapper."""
         self._generate_test_data()
         res, _, _ = dnadiff.dnadiff(self.ref_fasta, self.target_fasta)
-        self.assertAlmostEqual(res['Alignments']['1-to-1']['AvgIdentity'].ref, 90.0, places=0)
+        self.assertAlmostEqual(
+            res['Alignments']['1-to-1']['AvgIdentity'].ref, 90.0, places=0)
         self._cleanup_test_data()
