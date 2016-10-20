@@ -5,7 +5,7 @@ import pysam
 from collections import defaultdict
 
 
-def count_reads(alignment_file, min_aln_qual=0):
+def count_reads(alignment_file, in_format='BAM', min_aln_qual=0):
     """Count reads mapping to references in a BAM file.
 
     :param alignment_file: BAM file.
@@ -14,7 +14,15 @@ def count_reads(alignment_file, min_aln_qual=0):
     :rtype: dict
     """
     counts = defaultdict(int)
-    aln_iter = pysam.AlignmentFile(alignment_file, "rb")
+    if in_format == 'BAM':
+        mode = "rb"
+    elif in_format == 'SAM':
+        mode = "r"
+    else:
+        raise Exception("Invalid format: {}".format(in_format))
+    
+    aln_iter = pysam.AlignmentFile(alignment_file, mode)
+
 
     for segment in aln_iter:
         if segment.is_unmapped:
