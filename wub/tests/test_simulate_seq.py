@@ -3,6 +3,7 @@ import unittest
 import editdistance
 import numpy as np
 from wub.simulate import seq as sim_seq
+from wub.util import seq as seq_util
 
 
 class TestSimulateSeq(unittest.TestCase):
@@ -24,3 +25,9 @@ class TestSimulateSeq(unittest.TestCase):
         # Should pass 0.9973 proportion of cases:
         self.assertTrue(expected_errors - errors_sd * 3 < distance < expected_errors +
                         errors_sd * 3, msg="expected: {} realised:{}".format(expected_errors, distance))
+
+    def test_add_errors(self):
+        """Test function adding sequencing errors."""
+        seq = "ATGCATGCATGC"
+        mut_seq = sim_seq.add_errors(seq, 6, 'substitution')
+        self.assertSequenceEqual(seq_util.alignment_stats(seq, mut_seq), (12, 6, 0, 0, 0.5))
