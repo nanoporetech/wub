@@ -135,6 +135,7 @@ def read_seq_records_dict(input_object, format='fasta'):
         handle = open(handle, "rU")
     return SeqIO.to_dict(SeqIO.parse(handle, format))
 
+
 def record_lengths(input_iter):
     """Return lengths of SeqRecord obejcts in the input iterator.
 

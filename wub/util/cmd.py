@@ -16,6 +16,7 @@ def find_executable(command):
     # distutils.
     return exefind_distutils(command)
 
+
 def ensure_executable(command):
     """Find executable in path corresponding to a command and abort if not found.
 
@@ -26,5 +27,6 @@ def ensure_executable(command):
     # In the future we might want to eliminate the dependency of
     # distutils.
     if not find_executable(command):
-        sys.stderr.write("Required command \"{}\" not found in path! Aborting.!\n".format(command))
+        sys.stderr.write(
+            "Required command \"{}\" not found in path! Aborting.!\n".format(command))
         sys.exit(127)

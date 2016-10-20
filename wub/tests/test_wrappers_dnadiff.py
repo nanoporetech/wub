@@ -4,7 +4,6 @@ import tempfile
 import os
 
 from wub.wrappers import dnadiff
-from wub.util import seq as seq_util
 from wub.util import cmd as cmd_util
 from wub.simulate import seq as sim_seq
 
