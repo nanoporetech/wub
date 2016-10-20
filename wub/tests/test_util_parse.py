@@ -20,6 +20,11 @@ class TestUtilParse(unittest.TestCase):
         parsed = (("a", "0.1"), ("b", "0.2"), ("c", "0.3"))
         self.assertSequenceEqual(parse.args_string_to_dict(string).items(), parsed)
 
+    def test_args_string_to_dict_empty(self):
+        """Test parsing of dictionaries encoded in separated strings (empty input)."""
+        string = ""
+        self.assertEqual(len(parse.args_string_to_dict(string).items()), 0)
+
     def test_normalise_array(self):
         """Test array normalization."""
         a = np.array([2, 2, 2, 2])
