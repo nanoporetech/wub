@@ -5,6 +5,7 @@ import os
 
 from wub.wrappers import dnadiff
 from wub.util import seq as seq_util
+from wub.util import cmd as cmd_util
 from wub.simulate import seq as sim_seq
 
 error_rate = 0.1
@@ -39,7 +40,7 @@ class TestWrappersDnadiff(unittest.TestCase):
         os.unlink(self.ref_fasta)
         os.unlink(self.target_fasta)
 
-    @unittest.skipIf(not cmd_util.find_executable('lastal'),
+    @unittest.skipIf(not cmd_util.find_executable('dnadiff'),
                      "Dnadiff binary not found, skipping integration tests.")
     def test_dnadiff(self):
         """Test dnadiff wrapper."""
