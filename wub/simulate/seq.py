@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import functools
 from collections import namedtuple
 
 from wub.util import seq as seq_util
@@ -10,7 +11,9 @@ uniform_probs = [0.25, 0.25, 0.25, 0.25]
 strand_directions = ['+', '-']
 
 MutatedSeq = namedtuple(
-    'MutatedSeq', 'seq real_qual real_subst real_del real_ins')
+    'MutatedSeq', 'seq real_qual real_subst real_del real_ins cigar')
+
+cigar_operations = {'match': 'M', 'substitution': 'M', 'insertion': 'I', 'deletion': 'D'}
 
 
 def sample_direction(forward_prob):
@@ -68,6 +71,40 @@ def sample_error_type(error_weights):
     return np.random.choice(error_weights.keys(), p=error_weights.values())
 
 
+def cigar_list_to_string(cigar_list):
+    """Sample error type from error weights dictionary.
+
+    :param error_weights: A dcitionary with (type, probability) pairs.
+    :returns: Error type
+    :rtype: str
+    """
+
+    tmp = map(lambda x: str(x[0]) + str(x[1]), cigar_list)
+    return ''.join(tmp)
+
+
+def compress_raw_cigar_list(raw_cigar):
+    """Sample error type from error weights dictionary.
+
+    :param error_weights: A dcitionary with (type, probability) pairs.
+    :returns: Error type
+    :rtype: str
+    """
+
+    raw_cigar[0] = [raw_cigar[0]]
+
+    def cigar_op_compose(a, b):
+        x = a.pop()
+        if x[1] == b[1]:
+            a.append((x[0] + b[0], x[1]))
+        else:
+            a.extend([x, b])
+        return a
+
+    cigar = functools.reduce(cigar_op_compose, raw_cigar)
+    return cigar
+
+
 def simulate_sequencing_errors(sequence, error_rate, error_weights):
     """Simulate substitutions, deletions and insertions.
 
@@ -76,7 +113,7 @@ def simulate_sequencing_errors(sequence, error_rate, error_weights):
     :param error_weights: A dictionary with error types as keys and probabilities as values.
     The possible error types are: substitution, deletion, insertion.
     :returns: A named tuple with elements: mutated sequence, realised quality, number of realised substitutions,
-    number of realised deletions, number of realised insertions.
+    number of realised deletions, number of realised insertions, cigar string.
     :rtype: namedtuple
     """
     if len(sequence) == 0:
@@ -87,32 +124,44 @@ def simulate_sequencing_errors(sequence, error_rate, error_weights):
     realised_substitutions = 0
     realised_deletions = 0
     realised_insertions = 0
+    raw_cigar_list = []
 
     for position, base in enumerate(sequence):
         if np.random.uniform() < error_rate:
             error_type = sample_error_type(error_weights)
+
             if error_type == 'substitution':
                 new_base = random_base_except(base)
                 realised_substitutions += 1
+                raw_cigar_list.append((1, cigar_operations[error_type]))
+
             elif error_type == 'deletion':
                 new_base = ''
                 realised_deletions += 1
+                raw_cigar_list.append((1, cigar_operations[error_type]))
+
             elif error_type == 'insertion':
                 new_base = base + random_base()
                 realised_insertions += 1
+                raw_cigar_list.append((1, cigar_operations['match']))
+                raw_cigar_list.append((1, cigar_operations[error_type]))
+
             else:
                 raise Exception("Unhandled error type: {}".format(error_type))
         else:
+            raw_cigar_list.append((1, cigar_operations['match']))
             new_base = base
         new_bases.append(new_base)
 
     new_sequence = ''.join(new_bases)
+    cigar = cigar_list_to_string(compress_raw_cigar_list(raw_cigar_list))
+
     realised_events = realised_substitutions + \
         realised_deletions + realised_insertions
     realised_quality = seq_util.prob_to_phred(
         round(float(realised_events) / float(len(sequence)), 3))
     mutated_record = MutatedSeq(
-        new_sequence, realised_quality, realised_substitutions, realised_deletions, realised_insertions)
+        new_sequence, realised_quality, realised_substitutions, realised_deletions, realised_insertions, cigar)
     return mutated_record
 
 
