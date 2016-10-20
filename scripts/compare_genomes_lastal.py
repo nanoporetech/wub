@@ -49,7 +49,7 @@ if __name__ == '__main__':
     cmd_util.ensure_executable('lastdb')
 
     filter_alignments = not args.f
-    lastal_args = parse.args_string__to_dict(args.l)
+    lastal_args = parse.args_string_to_dict(args.l)
     stats = lastal.compare_genomes_lastal(
         args.ref, args.target, lastal_options=lastal_args, filter_alns=filter_alignments, cleanup=True)
 

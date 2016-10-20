@@ -17,7 +17,7 @@ def separated_list_to_floats(separated_list, separator=","):
     return [float(element) for element in separated_list.split(separator)]
 
 
-def args_string__to_dict(args_string, elements_separator=",", keyvalue_separator=":"):
+def args_string_to_dict(args_string, elements_separator=",", keyvalue_separator=":"):
     """ Convert a two-level separated list into a dictionary.
 
     :param args_string: Two-level separated string.
