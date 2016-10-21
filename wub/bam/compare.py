@@ -45,12 +45,12 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, in_format='BAM'):
         ('DirectionMismatch', 0),
         ('StrictFlagMismatch', 0),
         ('SeqMismatch', 0),
+        ('CoarseMatches', 0),
         ('CommonAlignedBases', 0),
         ('CommonMatchingBases', 0),
         ('PerQueryBaseSim', []),
-        ('CoarseMatches', 0),
-        (aln_one, {'AlignedBases': 0, 'UnalignedQueries': 0}),
-        (aln_two, {'AlignedBases': 0, 'UnalignedQueries': 0}),
+        (aln_one, {'AlignedBases': 0, 'UnalignedQueries': 0, 'AlignedQueries': 0}),
+        (aln_two, {'AlignedBases': 0, 'UnalignedQueries': 0, 'AlignedQueries': 0}),
         ('AlignedSimilarity', 0.0),
         ])
 
@@ -60,7 +60,8 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, in_format='BAM'):
 
         # Both reads are aligned:
         if aln_diff['mapped'] == (True, True):
-
+            stats[aln_one]['AlignedQueries'] += 1
+            stats[aln_two]['AlignedQueries'] += 1
             # Orientation mismatch:
             if aln_diff['dir_match'] is False:
                 stats['DirectionMismatch'] += 1
@@ -87,10 +88,12 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, in_format='BAM'):
 
         # Read from first BAM is aligned:
         elif aln_diff['mapped'] == (True, False):
+            stats[aln_one]['AlignedQueries'] += 1
             stats[aln_one]['AlignedBases'] += aln_diff['bases_one']
             stats[aln_two]['UnalignedQueries'] += 1
         # Read from second BAM is aligned:
         elif aln_diff['mapped'] == (False, True):
+            stats[aln_two]['AlignedQueries'] += 1
             stats[aln_two]['AlignedBases'] += aln_diff['bases_two']
             stats[aln_one]['UnalignedQueries'] += 1
         # Both unaligned:
