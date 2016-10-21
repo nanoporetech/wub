@@ -27,6 +27,8 @@ parser.add_argument(
 parser.add_argument(
     '-t', metavar='tsv_file', type=str, help="Save results in tsv format in this file (None).", default=None)
 parser.add_argument(
+    '-f', metavar='format', type=str, help="Input format (BAM).", default='BAM')
+parser.add_argument(
     'bam_one', metavar='bam_one', type=str, help="First input BAM file.")
 parser.add_argument(
     'bam_two', metavar='bam_two', type=str, help="Second input BAM file.")
@@ -35,7 +37,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     stats = bam_compare.bam_compare(
-        args.bam_one, args.bam_two, coarse_tolerance=args.w, strict_flags=args.g, in_format='BAM')
+        args.bam_one, args.bam_two, coarse_tolerance=args.w, strict_flags=args.g, in_format=args.f)
 
     plotter = report.Report(args.r)
 
