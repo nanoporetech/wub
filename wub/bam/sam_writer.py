@@ -23,7 +23,7 @@ class SamWriter:
                     self.out_handler.write("\t{}:{}".format(key, value))
                 self.out_handler.write("\n")
 
-    def new_sam_record(self, qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, seq, qual):
+    def new_sam_record(self, qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, seq, qual, tags):
         """Create new SAM record structure.
 
         :param self: object
@@ -37,6 +37,7 @@ class SamWriter:
         :param tlen: Template length.
         :param seq: Read sequence.
         :param qual: Base qualities.
+        :param tags: Optional tags.
         :returns: SAM record.
         :rtype: OrderedDict
         """
@@ -53,6 +54,7 @@ class SamWriter:
         record['TLEN'] = tlen
         record['SEQ'] = seq
         record['QUAL'] = qual
+        record['TAGS'] = tags
 
         return record
 
