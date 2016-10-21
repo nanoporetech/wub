@@ -34,7 +34,8 @@ parser.add_argument(
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    stats = bam_compare.bam_compare(args.bam_one, args.bam_two, coarse_tolerance=args.w, strict_flags=args.g, in_format='BAM')
+    stats = bam_compare.bam_compare(
+        args.bam_one, args.bam_two, coarse_tolerance=args.w, strict_flags=args.g, in_format='BAM')
 
     plotter = report.Report(args.r)
 
@@ -43,15 +44,18 @@ if __name__ == '__main__':
     plotter.plot_bars_simple(
         query_stats, title="Per query statistics", xlab="Field", ylab="Count", auto_limit=False)
 
-    aligned_bases = OrderedDict((os.path.basename(bam), stats[bam]['AlignedBases']) for bam in stats['BamFiles'])
+    aligned_bases = OrderedDict(
+        (os.path.basename(bam), stats[bam]['AlignedBases']) for bam in stats['BamFiles'])
     plotter.plot_bars_simple(
         aligned_bases, title="Aligned bases", xlab="BAM", ylab="Bases", auto_limit=False)
 
-    aligned_queries = OrderedDict((os.path.basename(bam), stats[bam]['AlignedQueries']) for bam in stats['BamFiles'])
+    aligned_queries = OrderedDict(
+        (os.path.basename(bam), stats[bam]['AlignedQueries']) for bam in stats['BamFiles'])
     plotter.plot_bars_simple(
         aligned_queries, title="Aligned queries", xlab="BAM", ylab="Bases", auto_limit=False)
 
-    unaligned_queries = OrderedDict((os.path.basename(bam), stats[bam]['UnalignedQueries']) for bam in stats['BamFiles'])
+    unaligned_queries = OrderedDict(
+        (os.path.basename(bam), stats[bam]['UnalignedQueries']) for bam in stats['BamFiles'])
     plotter.plot_bars_simple(
         unaligned_queries, title="Unaligned queries", xlab="BAM", ylab="Bases", auto_limit=False)
 
@@ -63,6 +67,10 @@ if __name__ == '__main__':
     sim_stats = OrderedDict((field, stats[field]) for field in ['AlignedSimilarity'])
     plotter.plot_bars_simple(
         sim_stats, title="Proportion of bases with matching alignment", xlab="Field", ylab="Count", auto_limit=False)
+
+    plotter.plot_histograms({'PerQuerySim': stats[
+                            'PerQueryBaseSim']}, title="Distribution of percent bases with matched alignment",
+                            xlab="Percent bases with matched alignment", ylab="Count", legend=False)
 
     plotter.close()
 
