@@ -19,12 +19,18 @@ parser.add_argument('-m', metavar='length', type=int,
                     help="Length of simulated sequences (3000).", default=3000)
 parser.add_argument('-b', metavar='base_freqs', type=str,
                     help="Relative base frequencies in A,C,G,T order (1,1,1,1).", default="1,1,1,1")
+parser.add_argument('-z', metavar='random_seed', type=int,
+                    help="Random seed (None).", default=None)
 parser.add_argument('output_fasta', nargs='?', help='Output fasta (default: stdout)',
                     type=argparse.FileType('w'), default=sys.stdout)
 
 
 if __name__ == '__main__':
     args = parser.parse_args()
+
+    # Set random seed:
+    if args.z is not None:
+        np.random.seed(args.z)
 
     base_frequencies = np.array(parse_util.separated_list_to_floats(args.b))
     # Normalise relative base frequencies to probabilities:

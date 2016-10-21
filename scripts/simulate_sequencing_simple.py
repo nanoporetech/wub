@@ -44,6 +44,8 @@ parser.add_argument(
     '-q', metavar='mock_quality', type=int, help="Mock base quality for fastq output (40).", default=40)
 parser.add_argument(
     '-s', metavar='true_sam', type=str, help="Save true alignments in this SAM file (None).", default=None)
+parser.add_argument('-z', metavar='random_seed', type=int,
+                    help="Random seed (None).", default=None)
 parser.add_argument('input_fasta', nargs='?', help='Input genome in fasta format (default: stdin).',
                     type=argparse.FileType('r'), default=sys.stdin)
 parser.add_argument('output_fastq', nargs='?', help='Output fastq (default: stdout)',
@@ -133,6 +135,10 @@ def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation,
 
 if __name__ == '__main__':
     args = parser.parse_args()
+
+    # Set random seed:
+    if args.z is not None:
+        np.random.seed(args.z)
 
     # Read in chromosomes of the input genome:
     chromosomes = list(seq_util.read_seq_records(args.input_fasta))

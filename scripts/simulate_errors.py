@@ -19,6 +19,8 @@ parser.add_argument('-e', metavar='error_rate', type=float,
                     help="Total rate of substitutions insertions and deletions (0.1).", default=0.1)
 parser.add_argument('-w', metavar='error_weights', type=str,
                     help="Relative frequency of substitutions,insertions,deletions (1,1,4).", default="1,1,4")
+parser.add_argument('-z', metavar='random_seed', type=int,
+                    help="Random seed (None).", default=None)
 parser.add_argument('input_fasta', nargs='?', help='Input fasta (default: stdin).',
                     type=argparse.FileType('r'), default=sys.stdin)
 parser.add_argument('output_fasta', nargs='?', help='Output fasta (default: stdout)',
@@ -41,6 +43,10 @@ def simulate_errors(input_iter, error_rate, error_weights):
 
 if __name__ == '__main__':
     args = parser.parse_args()
+
+    # Set random seed:
+    if args.z is not None:
+        np.random.seed(args.z)
 
     # Process error weights:
     error_weights = np.array(parse_util.separated_list_to_floats(args.w))
