@@ -122,10 +122,14 @@ def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation,
             if direction == '-':
                 flag = flag | 0x10
 
+            # Construct NM tag:
+                nm_tag = "NM:i:{}".format(
+                    mutated_record.real_subst + mutated_record.real_del + mutated_record.real_ins)
+
             # Construct SAM record:
             sam = sam_writer.new_sam_record(qname=read_name, flag=flag, rname=fragment.chrom,
                                             pos=fragment.start + 1, mapq=93, cigar=mutated_record.cigar,
-                                            rnext='*', pnext=0, tlen=0, seq=mutated_record.seq, qual=pysam.qualities_to_qualitystring(mock_qualities))
+                                            rnext='*', pnext=0, tlen=0, seq=mutated_record.seq, qual=pysam.qualities_to_qualitystring(mock_qualities), tags=nm_tag)
 
         read_seq = mutated_record.seq
         if direction == '-':
