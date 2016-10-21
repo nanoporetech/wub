@@ -26,7 +26,7 @@ def is_coarse_match(aln_diff, tolerance):
     return True
 
 
-def bam_compare(aln_one, aln_two, coarse_tolerance=50, in_format='BAM'):
+def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_format='BAM'):
     """Count reads mapping to references in a BAM file.
 
     :param alignment_file: BAM file.
@@ -55,7 +55,7 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, in_format='BAM'):
         ])
 
     for segments in izip(aln_iter_one.fetch(until_eof=True), aln_iter_two.fetch(until_eof=True)):
-        aln_diff = compare_alignments(segments[0], segments[1])
+        aln_diff = compare_alignments(segments[0], segments[1], strict_flags)
         stats['TotalQueries'] += 1
 
         # Both reads are aligned:
@@ -101,7 +101,10 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, in_format='BAM'):
             stats[aln_one]['UnalignedQueries'] += 1
             stats[aln_two]['UnalignedQueries'] += 1
 
-    stats['AlignedSimilarity'] = stats['CommonMatchingBases'] / float(stats['CommonAlignedBases'])
+    if stats['CommonAlignedBases'] > 0:
+        stats['AlignedSimilarity'] = stats['CommonMatchingBases'] / float(stats['CommonAlignedBases'])
+    else:
+        stats['AlignedSimilarity'] = 0.0
     return stats
 
 

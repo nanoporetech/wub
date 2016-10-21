@@ -17,7 +17,9 @@ parser = argparse.ArgumentParser(
     The two BAM files must have the same set of reads in the same order (name sorted).
     """)
 parser.add_argument(
-    '-a', metavar='min_aqual', type=int, help="Minimum mapping quality (0).", default=0)
+    '-w', metavar='coarse_tolerance', type=int, help="Tolerance when performing coarse comparison of alignments (50).", default=50)
+parser.add_argument(
+    '-g', action="store_true", help="Do strict comparison of alignment flags.", default=False)
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bam_alignments_compare.pdf).", default="bam_alignments_compare.pdf")
 parser.add_argument(
@@ -32,7 +34,7 @@ parser.add_argument(
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    stats = bam_compare.bam_compare(args.bam_one, args.bam_two, in_format='BAM')
+    stats = bam_compare.bam_compare(args.bam_one, args.bam_two, coarse_tolerance=args.w, strict_flags=args.g, in_format='BAM')
 
     plotter = report.Report(args.r)
 
@@ -50,7 +52,6 @@ if __name__ == '__main__':
         aligned_queries, title="Aligned queries", xlab="BAM", ylab="Bases", auto_limit=False)
 
     unaligned_queries = OrderedDict((os.path.basename(bam), stats[bam]['UnalignedQueries']) for bam in stats['BamFiles'])
-    print unaligned_queries
     plotter.plot_bars_simple(
         unaligned_queries, title="Unaligned queries", xlab="BAM", ylab="Bases", auto_limit=False)
 
