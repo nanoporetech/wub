@@ -40,6 +40,7 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, in_format='BAM'):
 
     # Comparison summary structure:
     stats = OrderedDict([
+        ('BamFiles', [aln_one, aln_two]),
         ('TotalQueries', 0),
         ('DirectionMismatch', 0),
         ('StrictFlagMismatch', 0),
