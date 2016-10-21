@@ -31,3 +31,18 @@ class TestSimulateSeq(unittest.TestCase):
         seq = "ATGCATGCATGC"
         mut_seq = sim_seq.add_errors(seq, 6, 'substitution')
         self.assertSequenceEqual(seq_util.alignment_stats(seq, mut_seq), (12, 6, 0, 0, 0.5))
+
+    def test_compress_raw_cigar_list(self):
+        """Test compression of raw cigar lists."""
+        cigar_list = [
+            (1, 'M'), (1, 'M'), (1, 'M'), (1, 'D'), (1, 'D'), (1, 'M'), (1, 'I'), (1, 'M')]
+        compressed = sim_seq.compress_raw_cigar_list(cigar_list)
+        expected = [(3, 'M'), (2, 'D'), (1, 'M'), (1, 'I'), (1, 'M')]
+        self.assertSequenceEqual(compressed, expected)
+
+    def test_cigar_list_to_string(self):
+        """Test formatting of cigar strings."""
+        cigar_list = [(3, 'M'), (2, 'D'), (1, 'M'), (1, 'I'), (1, 'M')]
+        cigar_string = sim_seq.cigar_list_to_string(cigar_list)
+        expected = "3M2D1M1I1M"
+        self.assertEqual(cigar_string, expected)
