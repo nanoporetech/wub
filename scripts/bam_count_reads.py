@@ -15,6 +15,8 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     '-a', metavar='min_aqual', type=int, help="Minimum mapping quality (0).", default=0)
 parser.add_argument(
+    '-f', metavar='in_format', type=str, help="Input format (BAM).", default='BAM')
+parser.add_argument(
     '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
 parser.add_argument(
     '-t', metavar='tsv_file', type=str, help="Save results in tsv format in this file (bam_count_reads.tsv).", default="bam_count_reads.tsv")
@@ -26,7 +28,7 @@ parser.add_argument(
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    counts = read_counter.count_reads(args.bam, args.a)
+    counts = read_counter.count_reads(args.bam, in_format=args.f, min_aln_qual=args.a)
 
     if args.s:
         counts = OrderedDict(sorted((item for item in counts.iteritems()), key=lambda x: x[1], reverse=True))
