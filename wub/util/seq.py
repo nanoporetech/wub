@@ -9,7 +9,7 @@ from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio import AlignIO
-
+import pysam
 
 """ Utilities manipulating biological sequences and formats. Extensions to biopython functionality.
 """
@@ -189,10 +189,30 @@ def mean_qscore(scores):
     return mean_phred
 
 
+def quality_array_to_string(quality_list):
+    """Convert list of phred quality values to string.
+
+    :param quality_list: List of phred quality scores.
+    :returns: Quality string.
+    :rtype: str
+    """
+    return pysam.qualities_to_qualitystring(quality_list)
+
+
+def quality_string_to_array(quality_string):
+    """Convert quality string into a list of phred scores.
+
+    :param quality_string: Quality string.
+    :returns: Array of scores.
+    :rtype: array
+    """
+    return pysam.qualitystring_to_array(quality_string)
+
+
 def read_alignment(input_file, format='fasta'):
     """
     Load multiple alignment from file.
-, OrderedDict
+
     :param input_file: Input file name.
     :returns: The alignment read from the input file.
     :rtype: MultipleSeqAlignment
