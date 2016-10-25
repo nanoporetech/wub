@@ -75,7 +75,6 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
             # Sequence mismatch:
             if aln_diff['seq_match'] is False:
                 stats['SeqMismatch'] += 1
-                continue
 
             stats['CommonAlignedBases'] += aln_diff['bases']
             stats['CommonMatchingBases'] += aln_diff['cons_score']
@@ -177,10 +176,9 @@ def compare_alignments(segment_one, segment_two, strict_flags=False):
         else:
             aln_diff['flag_match'] = True
 
-    # Check if read sequences differ: FIXME: hard clipping will mess this up!
+    # Check if read sequences differ: Now should work with hard clipping.
     if segment_one.query_sequence != segment_two.query_sequence:
         aln_diff['seq_match'] = False
-        return aln_diff
     else:
         aln_diff['seq_match'] = True
 
