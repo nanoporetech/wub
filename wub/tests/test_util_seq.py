@@ -39,7 +39,7 @@ class TestUtilSeq(unittest.TestCase):
         """Test error probability to phred score conversion."""
         self.assertAlmostEqual(seq.phred_to_prob(3), 0.5, places=2)
 
-    def test_mean_qscore(self):
+    def test_mean_qscore_large(self):
         """Test mean q score calculation (large identical input)."""
         scores = [30] * 5000
         self.assertEqual(seq.mean_qscore(scores), 30)

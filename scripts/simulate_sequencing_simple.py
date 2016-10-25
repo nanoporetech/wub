@@ -5,7 +5,6 @@ import argparse
 import sys
 
 import numpy as np
-import pysam
 from collections import OrderedDict
 
 from wub.simulate import seq as sim_seq

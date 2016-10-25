@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """Compares alignments in two BAM files."""
 
-import pysam
 from itertools import izip
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict
 from wub.bam import common as bam_common
 
 

@@ -3,11 +3,7 @@
 
 import argparse
 
-import pandas as pd
-from collections import OrderedDict
-
 import pysam
-from wub.bam import compare
 from wub.bam import filter as bam_filter
 from wub.bam import common as bam_common
 
