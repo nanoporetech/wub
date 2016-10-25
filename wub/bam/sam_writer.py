@@ -12,7 +12,8 @@ class SamWriter:
         self.out_file = out_file
         self.header = header
         self.out_handler = open(out_file, 'w')
-        self._write_header()
+        if header is not None:
+            self._write_header()
 
     def _write_header(self):
         """Write SAM header."""
