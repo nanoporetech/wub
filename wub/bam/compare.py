@@ -8,6 +8,13 @@ from wub.bam import common as bam_common
 
 
 def is_coarse_match(aln_diff, tolerance):
+    """Determine if start and end postions of two alignments are within
+    the specified tolerance levels.
+
+    :param aln_diff: Alignment diff structure as returned by compare_alignments.
+    :returns: True or False
+    :rtype: bool
+    """
     if abs(aln_diff['start_pos'][1] - aln_diff['start_pos'][0]) > tolerance:
         return False
     if abs(aln_diff['end_pos'][1] - aln_diff['end_pos'][0]) > tolerance:
