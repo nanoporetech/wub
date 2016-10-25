@@ -4,18 +4,7 @@
 import pysam
 from itertools import izip
 from collections import defaultdict, OrderedDict
-
-
-def pysam_open(alignment_file, in_format='BAM'):
-    if in_format == 'BAM':
-        mode = "rb"
-    elif in_format == 'SAM':
-        mode = "r"
-    else:
-        raise Exception("Invalid format: {}".format(in_format))
-
-    aln_iter = pysam.AlignmentFile(alignment_file, mode)
-    return aln_iter
+from wub.bam import common as bam_common
 
 
 def is_coarse_match(aln_diff, tolerance):
@@ -35,8 +24,8 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
     :rtype: dict
     """
 
-    aln_iter_one = pysam_open(aln_one, in_format)
-    aln_iter_two = pysam_open(aln_two, in_format)
+    aln_iter_one = bam_common.pysam_open(aln_one, in_format)
+    aln_iter_two = bam_common.pysam_open(aln_two, in_format)
 
     # Comparison summary structure:
     stats = OrderedDict([
@@ -101,7 +90,8 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
             stats[aln_two]['UnalignedQueries'] += 1
 
     if stats['CommonAlignedBases'] > 0:
-        stats['AlignedSimilarity'] = stats['CommonMatchingBases'] / float(stats['CommonAlignedBases'])
+        stats['AlignedSimilarity'] = stats['CommonMatchingBases'] / \
+            float(stats['CommonAlignedBases'])
     else:
         stats['AlignedSimilarity'] = 0.0
     return stats

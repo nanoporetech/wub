@@ -9,6 +9,7 @@ from collections import OrderedDict
 import pysam
 from wub.bam import compare
 from wub.bam import filter as bam_filter
+from wub.bam import common as bam_common
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
@@ -28,7 +29,7 @@ parser.add_argument(
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    input_iter = compare.pysam_open(args.infile, args.f)
+    input_iter = bam_common.pysam_open(args.infile, args.f)
 
     if args.s == 'top_per_query':
         output_iter = bam_filter.filter_top_per_query(input_iter.fetch(until_eof=True))
