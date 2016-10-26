@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Compares alignments in two BAM files."""
 
-from itertools import izip
+from itertools import izip, chain
 from collections import OrderedDict
 from wub.bam import common as bam_common
 
@@ -103,19 +103,28 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
     return stats
 
 
-def aligned_pairs_to_matches(aligned_pairs):
-    return (pair[1] for pair in aligned_pairs if pair[0] is not None)
+def aligned_pairs_to_matches(aligned_pairs, offset):
+    ref_pos_iter = (pair[1] for pair in aligned_pairs if pair[0] is not None)
+    return chain([None] * offset, ref_pos_iter)
 
 
-def calc_consistency_score(segment_one, segment_two):
-    matches_one = aligned_pairs_to_matches(segment_one.get_aligned_pairs())
-    matches_two = aligned_pairs_to_matches(segment_two.get_aligned_pairs())
+def calc_consistency_score(segment_one, segment_two, offset_one, offset_two):
+    matches_one = aligned_pairs_to_matches(segment_one.get_aligned_pairs(), offset_one)
+    matches_two = aligned_pairs_to_matches(segment_two.get_aligned_pairs(), offset_two)
 
     score = 0
     for matches in izip(matches_one, matches_two):
         if matches[0] == matches[1]:
             score += 1
+
     return score
+
+
+def get_hard_clip_offset(aln):
+    op = aln.cigartuples[0]
+    if op[0] == 5:
+        return op[1]
+    return 0
 
 
 def compare_alignments(segment_one, segment_two, strict_flags=False):
@@ -128,7 +137,7 @@ def compare_alignments(segment_one, segment_two, strict_flags=False):
     """
 
     # FIXME: comparison logic does not support multiple alignments, split
-    # alignments and hard clipping
+    # alignments
 
     # Check if query names match:
     if segment_one.query_name != segment_two.query_name:
@@ -179,13 +188,18 @@ def compare_alignments(segment_one, segment_two, strict_flags=False):
         aln_diff['seq_match'] = True
 
     # Register number of bases:
-    aln_diff['bases'] = segment_one.infer_query_length()
+    aln_diff['bases'] = max(segment_one.infer_query_length(), segment_two.infer_query_length())
 
     # Register reference positions:
     aln_diff['start_pos'] = (segment_one.reference_start, segment_two.reference_start)
     aln_diff['end_pos'] = (segment_one.reference_end, segment_two.reference_end)
 
+    # Figure out hard clipping offsets:
+    offset_one = get_hard_clip_offset(segment_one)
+    offset_two = get_hard_clip_offset(segment_two)
+
     # Register number of bases aligned the same way:
-    aln_diff['cons_score'] = calc_consistency_score(segment_one, segment_two)
+    aln_diff['cons_score'] = calc_consistency_score(
+        segment_one, segment_two, offset_one, offset_two)
 
     return aln_diff

@@ -66,5 +66,5 @@ r10_chr1_2417_2467_-/q12/s1/d1/i1	16	chr1	2420	41	2H4M1D37M1I6M	*	0	0	CCGATCATCC
         """Test read_counter wrapper."""
         self._generate_test_data()
         res = compare.bam_compare(self.sam_one, self.sam_two, in_format='SAM')
-        self.assertAlmostEqual(res['AlignedSimilarity'], 0.8553, places=3)
+        self.assertAlmostEqual(res['AlignedSimilarity'], 0.8680, places=3)
         self._cleanup_test_data()
