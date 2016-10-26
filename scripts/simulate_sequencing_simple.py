@@ -122,8 +122,8 @@ def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation,
                 flag = flag | 0x10
 
             # Construct NM tag:
-                nm_tag = "NM:i:{}".format(
-                    mutated_record.real_subst + mutated_record.real_del + mutated_record.real_ins)
+            nm_tag = "NM:i:{}".format(
+                mutated_record.real_subst + mutated_record.real_del + mutated_record.real_ins)
 
             # Construct SAM record:
             sam = sam_writer.new_sam_record(qname=read_name, flag=flag, rname=fragment.chrom,
