@@ -34,8 +34,6 @@ if __name__ == '__main__':
 
     writer = pysam.AlignmentFile(args.outfile, "wh", template=input_iter, header=input_iter.header)
     for record in output_iter:
-        if record.is_unmapped:
-            continue
         writer.write(record)
 
     writer.close()
