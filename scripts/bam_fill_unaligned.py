@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     for read in seq_util.read_seq_records(args.q, 'fastq'):
         if read.id not in sam_names:
-            qual = seq_util.quality_array_to_string(read.etter_annotations["phred_quality"])
+            qual = seq_util.quality_array_to_string(read.letter_annotations["phred_quality"])
             sam_record = writer.new_sam_record(qname=read.id, flag=4, rname="*", pos=0, mapq=0, cigar="*", rnext="*",
                                                pnext=0, tlen=0, seq=str(read.seq), qual=qual, tags="AS:i:0")
             writer.write(sam_record)
