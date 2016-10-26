@@ -104,11 +104,27 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
 
 
 def aligned_pairs_to_matches(aligned_pairs, offset):
+    """Convert aligned pairs into a sequence of reference positions.
+
+    :param aligned_pairs: Iterator of aligned pairs.
+    :param offset: Offset at the beggining of the sequences.
+    :returns: Iterator of reference positions aligned to the sequences positions.
+    :rtype: generator
+    """
     ref_pos_iter = (pair[1] for pair in aligned_pairs if pair[0] is not None)
     return chain([None] * offset, ref_pos_iter)
 
 
 def calc_consistency_score(segment_one, segment_two, offset_one, offset_two):
+    """Calculate the number of bases aligned to the same reference bases in two
+    alignments.
+    :param segment_one: Pysam aligned segments.
+    :param segment_two: Pysam aligned segments.
+    :param offset_one: Hard clipping offset for the first alignment.
+    :param offset_two: Hard clipping offset for the second alignment.
+    :retruns: Number of matching base alignments.
+    :rtype: int
+     """
     matches_one = aligned_pairs_to_matches(segment_one.get_aligned_pairs(), offset_one)
     matches_two = aligned_pairs_to_matches(segment_two.get_aligned_pairs(), offset_two)
 
@@ -121,6 +137,12 @@ def calc_consistency_score(segment_one, segment_two, offset_one, offset_two):
 
 
 def get_hard_clip_offset(aln):
+    """Get hard clipping offset from alignment.
+
+    :param aln: Pysam aligned segment.
+    :returns: Hard clipping offset.
+    :rtype: int
+    """
     op = aln.cigartuples[0]
     if op[0] == 5:
         return op[1]
