@@ -68,10 +68,14 @@ if __name__ == '__main__':
 
     sim_stats = OrderedDict((field, stats[field]) for field in ['AlignedSimilarity'])
     plotter.plot_bars_simple(
-        sim_stats, title="Proportion of bases with matching alignment", xlab="Field", ylab="Count", auto_limit=False)
+        sim_stats, title="Proportion of bases with matching alignment ({})".format(sim_stats.values()[0]), xlab="Field", ylab="Count", auto_limit=True)
 
     plotter.plot_histograms({'PerQuerySim': stats[
                             'PerQueryBaseSim']}, title="Distribution of percent bases with matched alignment",
+                            xlab="Percent bases with matched alignment", ylab="Count", legend=False)
+
+    plotter.plot_histograms({'PerQuerySimClipped': stats[
+                            'PerQueryBaseSimClipped']}, title="Distribution of percent bases with matched alignment (with clipping)",
                             xlab="Percent bases with matched alignment", ylab="Count", legend=False)
 
     plotter.close()
@@ -82,6 +86,7 @@ if __name__ == '__main__':
     if args.t is not None:
         data_map = stats.copy()
         del data_map['PerQueryBaseSim']
+        del data_map['PerQueryBaseSimClipped']
         for bam in data_map['BamFiles']:
             del data_map[bam]
         del data_map['BamFiles']
