@@ -38,6 +38,7 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         ('BamFiles', [aln_one, aln_two]),
         ('TotalQueries', 0),
         ('DirectionMismatch', 0),
+        ('RefMismatch', 0),
         ('StrictFlagMismatch', 0),
         ('SeqMismatch', 0),
         ('CoarseMatches', 0),
@@ -45,8 +46,10 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         ('CommonMatchingBases', 0),
         ('PerQueryBaseSim', []),
         ('PerQueryBaseSimClipped', []),
-        (aln_one, {'AlignedBases': 0, 'UnalignedQueries': 0, 'AlignedQueries': 0}),
-        (aln_two, {'AlignedBases': 0, 'UnalignedQueries': 0, 'AlignedQueries': 0}),
+        (aln_one, {'HardClippedBases': 0, 'AlignedBases': 0,
+                   'UnalignedQueries': 0, 'AlignedQueries': 0}),
+        (aln_two, {'HardClippedBases': 0, 'AlignedBases': 0,
+                   'UnalignedQueries': 0, 'AlignedQueries': 0}),
         ('AlignedSimilarity', 0.0),
         ])
 
@@ -58,6 +61,12 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         if aln_diff['mapped'] == (True, True):
             stats[aln_one]['AlignedQueries'] += 1
             stats[aln_two]['AlignedQueries'] += 1
+
+            # Reference mismatch:
+            if aln_diff['ref_match'] is False:
+                stats['RefMismatch'] = + 1
+                continue
+
             # Orientation mismatch:
             if aln_diff['dir_match'] is False:
                 stats['DirectionMismatch'] += 1
@@ -75,7 +84,8 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
             stats['CommonAlignedBases'] += aln_diff['bases']
             stats['CommonMatchingBases'] += aln_diff['cons_score']
             stats['PerQueryBaseSim'].append(aln_diff['cons_score'] / float(aln_diff['bases']))
-            stats['PerQueryBaseSimClipped'].append(float(aln_diff['cons_score']) / min(segments[0].infer_query_length(), segments[1].infer_query_length())) 
+            stats['PerQueryBaseSimClipped'].append(float(
+                aln_diff['cons_score']) / min(segments[0].infer_query_length(), segments[1].infer_query_length()))
 
             if is_coarse_match(aln_diff, coarse_tolerance):
                 stats['CoarseMatches'] += 1
@@ -171,6 +181,7 @@ def compare_alignments(segment_one, segment_two, strict_flags=False):
 
     aln_diff = OrderedDict([
         ('mapped', None),
+        ('ref_match', None),
         ('dir_match', None),
         ('flag_match', None),
         ('seq_match', None),
@@ -190,6 +201,13 @@ def compare_alignments(segment_one, segment_two, strict_flags=False):
     elif aln_diff['mapped'] == (False, True):
         aln_diff['bases_two'] = segment_two.infer_query_length()
         return aln_diff
+
+    # Mismatch in reference name:
+    if segment_one.reference_name != segment_two.reference_name:
+        aln_diff['ref_match'] = False
+        return aln_diff
+    else:
+        aln_diff['ref_match'] = True
 
     # Mismatch in orientation:
     if segment_one.is_reverse != segment_two.is_reverse:
