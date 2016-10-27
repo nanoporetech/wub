@@ -57,6 +57,10 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         aln_diff = compare_alignments(segments[0], segments[1], strict_flags)
         stats['TotalQueries'] += 1
 
+        # Register hard clipped bases:
+        stats[aln_one]['HardClippedBases'] += aln_diff['hard_clipped'][0]
+        stats[aln_two]['HardClippedBases'] += aln_diff['hard_clipped'][1]
+
         # Both reads are aligned:
         if aln_diff['mapped'] == (True, True):
             stats[aln_one]['AlignedQueries'] += 1
@@ -162,6 +166,18 @@ def get_hard_clip_offset(aln):
     return 0
 
 
+def count_hard_clipped(aln):
+    """Count hard clipped bases in aligned segment.
+
+    :param aln: Pysam aligned segement.
+    :returns: Number of hard clipped bases in segment.
+    :rtype: int
+    """
+    if aln.is_unmapped:
+        return 0
+    return sum(op[1] for op in (aln.cigartuples[0], aln.cigartuples[-1]) if op[0] == 5)
+
+
 def compare_alignments(segment_one, segment_two, strict_flags=False):
     """Count reads mapping to references in a BAM file.
 
@@ -188,10 +204,15 @@ def compare_alignments(segment_one, segment_two, strict_flags=False):
         ('bases', None),
         ('start_pos', None),
         ('end_pos', None),
+        ('hard_clipped', None),
         ('cons_score', None),
         ])
 
     aln_diff['mapped'] = (not segment_one.is_unmapped, not segment_two.is_unmapped)
+
+    # Count hard clipped bases:
+    aln_diff['hard_clipped'] = (count_hard_clipped(segment_one), count_hard_clipped(segment_two))
+
     # One or both unmapped:
     if aln_diff['mapped'] == (False, False):
         return aln_diff

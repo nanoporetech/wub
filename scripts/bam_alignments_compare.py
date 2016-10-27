@@ -42,9 +42,15 @@ if __name__ == '__main__':
     plotter = report.Report(args.r)
 
     query_stats = OrderedDict((field, stats[field]) for field in (
-        'TotalQueries', 'CoarseMatches', 'DirectionMismatch', 'StrictFlagMismatch'))
+        'TotalQueries', 'CoarseMatches', 'DirectionMismatch', 'SeqMismatch'))
     plotter.plot_bars_simple(
         query_stats, title="Per query statistics", xlab="Field", ylab="Count", auto_limit=False)
+
+    query_stats = OrderedDict((field, stats[field]) for field in (
+        'TotalQueries', 'StrictFlagMismatch', 'RefMismatch'))
+    plotter.plot_bars_simple(
+        query_stats, title="Per query statistics (continued)", xlab="Field", ylab="Count", auto_limit=False)
+
 
     aligned_bases = OrderedDict(
         (os.path.basename(bam), stats[bam]['AlignedBases']) for bam in stats['BamFiles'])
@@ -61,6 +67,11 @@ if __name__ == '__main__':
     plotter.plot_bars_simple(
         unaligned_queries, title="Unaligned queries", xlab="BAM", ylab="Bases", auto_limit=False)
 
+    unaligned_queries = OrderedDict(
+        (os.path.basename(bam), stats[bam]['HardClippedBases']) for bam in stats['BamFiles'])
+    plotter.plot_bars_simple(
+        unaligned_queries, title="Hard clipped bases", xlab="BAM", ylab="Bases", auto_limit=False)
+
     base_stats = OrderedDict((field, stats[field])
                              for field in ('CommonAlignedBases', 'CommonMatchingBases'))
     plotter.plot_bars_simple(
@@ -68,7 +79,7 @@ if __name__ == '__main__':
 
     sim_stats = OrderedDict((field, stats[field]) for field in ['AlignedSimilarity'])
     plotter.plot_bars_simple(
-        sim_stats, title="Proportion of bases with matching alignment ({})".format(sim_stats.values()[0]), xlab="Field", ylab="Count", auto_limit=True)
+        sim_stats, title="Proportion of bases with matching alignment ({})".format(sim_stats.values()[0]), xlab="Field", ylab="Count", auto_limit=False)
 
     plotter.plot_histograms({'PerQuerySim': stats[
                             'PerQueryBaseSim']}, title="Distribution of percent bases with matched alignment",
