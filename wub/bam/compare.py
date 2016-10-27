@@ -46,9 +46,9 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         ('CommonMatchingBases', 0),
         ('PerQueryBaseSim', []),
         ('PerQueryBaseSimClipped', []),
-        (aln_one, {'HardClippedBases': 0, 'AlignedBases': 0,
+        (aln_one, {'HardClippedBases': 0, 'SoftClippedBases': 0, 'AlignedBases': 0,
                    'UnalignedQueries': 0, 'AlignedQueries': 0}),
-        (aln_two, {'HardClippedBases': 0, 'AlignedBases': 0,
+        (aln_two, {'HardClippedBases': 0, 'SoftClippedBases': 0', AlignedBases': 0,
                    'UnalignedQueries': 0, 'AlignedQueries': 0}),
         ('AlignedSimilarity', 0.0),
         ])
@@ -57,9 +57,12 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         aln_diff = compare_alignments(segments[0], segments[1], strict_flags)
         stats['TotalQueries'] += 1
 
-        # Register hard clipped bases:
+        # Register hard and soft clipped bases:
         stats[aln_one]['HardClippedBases'] += aln_diff['hard_clipped'][0]
         stats[aln_two]['HardClippedBases'] += aln_diff['hard_clipped'][1]
+
+        stats[aln_one]['SoftClippedBases'] += aln_diff['soft_clipped'][0]
+        stats[aln_two]['SoftClippedBases'] += aln_diff['soft_clipped'][1]
 
         # Both reads are aligned:
         if aln_diff['mapped'] == (True, True):
@@ -166,16 +169,17 @@ def get_hard_clip_offset(aln):
     return 0
 
 
-def count_hard_clipped(aln):
+def count_clipped(aln, target_op):
     """Count hard clipped bases in aligned segment.
 
     :param aln: Pysam aligned segement.
+    :param target_op: CIGAR operation.
     :returns: Number of hard clipped bases in segment.
     :rtype: int
     """
     if aln.is_unmapped:
         return 0
-    return sum(op[1] for op in (aln.cigartuples[0], aln.cigartuples[-1]) if op[0] == 5)
+    return sum(op[1] for op in (aln.cigartuples[0], aln.cigartuples[-1]) if op[0] == target_op)
 
 
 def compare_alignments(segment_one, segment_two, strict_flags=False):
@@ -205,13 +209,17 @@ def compare_alignments(segment_one, segment_two, strict_flags=False):
         ('start_pos', None),
         ('end_pos', None),
         ('hard_clipped', None),
+        ('soft_clipped', None),
         ('cons_score', None),
         ])
 
     aln_diff['mapped'] = (not segment_one.is_unmapped, not segment_two.is_unmapped)
 
     # Count hard clipped bases:
-    aln_diff['hard_clipped'] = (count_hard_clipped(segment_one), count_hard_clipped(segment_two))
+    aln_diff['hard_clipped'] = (count_clipped(segment_one, 5), count_clipped(segment_two, 5))
+
+    # Count soft clipped bases:
+    aln_diff['soft_clipped'] = (count_clipped(segment_one, 4), count_clipped(segment_two, 4))
 
     # One or both unmapped:
     if aln_diff['mapped'] == (False, False):
