@@ -48,7 +48,7 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         ('PerQueryBaseSimClipped', []),
         (aln_one, {'HardClippedBases': 0, 'SoftClippedBases': 0, 'AlignedBases': 0,
                    'UnalignedQueries': 0, 'AlignedQueries': 0}),
-        (aln_two, {'HardClippedBases': 0, 'SoftClippedBases': 0', AlignedBases': 0,
+        (aln_two, {'HardClippedBases': 0, 'SoftClippedBases': 0, 'AlignedBases': 0,
                    'UnalignedQueries': 0, 'AlignedQueries': 0}),
         ('AlignedSimilarity', 0.0),
         ])
