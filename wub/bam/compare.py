@@ -44,6 +44,7 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         ('CommonAlignedBases', 0),
         ('CommonMatchingBases', 0),
         ('PerQueryBaseSim', []),
+        ('PerQueryBaseSimClipped', []),
         (aln_one, {'AlignedBases': 0, 'UnalignedQueries': 0, 'AlignedQueries': 0}),
         (aln_two, {'AlignedBases': 0, 'UnalignedQueries': 0, 'AlignedQueries': 0}),
         ('AlignedSimilarity', 0.0),
@@ -74,6 +75,8 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
             stats['CommonAlignedBases'] += aln_diff['bases']
             stats['CommonMatchingBases'] += aln_diff['cons_score']
             stats['PerQueryBaseSim'].append(aln_diff['cons_score'] / float(aln_diff['bases']))
+            stats['PerQueryBaseSimClipped'].append(float(aln_diff['cons_score']) / min(segments[0].infer_query_length(), segments[1].infer_query_length())) 
+
             if is_coarse_match(aln_diff, coarse_tolerance):
                 stats['CoarseMatches'] += 1
 
@@ -112,7 +115,7 @@ def aligned_pairs_to_matches(aligned_pairs, offset):
     :rtype: generator
     """
     ref_pos_iter = (pair[1] for pair in aligned_pairs if pair[0] is not None)
-    return chain([None] * offset, ref_pos_iter)
+    return chain([False] * offset, ref_pos_iter)
 
 
 def calc_consistency_score(segment_one, segment_two, offset_one, offset_two):
