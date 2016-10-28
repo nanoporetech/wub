@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Compares alignments in two BAM files."""
 
-from itertools import izip, chain
+from itertools import izip, izip_longest, chain
 from collections import OrderedDict
 from wub.bam import common as bam_common
 
@@ -149,7 +149,7 @@ def calc_consistency_score(segment_one, segment_two, offset_one, offset_two):
     matches_two = aligned_pairs_to_matches(segment_two.get_aligned_pairs(), offset_two)
 
     score = 0
-    for matches in izip(matches_one, matches_two):
+    for matches in izip_longest(matches_one, matches_two, fillvalue=False):
         if matches[0] == matches[1]:
             score += 1
 
