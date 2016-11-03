@@ -38,3 +38,18 @@ def filter_top_per_query(records_iter):
             yield sorted_buff[0]
         else:
             buff.append(rec)
+
+
+def filter_query_coverage(records_iter, minimum_coverage):
+    """Filter pysam records keeping the ones with sufficient query coverage.
+
+    :param records_iter: Iterator of pysam aligned segments.
+    :param minimum_coverage: Minimum fraction of covered query.
+    :returns: Generator of filtered records.
+    :rtype: generator
+    """
+    for rec in records_iter:
+        if rec.is_unmapped:
+            yield rec
+        if (float(rec.query_alignment_length) / rec.infer_query_length()) >= minimum_coverage:
+            yield rec

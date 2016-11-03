@@ -16,7 +16,10 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     '-f', metavar='format', type=str, help="Input/output format (SAM).", default='SAM')
 parser.add_argument(
-    '-s', metavar='strategy', type=str, help="Filtering strategy (top_per_query).", default="top_per_query", choices=['top_per_query'])
+    '-s', metavar='strategy', type=str, help="Filtering strategy: top_per_query, query_coverage (top_per_query).",
+    default="top_per_query", choices=['top_per_query', 'query_coverage'])
+parser.add_argument(
+    '-q', metavar='query_cover', type=float, help="Minimum query coverage fraction (0.8).", default=0.8)
 parser.add_argument(
     'infile', metavar='input_file', type=str, help="Input file.")
 parser.add_argument(
@@ -29,6 +32,8 @@ if __name__ == '__main__':
 
     if args.s == 'top_per_query':
         output_iter = bam_filter.filter_top_per_query(input_iter.fetch(until_eof=True))
+    elif args.s == 'query_coverage':
+        output_iter = bam_filter.filter_query_coverage(input_iter.fetch(until_eof=True), args.q)
     else:
         raise Exception('Filtering strategy not implemented!')
 
