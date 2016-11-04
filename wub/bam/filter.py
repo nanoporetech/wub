@@ -53,3 +53,20 @@ def filter_query_coverage(records_iter, minimum_coverage):
             yield rec
         if (float(rec.query_alignment_length) / rec.infer_query_length()) >= minimum_coverage:
             yield rec
+
+
+def filter_ref_coverage(records_iter, minimum_coverage, header):
+    """Filter pysam records keeping the ones with sufficient reference coverage.
+
+    :param records_iter: Iterator of pysam aligned segments.
+    :param minimum_coverage: Minimum fraction of covered reference.
+    :param header: SAM header with reference lengths.
+    :returns: Generator of filtered records.
+    :rtype: generator
+    """
+    ref_lengths = dict((h['SN'], int(h['LN'])) for h in header['SQ'])
+    for rec in records_iter:
+        if rec.is_unmapped:
+            yield rec
+        if (float(rec.query_alignment_length) / ref_lengths[rec.reference_name]) >= minimum_coverage:
+            yield rec
