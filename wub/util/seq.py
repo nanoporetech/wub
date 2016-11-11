@@ -2,7 +2,7 @@
 
 import sys
 from itertools import izip
-from collections import namedtuple, OrderedDict
+from collections import namedtuple, OrderedDict, Counter
 import numpy as np
 from Bio import SeqIO
 from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
@@ -57,6 +57,15 @@ def reverse_complement(seq):
         return seq
     return reduce(lambda x, y: x + y, map(base_complement, seq[::-1]))
 
+def base_composition(seq):
+    """ Return letter counts of a string (base) sequence.
+
+    :param seq: Input sequence.
+    :returns: Letter counts.
+    :rtype: dict
+
+    """
+    return dict(Counter(seq))
 
 def mock_qualities(record, mock_qual):
     """Add mock quality values to SeqRecord object.
