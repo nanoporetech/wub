@@ -23,7 +23,8 @@ parser.add_argument(
     '-c', metavar='region', type=str, help="BAM region (None).", required=False, default=None)
 parser.add_argument(
     '-t', metavar='bam_tag', type=str, default=None, help="Dataset tag (BAM basename).", required=False)
-parser.add_argument('-q', metavar='aqual', type=int, default=5, help="Minimum alignment quality (5).")
+parser.add_argument(
+    '-q', metavar='aqual', type=int, default=5, help="Minimum alignment quality (5).")
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bam_alignments_compare.pdf).", default="bam_alignments_compare.pdf")
 parser.add_argument(
@@ -37,4 +38,4 @@ if __name__ == '__main__':
     # print stats.read_stats(args.bam, args.c)
     # print stats.pileup_stats(args.bam, args.c)
     references = seq_util.read_seq_records_dict(args.f)
-    print stats.error_stats(args.bam, references, region=args.c)
+    print stats.error_and_read_stats(args.bam, references, region=args.c)
