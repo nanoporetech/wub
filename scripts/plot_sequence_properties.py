@@ -3,6 +3,7 @@
 
 import argparse
 import sys
+import numpy as np
 
 from wub.util import seq as seq_util
 from wub.vis import report
@@ -49,11 +50,11 @@ if __name__ == '__main__':
     plotter = report.Report(args.r)
 
     plotter.plot_histograms(
-        {'lengths': lengths}, title="Distribution of sequence lengths", xlab="Length", ylab="Count", legend=False)
+        {'lengths': lengths}, title="Distribution of sequence lengths (mean={0:.3f})".format(np.mean(lengths)), xlab="Length", ylab="Count", legend=False)
 
     if in_format == 'fastq':
         plotter.plot_histograms(
-            {'qualities': mean_qualities}, title="Distribution of mean base qualities", xlab="Mean base quality", ylab="Count", legend=False)
+            {'qualities': mean_qualities}, title="Distribution of mean base qualities (mean={0:.3f})".format(np.mean(mean_qualities)), xlab="Mean base quality", ylab="Count", legend=False)
         if args.j:
             plotter.plot_arrays({'scatter': (lengths, mean_qualities)}, title="Sequence length vs. mean base quality",
                                 xlab="Sequence length", ylab="Mean base quality", legend=False)
