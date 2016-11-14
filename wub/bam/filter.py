@@ -51,7 +51,7 @@ def filter_query_coverage(records_iter, minimum_coverage):
     for rec in records_iter:
         if rec.is_unmapped:
             yield rec
-        if (float(rec.query_alignment_length) / rec.infer_query_length()) >= minimum_coverage:
+        elif (float(rec.query_alignment_length) / rec.infer_query_length()) >= minimum_coverage:
             yield rec
 
 
@@ -68,5 +68,5 @@ def filter_ref_coverage(records_iter, minimum_coverage, header):
     for rec in records_iter:
         if rec.is_unmapped:
             yield rec
-        if (float(rec.query_alignment_length) / ref_lengths[rec.reference_name]) >= minimum_coverage:
+        elif (float(rec.query_alignment_length) / ref_lengths[rec.reference_name]) >= minimum_coverage:
             yield rec
