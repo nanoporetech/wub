@@ -26,6 +26,8 @@ def _update_read_stats(r, res, min_aqual):
 def read_stats(bam, min_aqual=0, region=None):
     """ Parse reads in BAM file and record various statistics. """
     res = defaultdict(list)
+    res['unmapped'] = 0
+    res['mapped'] = 0
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
     ue = True
     if region is not None:
@@ -101,20 +103,19 @@ def _update_events(r, ref, events, indel_dists, context_sizes):
     for t in r.get_aligned_pairs():
         if t[0] is None:
             # deletion
-            _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
-                            0], rpos=t[1], etype='deletion', context_sizes=context_sizes)
 
             if deletion[0] == 0:
                 deletion[1] = str(ref.seq[t[1] - context_sizes[0]:t[1]])
             deletion[0] += 1
+            match_pos = t[1]  # FIXME: is this the right coordinate?
 
             if insert != '':
                 _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
                                 0], rpos=match_pos, etype='insertion', context_sizes=context_sizes)
-                _register_insert(insert, match_pos, indel_dists['insertion_lengths'], indel_dists['insertion_composition'])
+                _register_insert(
+                    insert, match_pos, indel_dists['insertion_lengths'], indel_dists['insertion_composition'])
                 insert = ''
 
-            match_pos = t[1]
         elif t[1] is None:
             # insertion
             insert += r.query_sequence[t[0]]
@@ -125,12 +126,13 @@ def _update_events(r, ref, events, indel_dists, context_sizes):
             # match or mismatch
             _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
                             0], rpos=t[1], etype='match', context_sizes=context_sizes)
-            if insert != '':
-                _register_event(events, ref=r.query_sequence, query=ref.seq, qpos=t[
-                                0], rpos=match_pos, etype='insertion', context_sizes=context_sizes)
-                _register_insert(insert, match_pos, indel_dists['insertion_lengths'], indel_dists['insertion_composition'])
-                insert = ''
             match_pos = t[1]
+            if insert != '':
+                _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
+                                0], rpos=match_pos, etype='insertion', context_sizes=context_sizes)
+                _register_insert(
+                    insert, match_pos, indel_dists['insertion_lengths'], indel_dists['insertion_composition'])
+                insert = ''
             _register_deletion(
                 deletion, match_pos, context_sizes, ref, events, indel_dists['deletion_lengths'], r, t)
 
@@ -155,4 +157,4 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
         ref = refs[r.reference_name]
         _update_events(r, ref, events, indel_dists, context_sizes)
 
-    return events, read_stats, indel_dists
+    return {'events': events, 'read_stats': read_stats, 'indel_dists': indel_dists}
