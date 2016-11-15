@@ -55,7 +55,7 @@ def pileup_stats(bam, region=None):
                 st[pileupcolumn.reference_name][pileupcolumn.reference_pos].append(
                     pileupread.alignment.query_qualities[pileupread.query_position])
     samfile.close()
-    return {'qualities': st, 'coverage': cst}
+    return {'qualities': dict(st), 'coverage': dict(cst)}
 
 
 def _register_event(e, query, ref, qpos, rpos, etype, context_sizes, fixed_context=None):
@@ -157,4 +157,4 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
         ref = refs[r.reference_name]
         _update_events(r, ref, events, indel_dists, context_sizes)
 
-    return {'events': events, 'read_stats': read_stats, 'indel_dists': indel_dists}
+    return {'events': dict(events), 'read_stats': dict(read_stats), 'indel_dists': dict(indel_dists)}
