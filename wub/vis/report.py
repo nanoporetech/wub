@@ -22,6 +22,7 @@ class Report:
 
         """
         self.pdf = pdf
+        self.plt = plt
         self.pages = PdfPages(pdf)
 
     def _set_properties_and_close(self, fig, title, xlab, ylab):
@@ -113,7 +114,44 @@ class Report:
 
         self._set_properties_and_close(fig, title, xlab, ylab)
 
-    def plot_dicts(self, data_map, title="", xlab="", ylab="", marker='-', legend_loc='upper right'):
+    def plot_pcolor(self, data, title="", xlab="", ylab="", xticks=None, yticks=None, invert_yaxis=False, colormap=plt.cm.Blues, tick_size=5, tick_rotation=90):
+        """Plot square heatmap of data matrix.
+
+        :param self: object.
+        :param data: 2D array to be plotted.
+        :param title: Figure title.
+        :param xlab: X axis label.
+        :param ylab: Y axis label.
+        :param xticks: X axis tick labels..
+        :param yticks: Y axis tick labels..
+        :param invert_yaxis: Invert Y axis if true.
+        :param colormap: matplotlib color map.
+        :param tick_size: Font size on tick labels.
+        :param tick_rotation: Rotation of tick labels.
+        :retuns: None
+        :rtype: object
+        """
+        """
+        """
+
+        fig, ax = plt.subplots()
+        hm = plt.pcolor(data, cmap=colormap)
+        if invert_yaxis:
+            ax.invert_yaxis()
+        ax.xaxis.tick_top()
+        ax.xaxis.set_label_position('top')
+
+        ax.set_xticks(np.arange(data.shape[1]) + 0.5, minor=False)
+        ax.set_yticks(np.arange(data.shape[0]) + 0.5, minor=False)
+
+        ax.set_xticklabels(xticks, minor=False, fontsize=tick_size, rotation=tick_rotation)
+        ax.set_yticklabels(yticks, minor=False, fontsize=tick_size)
+        plt.colorbar(hm)
+
+        self._set_properties_and_close(fig, title, xlab, ylab)
+
+
+    def plot_dicts(self, data_map, title="", xlab="", ylab="", marker='-', legend_loc='upper right', legend=True, hist_style=False):
         """Plot elements of multiple dictionaries on a single plot.
 
         :param self: object.
@@ -123,15 +161,22 @@ class Report:
         :param ylab: Y axis label.
         :param marker: Marker passed to the plot function.
         :param legend_loc: Location of legend.
+        :param legend: Hide legend if False.
+        :param hist_style: Plot histogram-style bar plots.
         :returns: None
         :rtype: object
         """
         fig = plt.figure()
 
-        for label, d in data_map.iteritems():
-            plt.plot(d.keys(), d.values(), marker, label=label)
+        if not hist_style:
+            for label, d in data_map.iteritems():
+                plt.plot(d.keys(), d.values(), marker, label=label)
+        else:
+            for label, d in data_map.iteritems():
+                plt.bar(d.keys(), d.values(), label=label, align='center')
 
-        plt.legend(loc=legend_loc)
+        if legend:
+            plt.legend(loc=legend_loc)
         self._set_properties_and_close(fig, title, xlab, ylab)
 
     def plot_histograms(self, data_map, title="", xlab="", ylab="", bins=50, alpha=0.7, legend_loc='upper right', legend=True):
@@ -151,7 +196,8 @@ class Report:
         fig = plt.figure()
 
         for label, data in data_map.iteritems():
-            plt.hist(data, bins=bins, label=label, alpha=alpha)
+            if len(data) > 0:
+                plt.hist(data, bins=bins, label=label, alpha=alpha)
         if legend:
             plt.legend(loc=legend_loc)
 
