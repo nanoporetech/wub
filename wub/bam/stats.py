@@ -25,9 +25,16 @@ def _update_read_stats(r, res, min_aqual):
 
 def read_stats(bam, min_aqual=0, region=None):
     """ Parse reads in BAM file and record various statistics. """
-    res = defaultdict(list)
-    res['unmapped'] = 0
-    res['mapped'] = 0
+    res = {'unmapped': 0,
+           'mapped': 0,
+           'unaligned_quals': [],
+           'unaligned_lengths': [],
+           'aligned_quals': [],
+           'alignment_lengths': [],
+           'aligned_lengths': [],
+           'mqfail_aligned_quals': [],
+           'mqfail_alignment_lengths': [],
+           }
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
     ue = True
     if region is not None:
@@ -100,14 +107,21 @@ def _update_events(r, ref, events, indel_dists, context_sizes):
     insert = ''
     deletion = [0, None]
 
-    for t in r.get_aligned_pairs():
+    aligned_pairs = r.get_aligned_pairs()
+    # Remove soft clips:
+    if r.cigartuples[0][0] == 4:
+        aligned_pairs = aligned_pairs[r.cigartuples[0][1]:]
+    if r.cigartuples[-1][0] == 4:
+        aligned_pairs = aligned_pairs[:-r.cigartuples[-1][1]]
+
+    for t in aligned_pairs:
         if t[0] is None:
             # deletion
 
             if deletion[0] == 0:
                 deletion[1] = str(ref.seq[t[1] - context_sizes[0]:t[1]])
             deletion[0] += 1
-            match_pos = t[1]  # FIXME: is this the right coordinate?
+            match_pos = t[1]
 
             if insert != '':
                 _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
@@ -141,8 +155,16 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
     """WARNING: context overstepping start/end boundaries are not registered."""
     events = defaultdict(lambda: defaultdict(int))
     read_stats = defaultdict(list)
-    read_stats['mapped'] = 0
-    read_stats['unmapped'] = 0
+    read_stats = {'unmapped': 0,
+                  'mapped': 0,
+                  'unaligned_quals': [],
+                  'unaligned_lengths': [],
+                  'aligned_quals': [],
+                  'alignment_lengths': [],
+                  'aligned_lengths': [],
+                  'mqfail_aligned_quals': [],
+                  'mqfail_alignment_lengths': [],
+                  }
     indel_dists = {'insertion_lengths': defaultdict(int), 'deletion_lengths': defaultdict(
         int), 'insertion_composition': defaultdict(int)}
 
