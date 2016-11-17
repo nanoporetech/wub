@@ -69,6 +69,15 @@ def stats_to_matrix(rst):
     return mat
 
 
+def normalise_data(d):
+    nd = {}
+    for k, v in d.iteritems():
+        total = float(sum(v.values()))
+        nd[k] = {}
+        for ik, iv in v.iteritems():
+            nd[k][ik] = iv / total
+    return nd
+
 def ref_qual_qc(st, report):
     """ Plot per reference statistics. """
     ref_qc = {}
@@ -125,11 +134,12 @@ def error_stat_qc(st, report, csizes, ommit_diagonal=False):
     contexts = enumerate_contexts(csizes)
     bases_plus = list(seq_util.bases)
     bases_plus.extend(['-', '*'])
+    nd = normalise_data(st) 
 
     z = np.zeros((len(bases_plus), len(contexts)), dtype=float)
     for conti, cont in enumerate(contexts):
         for bi, b in enumerate(bases_plus):
-            z[bi][conti] = st[cont][b]
+            z[bi][conti] = nd[cont][b]
             central_base = cont[csizes[0]:len(cont) - csizes[1]]
             if central_base == b:
                 if ommit_diagonal:
