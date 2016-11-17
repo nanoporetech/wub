@@ -78,6 +78,7 @@ def normalise_data(d):
             nd[k][ik] = iv / total
     return nd
 
+
 def ref_qual_qc(st, report):
     """ Plot per reference statistics. """
     ref_qc = {}
@@ -134,7 +135,7 @@ def error_stat_qc(st, report, csizes, ommit_diagonal=False):
     contexts = enumerate_contexts(csizes)
     bases_plus = list(seq_util.bases)
     bases_plus.extend(['-', '*'])
-    nd = normalise_data(st) 
+    nd = normalise_data(st)
 
     z = np.zeros((len(bases_plus), len(contexts)), dtype=float)
     for conti, cont in enumerate(contexts):
@@ -160,6 +161,7 @@ if __name__ == '__main__':
     plotter = report.Report(args.r)
 
     references = seq_util.read_seq_records_dict(args.f)
+
     err_read_stats = stats.error_and_read_stats(
         args.bam, references, region=args.c, context_sizes=context_sizes)
     read_stats = err_read_stats['read_stats']

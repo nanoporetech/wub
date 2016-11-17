@@ -38,6 +38,8 @@ def read_stats(bam, min_aqual=0, region=None):
            'mqfail_alignment_lengths': [],
            'mapping_quals': [],
            }
+    base_stats = {'length': 0, 'match': 0, 'mismatch': 0, 'deletion': 0, 'insertion': 0}
+
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
     ue = True
     if region is not None:
@@ -46,6 +48,14 @@ def read_stats(bam, min_aqual=0, region=None):
     for r in bam_iter:
         _update_read_stats(r, res, min_aqual)
 
+        bs = stats_from_aligned_read(r)
+        if bs is not None:
+            for k in base_stats.iterkeys():
+                base_stats[k] += bs[k]
+
+    base_stats['identity'] = float(base_stats['match']) / (base_stats['match'] + base_stats['mismatch'])
+    base_stats['accuracy'] = 1.0 - float(base_stats['insertion'] + base_stats['deletion'] + base_stats['mismatch']) / base_stats['length']
+    res['base_stats'] = base_stats
     bam_reader.close()
     return res
 
@@ -105,7 +115,7 @@ def _register_deletion(deletion, match_pos, context_sizes, ref, events, deletion
         deletion[1] = None
 
 
-def _update_events(r, ref, events, indel_dists, context_sizes):
+def _update_events(r, ref, events, indel_dists, context_sizes, base_stats):
     match_pos = 0
     insert = ''
     deletion = [0, None]
@@ -120,6 +130,7 @@ def _update_events(r, ref, events, indel_dists, context_sizes):
     for t in aligned_pairs:
         if t[0] is None:
             # deletion
+            base_stats['deletion'] += 1
 
             if deletion[0] == 0:
                 deletion[1] = str(ref.seq[t[1] - context_sizes[0]:t[1]])
@@ -135,12 +146,19 @@ def _update_events(r, ref, events, indel_dists, context_sizes):
 
         elif t[1] is None:
             # insertion
+            base_stats['insertion'] += 1
+
             insert += r.query_sequence[t[0]]
             _register_deletion(
                 deletion, match_pos, context_sizes, ref, events, indel_dists['deletion_lengths'], r, t)
 
         else:
             # match or mismatch
+            if r.query_sequence[t[0]] == ref.seq[t[1]]:
+                base_stats['match'] += 1
+            else:
+                base_stats['mismatch'] += 1
+
             _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
                             0], rpos=t[1], etype='match', context_sizes=context_sizes)
             match_pos = t[1]
@@ -173,6 +191,7 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
         int), 'insertion_composition': defaultdict(int)}
 
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
+    base_stats = {'match': 0, 'mismatch': 0, 'deletion': 0, 'insertion': 0}
 
     for r in bam_reader.fetch(region=region, until_eof=True):
         _update_read_stats(r, read_stats, min_aqual)
@@ -181,6 +200,55 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
         if r.mapping_quality < min_aqual:
             continue
         ref = refs[r.reference_name]
-        _update_events(r, ref, events, indel_dists, context_sizes)
+        _update_events(r, ref, events, indel_dists, context_sizes, base_stats)
 
-    return {'events': dict(events), 'read_stats': dict(read_stats), 'indel_dists': dict(indel_dists)}
+    base_stats['aln_length'] = base_stats['match'] + base_stats['mismatch'] + \
+        base_stats['insertion'] + base_stats['deletion']
+    base_stats['identity'] = float(
+        base_stats['match']) / (base_stats['match'] + base_stats['mismatch'])
+    base_stats['accuracy'] = 1.0 - \
+        float(base_stats['mismatch'] + base_stats['insertion'] + base_stats['deletion']) / \
+        base_stats['aln_length']
+
+    res = {'events': dict(events), 'read_stats': dict(
+        read_stats), 'indel_dists': dict(indel_dists), 'base_stats': base_stats}
+    return res
+
+
+def stats_from_aligned_read(read):
+    """Create summary information for an aligned read (taken from tang.util.bio).
+
+    :param read: :class:`pysam.AlignedSegment` object
+    """
+    tags = dict(read.tags)
+    try:
+        tags.get('NM')
+    except:
+        raise IOError(
+            "Read is missing required 'NM' tag. Try running 'samtools fillmd -S - ref.fa'.")
+    name = read.qname
+    if read.flag == 4:
+        return None
+    match = reduce(lambda x, y: x + y[1] if y[0] == 0 else x, read.cigar, 0)
+    ins = reduce(lambda x, y: x + y[1] if y[0] == 1 else x, read.cigar, 0)
+    delt = reduce(lambda x, y: x + y[1] if y[0] == 2 else x, read.cigar, 0)
+    # NM is edit distance: NM = INS + DEL + SUB
+    sub = tags['NM'] - ins - delt
+    length = match + ins + delt
+    iden = 100 * float(match - sub) / match
+    acc = 100 - 100 * float(tags['NM']) / length
+    coverage = 100 * float(read.query_alignment_length) / read.infer_query_length()
+    direction = '-' if read.is_reverse else '+'
+    results = {
+        "name": name,
+        "coverage": coverage,
+        "direction": direction,
+        "length": length,
+        "insertion": ins,
+        "deletion": delt,
+        "mismatch": sub,
+        "match": match - sub,
+        "identity": iden,
+        "accuracy": acc
+    }
+    return results
