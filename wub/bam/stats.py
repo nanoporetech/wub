@@ -10,17 +10,19 @@ def _update_read_stats(r, res, min_aqual):
     if r.is_unmapped:
         res['unmapped'] += 1
         res['unaligned_quals'].append(seq_util.mean_qscore(r.query_qualities))
-        res['unaligned_lengths'].append(r.infer_query_length())
+        res['unaligned_lengths'].append(r.infer_query_length(False))
     elif r.mapping_quality >= min_aqual:
         res['mapped'] += 1
         res['aligned_quals'].append(seq_util.mean_qscore(r.query_qualities))
         res['alignment_lengths'].append(r.query_alignment_length)
         res['aligned_lengths'].append(r.infer_query_length())
+        res['mapping_quals'].append(r.mapping_quality)
     else:
         res['mapped'] += 1
         res['mqfail_aligned_quals'].append(seq_util.mean_qscore(r.query_qualities))
         res['mqfail_alignment_lengths'].append(r.query_alignment_length)
         res['mqfail_aligned_lengths'].append(r.infer_query_length())
+        res['mapping_quals'].append(r.mapping_quality)
 
 
 def read_stats(bam, min_aqual=0, region=None):
@@ -34,6 +36,7 @@ def read_stats(bam, min_aqual=0, region=None):
            'aligned_lengths': [],
            'mqfail_aligned_quals': [],
            'mqfail_alignment_lengths': [],
+           'mapping_quals': [],
            }
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
     ue = True
@@ -164,6 +167,7 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
                   'aligned_lengths': [],
                   'mqfail_aligned_quals': [],
                   'mqfail_alignment_lengths': [],
+                  'mapping_quals': [],
                   }
     indel_dists = {'insertion_lengths': defaultdict(int), 'deletion_lengths': defaultdict(
         int), 'insertion_composition': defaultdict(int)}
