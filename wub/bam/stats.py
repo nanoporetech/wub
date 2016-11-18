@@ -38,7 +38,7 @@ def read_stats(bam, min_aqual=0, region=None):
            'mqfail_alignment_lengths': [],
            'mapping_quals': [],
            }
-    base_stats = {'length': 0, 'match': 0, 'mismatch': 0, 'deletion': 0, 'insertion': 0}
+    base_stats = {'aln_length': 0, 'match': 0, 'mismatch': 0, 'deletion': 0, 'insertion': 0}
 
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
     ue = True
@@ -54,7 +54,7 @@ def read_stats(bam, min_aqual=0, region=None):
                 base_stats[k] += bs[k]
 
     base_stats['identity'] = float(base_stats['match']) / (base_stats['match'] + base_stats['mismatch'])
-    base_stats['accuracy'] = 1.0 - float(base_stats['insertion'] + base_stats['deletion'] + base_stats['mismatch']) / base_stats['length']
+    base_stats['accuracy'] = 1.0 - float(base_stats['insertion'] + base_stats['deletion'] + base_stats['mismatch']) / base_stats['aln_length']
     res['base_stats'] = base_stats
     bam_reader.close()
     return res
@@ -241,6 +241,7 @@ def stats_from_aligned_read(read):
     direction = '-' if read.is_reverse else '+'
     results = {
         "name": name,
+        "ref": read.reference_name,
         "coverage": coverage,
         "direction": direction,
         "length": length,

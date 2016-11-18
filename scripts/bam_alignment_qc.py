@@ -81,7 +81,6 @@ def normalise_data(d):
 
 def ref_qual_qc(st, report):
     """ Plot per reference statistics. """
-    ref_qc = {}
     for ref, stats in st['qualities'].iteritems():
         mat = stats_to_matrix(stats)
         report.plot_heatmap(mat, title="Quality values across {}".format(
@@ -91,6 +90,17 @@ def ref_qual_qc(st, report):
             ref), xlab="Position", ylab="Mean quality", legend=False)
         report.plot_dicts(OrderedDict([('Dummy', st['coverage'][ref])]), title="Base coverage across {}".format(
             ref), xlab="Position", ylab="Coverage", legend=False)
+
+
+def base_stats_qc(st, report):
+    """ Plot base statistics. """
+
+    bs = st.copy()
+    del bs['accuracy']
+    del bs['identity']
+    plotter.plot_bars_simple(bs, title="Basewise statistics", xlab="Type", ylab="Count")
+    plotter.plot_bars_simple(OrderedDict([('Identity ({})'.format(st['identity']), st['identity']), ('Accuracy ({})'.format(
+        st['accuracy']), st['accuracy'])]), title="Precision statistics", xlab="Type", ylab="Count")
 
 
 def read_qual_qc(st, report):
@@ -166,9 +176,11 @@ if __name__ == '__main__':
         args.bam, references, region=args.c, context_sizes=context_sizes)
     read_stats = err_read_stats['read_stats']
     error_stats = err_read_stats['events']
+    base_stats = err_read_stats['base_stats']
     indel_stats = err_read_stats['indel_dists']
 
     read_qual_qc(read_stats, plotter)
+    base_stats_qc(base_stats, plotter)
     error_stat_qc(error_stats, plotter, context_sizes, ommit_diagonal=True)
     indel_dist_qc(indel_stats, plotter)
 
