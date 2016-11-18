@@ -31,7 +31,7 @@ parser.add_argument(
 parser.add_argument(
     '-t', metavar='bam_tag', type=str, default=None, help="Dataset tag (BAM basename).", required=False)
 parser.add_argument(
-    '-q', metavar='aqual', type=int, default=5, help="Minimum alignment quality (5).")
+    '-q', metavar='aqual', type=int, default=0, help="Minimum alignment quality (0).")
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bam_alignment_qc.pdf).", default="bam_alignment_qc.pdf")
 parser.add_argument(
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     references = seq_util.read_seq_records_dict(args.f)
 
     err_read_stats = stats.error_and_read_stats(
-        args.bam, references, region=args.c, context_sizes=context_sizes)
+        args.bam, references, region=args.c, context_sizes=context_sizes, min_aqual=args.q)
     read_stats = err_read_stats['read_stats']
     error_stats = err_read_stats['events']
     base_stats = err_read_stats['base_stats']

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 from wub.bam import common as bam_common
 from wub.util import seq as seq_util
@@ -39,6 +39,19 @@ def read_stats(bam, min_aqual=0, region=None):
            'mapping_quals': [],
            }
     base_stats = {'aln_length': 0, 'match': 0, 'mismatch': 0, 'deletion': 0, 'insertion': 0}
+    read_stats = OrderedDict([
+        ("name", []),
+        ("ref", []),
+        ("coverage", []),
+        ("direction", []),
+        ("aln_length", []),
+        ("insertion", []),
+        ("deletion", []),
+        ("mismatch", []),
+        ("match", []),
+        ("identity", []),
+        ("accuracy", [])
+    ])
 
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
     ue = True
@@ -52,12 +65,16 @@ def read_stats(bam, min_aqual=0, region=None):
         if bs is not None:
             for k in base_stats.iterkeys():
                 base_stats[k] += bs[k]
+            for stat, value in bs.iteritems():
+                read_stats[stat].append(value)
 
-    base_stats['identity'] = float(base_stats['match']) / (base_stats['match'] + base_stats['mismatch'])
-    base_stats['accuracy'] = 1.0 - float(base_stats['insertion'] + base_stats['deletion'] + base_stats['mismatch']) / base_stats['aln_length']
+    base_stats['identity'] = float(
+        base_stats['match']) / (base_stats['match'] + base_stats['mismatch'])
+    base_stats['accuracy'] = 1.0 - float(base_stats['insertion'] +
+                                         base_stats['deletion'] + base_stats['mismatch']) / base_stats['aln_length']
     res['base_stats'] = base_stats
+    res['read_stats'] = read_stats
     bam_reader.close()
-    print res
     return res
 
 
@@ -240,17 +257,17 @@ def stats_from_aligned_read(read):
     acc = 100 - 100 * float(tags['NM']) / length
     coverage = 100 * float(read.query_alignment_length) / read.infer_query_length()
     direction = '-' if read.is_reverse else '+'
-    results = {
-        "name": name,
-        "ref": read.reference_name,
-        "coverage": coverage,
-        "direction": direction,
-        "aln_length": length,
-        "insertion": ins,
-        "deletion": delt,
-        "mismatch": sub,
-        "match": match - sub,
-        "identity": iden,
-        "accuracy": acc
-    }
+    results = OrderedDict([
+        ("name", name),
+        ("ref", read.reference_name),
+        ("coverage", coverage),
+        ("direction", direction),
+        ("aln_length", length),
+        ("insertion", ins),
+        ("deletion", delt),
+        ("mismatch", sub),
+        ("match", match - sub),
+        ("identity", iden),
+        ("accuracy", acc)
+    ])
     return results
