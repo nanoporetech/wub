@@ -1,6 +1,7 @@
 import unittest
 
 from os import path
+from collections import OrderedDict
 from wub.bam import stats
 from wub.util import seq as seq_util
 
@@ -15,7 +16,8 @@ class TestBamStats(unittest.TestCase):
         ref_fasta = path.join(top, "data/test_bam_stats/stat_ref.fas")
         bam = path.join(top, "data/test_bam_stats/stat_test.bam")
         refs = seq_util.read_seq_records_dict(ref_fasta)
-        res = stats.error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual=0)
+        res = stats.error_and_read_stats(
+            bam, refs, context_sizes=(1, 1), region=None, min_aqual=0)
 
         # Test evenets:
         self.assertEqual(res['events']['AGA'], {'*': 1, 'G': 2})
@@ -37,8 +39,7 @@ class TestBamStats(unittest.TestCase):
         bam = path.join(top, "data/test_bam_stats/stat_test.bam")
         res = stats.read_stats(bam, region=None, min_aqual=0)
 
-        self.assertEqual(res, {'aligned_lengths': [87], 'aligned_quals': [40], 'base_stats': {'deletion': 9, 'mismatch': 1, 'identity': 0.9873417721518988, 'insertion': 8, 'aln_length': 96, 'match': 78, 'accuracy': 0.8125}, 'mapping_quals': [47], 'mqfail_alignment_lengths': [], 'alignment_lengths': [87], 'mqfail_aligned_quals': [], 'unaligned_lengths': [], 'unaligned_quals': [], 'mapped': 1, 'unmapped': 0}
-                         )
+        self.assertEqual(res, {'aligned_lengths': [87], 'read_stats': OrderedDict([('name', ['r0_seq_1_0_87_+/q93/s0/d0/i0']), ('ref', ['seq_0']), ('coverage', [100.0]), ('direction', ['+']), ('aln_length', [96]), ('insertion', [8]), ('deletion', [9]), ('mismatch', [1]), ('match', [78]), ('identity', [98.73417721518987]), ('accuracy', [81.25])]), 'aligned_quals': [40], 'base_stats': {'deletion': 9, 'mismatch': 1, 'identity': 0.9873417721518988, 'insertion': 8, 'aln_length': 96, 'match': 78, 'accuracy': 0.8125}, 'mapping_quals': [47], 'mqfail_alignment_lengths': [], 'alignment_lengths': [87], 'mqfail_aligned_quals': [], 'unaligned_lengths': [], 'unaligned_quals': [], 'mapped': 1, 'unmapped': 0})
 
     def test_pileup_stats(self):
         """Test the gathering read statistics."""
