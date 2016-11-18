@@ -150,8 +150,7 @@ class Report:
 
         self._set_properties_and_close(fig, title, xlab, ylab)
 
-
-    def plot_dicts(self, data_map, title="", xlab="", ylab="", marker='-', legend_loc='upper right', legend=True, hist_style=False):
+    def plot_dicts(self, data_map, title="", xlab="", ylab="", marker='-', legend_loc='upper right', legend=True, hist_style=False, cmap=plt.cm.rainbow, alpha=0.6):
         """Plot elements of multiple dictionaries on a single plot.
 
         :param self: object.
@@ -163,6 +162,8 @@ class Report:
         :param legend_loc: Location of legend.
         :param legend: Hide legend if False.
         :param hist_style: Plot histogram-style bar plots.
+        :param cmap: Colormap for histogram plots.
+        :param alpha: Transparency value for histograms.
         :returns: None
         :rtype: object
         """
@@ -170,13 +171,18 @@ class Report:
 
         if not hist_style:
             for label, d in data_map.iteritems():
-                plt.plot(d.keys(), d.values(), marker, label=label)
+                x, y = d.keys(), d.values()
+                plt.plot(x, y, marker, label=label)
         else:
+            color = iter(cmap(np.linspace(0, 1, len(data_map))))
             for label, d in data_map.iteritems():
-                plt.bar(d.keys(), d.values(), label=label, align='center')
+                x, y = d.keys(), d.values()
+                plt.bar(x, y, label=label,
+                        align='center', color=next(color), alpha=alpha)
 
         if legend:
             plt.legend(loc=legend_loc)
+
         self._set_properties_and_close(fig, title, xlab, ylab)
 
     def plot_histograms(self, data_map, title="", xlab="", ylab="", bins=50, alpha=0.7, legend_loc='upper right', legend=True):
