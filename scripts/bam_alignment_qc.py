@@ -193,5 +193,5 @@ if __name__ == '__main__':
 
     # Dump results of parsing into output pickle:
     rd = {'tag': tag, 'read_stats': read_stats, 'error_stats': error_stats,
-          'indel_stats': indel_stats, 'pileup_stats': pileup_stats}
+          'indel_stats': indel_stats, 'pileup_stats': pileup_stats, 'base_stats': base_stats}
     misc.pickle_dump(rd, args.p)
