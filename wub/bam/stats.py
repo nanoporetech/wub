@@ -57,6 +57,7 @@ def read_stats(bam, min_aqual=0, region=None):
     base_stats['accuracy'] = 1.0 - float(base_stats['insertion'] + base_stats['deletion'] + base_stats['mismatch']) / base_stats['aln_length']
     res['base_stats'] = base_stats
     bam_reader.close()
+    print res
     return res
 
 
@@ -244,7 +245,7 @@ def stats_from_aligned_read(read):
         "ref": read.reference_name,
         "coverage": coverage,
         "direction": direction,
-        "length": length,
+        "aln_length": length,
         "insertion": ins,
         "deletion": delt,
         "mismatch": sub,

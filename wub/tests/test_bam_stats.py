@@ -28,7 +28,8 @@ class TestBamStats(unittest.TestCase):
         self.assertEqual(res['indel_dists']['deletion_lengths'], {9: 1})
 
         # Test read statistics:
-        self.assertEqual(res['read_stats'], {'alignment_lengths': [87], 'mapping_quals': [47], 'unaligned_lengths': [], 'unaligned_quals': [], 'mqfail_alignment_lengths': [], 'mapped': 1, 'unmapped': 0, 'mqfail_aligned_quals': [], 'aligned_quals': [40], 'aligned_lengths': [87]})
+        self.assertEqual(res['read_stats'], {'alignment_lengths': [87], 'mapping_quals': [47], 'unaligned_lengths': [], 'unaligned_quals': [
+            ], 'mqfail_alignment_lengths': [], 'mapped': 1, 'unmapped': 0, 'mqfail_aligned_quals': [], 'aligned_quals': [40], 'aligned_lengths': [87]})
 
     def test_read_stats(self):
         """Test the gathering read statistics."""
@@ -36,7 +37,8 @@ class TestBamStats(unittest.TestCase):
         bam = path.join(top, "data/test_bam_stats/stat_test.bam")
         res = stats.read_stats(bam, region=None, min_aqual=0)
 
-        self.assertEqual(res, {'alignment_lengths': [87], 'mapping_quals': [47], 'unaligned_lengths': [], 'unaligned_quals': [], 'mqfail_alignment_lengths': [], 'mapped': 1, 'unmapped': 0, 'mqfail_aligned_quals': [], 'aligned_quals': [40], 'aligned_lengths': [87]})
+        self.assertEqual(res, {'aligned_lengths': [87], 'aligned_quals': [40], 'base_stats': {'deletion': 9, 'mismatch': 1, 'identity': 0.9873417721518988, 'insertion': 8, 'aln_length': 96, 'match': 78, 'accuracy': 0.8125}, 'mapping_quals': [47], 'mqfail_alignment_lengths': [], 'alignment_lengths': [87], 'mqfail_aligned_quals': [], 'unaligned_lengths': [], 'unaligned_quals': [], 'mapped': 1, 'unmapped': 0}
+                         )
 
     def test_pileup_stats(self):
         """Test the gathering read statistics."""
