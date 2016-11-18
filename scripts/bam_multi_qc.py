@@ -94,6 +94,18 @@ if __name__ == '__main__':
         plotter.plot_bars_simple(
             data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'])
 
+    indel_stat_types = OrderedDict([
+        ('deletion_lengths', {'title': "Distribution of deletion lengths",
+                              'xlab': 'Length', 'ylab': 'Count'}),
+        ('insertion_lengths', {
+            'title': "Distribution of insertion lengths", 'xlab': 'Length', 'ylab': 'Count'})])
+
+    for field, props in indel_stat_types.iteritems():
+        data_map = OrderedDict(
+            [(tag, d['indel_stats'][field]) for tag, d in stats.iteritems()])
+        plotter.plot_dicts(
+            data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'], hist_style=True)
+
     if args.x is not None:
         ref_stat_types = OrderedDict([
             ('coverage', {'title': "Relative coverage: ",
@@ -101,8 +113,6 @@ if __name__ == '__main__':
             ('qualities', {
                 'title': "Mean qualities per position: ", 'xlab': 'Position', 'ylab': 'Mean quality'}), ])
         cov_stats = defaultdict(dict)
-        import pprint
-        pp = pprint.PrettyPrinter()
 
         for tag, d in stats.iteritems():
             for ref, cov in d['pileup_stats']['coverage'].iteritems():
