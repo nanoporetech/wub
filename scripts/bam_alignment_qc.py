@@ -19,6 +19,31 @@ from wub.util import misc
 parser = argparse.ArgumentParser(
     description="""Produce alignment based QC plots of the input BAM file.
     The input BAM file must be sorted by coordinates and indexed.
+
+    It produces the following global plots:
+        * Read statistics: number of mapped, unmapped and low mapping quality reads.
+        * Distribution of mean quality values in the mapped and unmapped fractions.
+        * Distribution of read lengths in the unmapped fraction.
+        * Distribution of read lengths in the mapped fraction.
+        * Distribution of read lengths in the mapping with quality less than -q
+        * Distribution of alignment lengths.
+        * Distribution of mapping qualities.
+        * Plot of alignment lengths vs. mean base qualities.
+        * Basewise statistics: total alignment length, number of insertions, deleltions, matches and mismatches.
+        * Precision statistics: accuracy and identity.
+        * Frequency of errors in the context specifed by the left and right context sizes (-n). Definition of context: for substitutions
+        the event is happening from the "central base", in the case of indels the events are located between the central base and the base before. The columns of the
+        heatmap are normalised to sum to one and then the diagonal element are set to zero.
+        * Distribution of deletion lengths.
+        * Distribution of insertion lengths.
+        * Base composition of insertions.
+
+    The following plots are produced for every reference unless disabled via -x:
+        * Distribution of quality values across the reference as a heatmap.
+        * Mean quality values across the reference.
+        * Base coverage across the reference.
+
+    The tool saves the gathered statistics in a pickle file, whihc can be fed to `bam_multi_qc.py` to compare different samples.
     """)
 parser.add_argument(
     '-f', metavar='reference', type=str, help="Reference fasta.", required=True)
@@ -98,7 +123,8 @@ def base_stats_qc(st, report):
     bs = st.copy()
     del bs['accuracy']
     del bs['identity']
-    plotter.plot_bars_simple(bs, title="Basewise statistics", xlab="Type", ylab="Count")
+    plotter.plot_bars_simple(
+        bs, title="Basewise statistics", xlab="Type", ylab="Count")
     plotter.plot_bars_simple(OrderedDict([('Identity ({})'.format(st['identity']), st['identity']), ('Accuracy ({})'.format(
         st['accuracy']), st['accuracy'])]), title="Precision statistics", xlab="Type", ylab="Count")
 
