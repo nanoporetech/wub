@@ -233,7 +233,7 @@ def error_stat_qc(st, report, csizes, ommit_diagonal=False):
                     z[bi][conti] = 0.0
 
     report.plot_pcolor(z, xticks=contexts, yticks=bases_plus,
-                       colormap=report.plt.cm.Blues, invert_yaxis=True)
+                       colormap=report.plt.cm.Blues, invert_yaxis=True, title="", xlab="From context", ylab="To base")
 
 
 if __name__ == '__main__':
