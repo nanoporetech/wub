@@ -71,15 +71,20 @@ def read_stats(bam, min_aqual=0, region=None, with_clipps=False):
         ue = False
     bam_iter = bam_reader.fetch(region=region)
     for r in bam_iter:
+        # Update basic read statistics:
         _update_read_stats(r, res, min_aqual)
 
+        # Get detailed statistics from aligned read and
+        # updated global stats:
         bs = stats_from_aligned_read(r, with_clipps)
+        # bs is None for unaligned reads.
         if bs is not None:
             for k in base_stats.iterkeys():
                 base_stats[k] += bs[k]
             for stat, value in bs.iteritems():
                 read_stats[stat].append(value)
 
+    # Calculate global identity and accuracy:
     base_stats['identity'] = float(
         base_stats['match']) / (base_stats['match'] + base_stats['mismatch'])
     base_stats['accuracy'] = 1.0 - (float(base_stats['insertion'] +
@@ -122,6 +127,8 @@ def _register_event(e, query, ref, qpos, rpos, etype, context_sizes, fixed_conte
     end = rpos + context_sizes[1] + 1
     context = str(ref[start:end])
 
+    # If context goes outside the reference boundaries,
+    # do not register it:
     if start < 0 or end > len(ref):
         return
     if etype == 'match':
@@ -146,12 +153,15 @@ def _register_insert(insert, rpos, insertion_lengths, insertion_composition):
 
 def _register_deletion(deletion, match_pos, context_sizes, ref, events, deletion_lengths, r, t):
     """Register deletion and deletion lengths."""
-    if deletion[0] > 0:
+    if deletion[0] > 0:  # We have an active deletion if length is larger than zero.
         right_contex_end = match_pos + context_sizes[1] + 1
         if right_contex_end <= len(ref):
+            # Deletions are registered with fixed context as we keep trakc of the left context
+            # in the deletion tuple:
             _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
                 0], rpos=t[0], etype='deletion', context_sizes=context_sizes, fixed_context=deletion[1] + str(ref.seq[match_pos:right_contex_end]))
         deletion_lengths[deletion[0]] += 1
+        # Reset deletion size to zero and context to None: we left deleltion event.
         deletion[0] = 0
         deletion[1] = None
 
@@ -172,13 +182,17 @@ def _update_events(r, ref, events, indel_dists, context_sizes, base_stats):
     for t in aligned_pairs:
         if t[0] is None:
             # deletion
+            # Increse delelted base count:
             base_stats['deletion'] += 1
 
             if deletion[0] == 0:
+                # We are at the left edge of the deletion, register context:
                 deletion[1] = str(ref.seq[t[1] - context_sizes[0]:t[1]])
             deletion[0] += 1
+            # Set match position to the last seen reference base:
             match_pos = t[1]
 
+            # Register insert if we are switching from deleltion to insertion:
             if insert != '':
                 _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
                                 0], rpos=match_pos, etype='insertion', context_sizes=context_sizes)
@@ -188,14 +202,18 @@ def _update_events(r, ref, events, indel_dists, context_sizes, base_stats):
 
         elif t[1] is None:
             # insertion
+            # Increase inserted base count:
             base_stats['insertion'] += 1
 
+            # Append base to insert:
             insert += r.query_sequence[t[0]]
+            # If switching from deleltion to insertion:
             _register_deletion(
                 deletion, match_pos, context_sizes, ref, events, indel_dists['deletion_lengths'], r, t)
 
         else:
             # match or mismatch
+            # Increase mismatch and mathc base counts:
             if r.query_sequence[t[0]] == ref.seq[t[1]]:
                 base_stats['match'] += 1
             else:
@@ -204,12 +222,14 @@ def _update_events(r, ref, events, indel_dists, context_sizes, base_stats):
             _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
                             0], rpos=t[1], etype='match', context_sizes=context_sizes)
             match_pos = t[1]
+            # We are switching from and insertion:
             if insert != '':
                 _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
                                 0], rpos=match_pos, etype='insertion', context_sizes=context_sizes)
                 _register_insert(
                     insert, match_pos, indel_dists['insertion_lengths'], indel_dists['insertion_composition'])
                 insert = ''
+            # We are switching from a deletion:
             _register_deletion(
                 deletion, match_pos, context_sizes, ref, events, indel_dists['deletion_lengths'], r, t)
 
