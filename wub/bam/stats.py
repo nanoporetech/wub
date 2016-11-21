@@ -25,7 +25,7 @@ def _update_read_stats(r, res, min_aqual):
         res['mapping_quals'].append(r.mapping_quality)
 
 
-def read_stats(bam, min_aqual=0, region=None):
+def read_stats(bam, min_aqual=0, region=None, with_clipps=False):
     """ Parse reads in BAM file and record various statistics. """
     res = {'unmapped': 0,
            'mapped': 0,
@@ -38,7 +38,8 @@ def read_stats(bam, min_aqual=0, region=None):
            'mqfail_alignment_lengths': [],
            'mapping_quals': [],
            }
-    base_stats = {'aln_length': 0, 'match': 0, 'mismatch': 0, 'deletion': 0, 'insertion': 0}
+    base_stats = {'aln_length': 0, 'match': 0, 'mismatch': 0,
+                  'deletion': 0, 'insertion': 0, 'clipps': 0}
     read_stats = OrderedDict([
         ("name", []),
         ("ref", []),
@@ -50,7 +51,8 @@ def read_stats(bam, min_aqual=0, region=None):
         ("mismatch", []),
         ("match", []),
         ("identity", []),
-        ("accuracy", [])
+        ("accuracy", []),
+        ("clipps", [])
     ])
 
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
@@ -61,7 +63,7 @@ def read_stats(bam, min_aqual=0, region=None):
     for r in bam_iter:
         _update_read_stats(r, res, min_aqual)
 
-        bs = stats_from_aligned_read(r)
+        bs = stats_from_aligned_read(r, with_clipps)
         if bs is not None:
             for k in base_stats.iterkeys():
                 base_stats[k] += bs[k]
@@ -70,8 +72,8 @@ def read_stats(bam, min_aqual=0, region=None):
 
     base_stats['identity'] = float(
         base_stats['match']) / (base_stats['match'] + base_stats['mismatch'])
-    base_stats['accuracy'] = 1.0 - float(base_stats['insertion'] +
-                                         base_stats['deletion'] + base_stats['mismatch']) / base_stats['aln_length']
+    base_stats['accuracy'] = 1.0 - (float(base_stats['insertion'] +
+                                          base_stats['deletion'] + base_stats['mismatch'] + base_stats['clipps']) / base_stats['aln_length'])
     res['base_stats'] = base_stats
     res['read_stats'] = read_stats
     bam_reader.close()
@@ -233,7 +235,7 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
     return res
 
 
-def stats_from_aligned_read(read):
+def stats_from_aligned_read(read, with_clipps=False):
     """Create summary information for an aligned read (taken from tang.util.bio).
 
     :param read: :class:`pysam.AlignedSegment` object
@@ -253,9 +255,13 @@ def stats_from_aligned_read(read):
     # NM is edit distance: NM = INS + DEL + SUB
     sub = tags['NM'] - ins - delt
     length = match + ins + delt
-    iden = 100 * float(match - sub) / match
-    acc = 100 - 100 * float(tags['NM']) / length
-    coverage = 100 * float(read.query_alignment_length) / read.infer_query_length()
+    clipps = 0
+    if with_clipps:
+        clipps = reduce(lambda x, y: x + y[1] if (y[0] == 4 or y[0] == 5) else x, read.cigar, 0)
+        length += clipps
+    iden = float(match - sub) / match
+    acc = 1.0 - (float(tags['NM'] + clipps) / length)
+    coverage = float(read.query_alignment_length) / read.infer_query_length()
     direction = '-' if read.is_reverse else '+'
     results = OrderedDict([
         ("name", name),
@@ -268,6 +274,7 @@ def stats_from_aligned_read(read):
         ("mismatch", sub),
         ("match", match - sub),
         ("identity", iden),
-        ("accuracy", acc)
+        ("accuracy", acc),
+        ("clipps", clipps),
     ])
     return results
