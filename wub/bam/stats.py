@@ -7,6 +7,7 @@ from wub.util import seq as seq_util
 
 
 def _update_read_stats(r, res, min_aqual):
+    """ Update read statistics. """
     if r.is_unmapped:
         res['unmapped'] += 1
         res['unaligned_quals'].append(seq_util.mean_qscore(r.query_qualities))
@@ -19,14 +20,23 @@ def _update_read_stats(r, res, min_aqual):
         res['mapping_quals'].append(r.mapping_quality)
     else:
         res['mapped'] += 1
-        res['mqfail_aligned_quals'].append(seq_util.mean_qscore(r.query_qualities))
+        res['mqfail_aligned_quals'].append(
+            seq_util.mean_qscore(r.query_qualities))
         res['mqfail_alignment_lengths'].append(r.query_alignment_length)
         res['mqfail_aligned_lengths'].append(r.infer_query_length())
         res['mapping_quals'].append(r.mapping_quality)
 
 
 def read_stats(bam, min_aqual=0, region=None, with_clipps=False):
-    """ Parse reads in BAM file and record various statistics. """
+    """ Parse reads in BAM file and record various statistics.
+
+    :param bam: BAM file.
+    :param min_aqual: Minimum mapping quality, skip read if mapping quality is lower.
+    :param region: smatools region.
+    :param with_clipps: Take into account clipps when calculating accuracy.
+    :returns: A dictionary with various global and per-read statistics.
+    :rtype: dict
+    """
     res = {'unmapped': 0,
            'mapped': 0,
            'unaligned_quals': [],
@@ -81,13 +91,21 @@ def read_stats(bam, min_aqual=0, region=None, with_clipps=False):
 
 
 def pileup_stats(bam, region=None):
-    """ Parse pileup columns and extract quality values. """
+    """ Parse pileup columns and extract quality values.
+
+    :param bam: Input BAM file.
+    :param region: samtools region.
+    :returns: Dictionaries per reference with per-base coverage and quality values.
+    :rtype: dict
+    """
     st = defaultdict(lambda: defaultdict(list))
     cst = defaultdict(lambda: defaultdict(int))
     samfile = bam_common.pysam_open(bam, in_format='BAM')
     for pileupcolumn in samfile.pileup(region=region):
-        # print pileupcolumn.reference_name, pileupcolumn.reference_pos, pileupcolumn.nsegments
-        cst[pileupcolumn.reference_name][pileupcolumn.reference_pos] = pileupcolumn.nsegments
+        # print pileupcolumn.reference_name, pileupcolumn.reference_pos,
+        # pileupcolumn.nsegments
+        cst[pileupcolumn.reference_name][
+            pileupcolumn.reference_pos] = pileupcolumn.nsegments
         for pileupread in pileupcolumn.pileups:
             if not pileupread.is_del and not pileupread.is_refskip:
                 # print pileupcolumn.reference_name, pileupcolumn.reference_pos,
@@ -99,6 +117,7 @@ def pileup_stats(bam, region=None):
 
 
 def _register_event(e, query, ref, qpos, rpos, etype, context_sizes, fixed_context=None):
+    """Register event withing a context."""
     start = rpos - context_sizes[0]
     end = rpos + context_sizes[1] + 1
     context = str(ref[start:end])
@@ -119,12 +138,14 @@ def _register_event(e, query, ref, qpos, rpos, etype, context_sizes, fixed_conte
 
 
 def _register_insert(insert, rpos, insertion_lengths, insertion_composition):
+    """Register insertion length and base composition."""
     insertion_lengths[len(insert)] += 1
     for base, count in seq_util.base_composition(insert).iteritems():
         insertion_composition[base] += count
 
 
 def _register_deletion(deletion, match_pos, context_sizes, ref, events, deletion_lengths, r, t):
+    """Register deletion and deletion lengths."""
     if deletion[0] > 0:
         right_contex_end = match_pos + context_sizes[1] + 1
         if right_contex_end <= len(ref):
@@ -136,6 +157,7 @@ def _register_deletion(deletion, match_pos, context_sizes, ref, events, deletion
 
 
 def _update_events(r, ref, events, indel_dists, context_sizes, base_stats):
+    """Update event details."""
     match_pos = 0
     insert = ''
     deletion = [0, None]
@@ -193,7 +215,20 @@ def _update_events(r, ref, events, indel_dists, context_sizes, base_stats):
 
 
 def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual=0):
-    """WARNING: context overstepping start/end boundaries are not registered."""
+    """Gather read statistics and context-dependend error statistics from BAM file.
+    WARNING: context overstepping reference start/end boundaries are not registered.
+
+    Definition of context: for substitutions the event is happening from the "central base", in the case of indels the events are located
+    between the central base and the base before.
+
+    :param bam: Input BAM file.
+    :param refs: Dictionary of references.
+    :param context_sizes: The size of the left and right contexts.
+    :param region: samtools regions.
+    :param min_qual: Minimum mappign quality.
+    :returns: Dictionary with read and error statistics.
+    :rtype: dict
+    """
     events = defaultdict(lambda: defaultdict(int))
     read_stats = defaultdict(list)
     read_stats = {'unmapped': 0,
@@ -236,9 +271,10 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
 
 
 def stats_from_aligned_read(read, with_clipps=False):
-    """Create summary information for an aligned read (taken from tang.util.bio).
+    """Create summary information for an aligned read (modified from tang.util.bio).
 
     :param read: :class:`pysam.AlignedSegment` object
+    :param with_clipps:
     """
     tags = dict(read.tags)
     try:
@@ -257,7 +293,8 @@ def stats_from_aligned_read(read, with_clipps=False):
     length = match + ins + delt
     clipps = 0
     if with_clipps:
-        clipps = reduce(lambda x, y: x + y[1] if (y[0] == 4 or y[0] == 5) else x, read.cigar, 0)
+        clipps = reduce(
+            lambda x, y: x + y[1] if (y[0] == 4 or y[0] == 5) else x, read.cigar, 0)
         length += clipps
     iden = float(match - sub) / match
     acc = 1.0 - (float(tags['NM'] + clipps) / length)
