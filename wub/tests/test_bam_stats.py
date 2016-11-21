@@ -39,7 +39,10 @@ class TestBamStats(unittest.TestCase):
         bam = path.join(top, "data/test_bam_stats/stat_test.bam")
         res = stats.read_stats(bam, region=None, min_aqual=0)
 
-        self.assertEqual(res, {'aligned_lengths': [87], 'read_stats': OrderedDict([('name', ['r0_seq_1_0_87_+/q93/s0/d0/i0']), ('ref', ['seq_0']), ('coverage', [100.0]), ('direction', ['+']), ('aln_length', [96]), ('insertion', [8]), ('deletion', [9]), ('mismatch', [1]), ('match', [78]), ('identity', [98.73417721518987]), ('accuracy', [81.25])]), 'aligned_quals': [40], 'base_stats': {'deletion': 9, 'mismatch': 1, 'identity': 0.9873417721518988, 'insertion': 8, 'aln_length': 96, 'match': 78, 'accuracy': 0.8125}, 'mapping_quals': [47], 'mqfail_alignment_lengths': [], 'alignment_lengths': [87], 'mqfail_aligned_quals': [], 'unaligned_lengths': [], 'unaligned_quals': [], 'mapped': 1, 'unmapped': 0})
+        self.maxDiff = None
+        target = {'aligned_lengths': [87], 'read_stats': OrderedDict([('name', ['r0_seq_1_0_87_+/q93/s0/d0/i0']), ('ref', ['seq_0']), ('coverage', [1.0]), ('direction', ['+']), ('aln_length', [96]), ('insertion', [8]), ('deletion', [9]), ('mismatch', [1]), ('match', [78]), ('identity', [0.9873417721518988]), ('accuracy', [0.8125]), ('clipps', [0])]), 'aligned_quals': [
+            40], 'base_stats': {'deletion': 9, 'mismatch': 1, 'identity': 0.9873417721518988, 'insertion': 8, 'clipps': 0, 'aln_length': 96, 'match': 78, 'accuracy': 0.8125}, 'mapping_quals': [47], 'mqfail_alignment_lengths': [], 'alignment_lengths': [87], 'mqfail_aligned_quals': [], 'unaligned_lengths': [], 'unaligned_quals': [], 'mapped': 1, 'unmapped': 0}
+        self.assertEqual(res, target)
 
     def test_pileup_stats(self):
         """Test the gathering read statistics."""
