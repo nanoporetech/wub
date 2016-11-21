@@ -17,7 +17,7 @@ from wub.util import misc
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
-    description="""Produce accuracy statistics of the input BAM file.
+    description="""Produce accuracy statistics of the input BAM file. Calculates global accuracy and identity and various per-read statistics.
     The input BAM file must be sorted by coordinates and indexed.
     """)
 parser.add_argument(
@@ -41,18 +41,27 @@ parser.add_argument(
 
 
 def base_stats_qc(st, report):
-    """ Plot base statistics. """
+    """ Plot base statistics.
 
-    bs=st.copy()
+    :param st: Statistics dict.
+    :param report: Plotter object.
+    """
+
+    bs = st.copy()
     del bs['accuracy']
     del bs['identity']
-    plotter.plot_bars_simple(bs, title="Basewise statistics", xlab="Type", ylab="Count")
+    plotter.plot_bars_simple(
+        bs, title="Basewise statistics", xlab="Type", ylab="Count")
     plotter.plot_bars_simple(OrderedDict([('Identity ({})'.format(st['identity']), st['identity']), ('Accuracy ({})'.format(
         st['accuracy']), st['accuracy'])]), title="Precision statistics", xlab="Type", ylab="Count")
 
 
 def read_precision_qc(st, report):
-    """ Plot read precision statistics. """
+    """ Plot read precision statistics.
+
+    :param st: Statistics dict.
+    :param report: Plotter object.
+    """
     report.plot_histograms(OrderedDict([('Dummy', st[
         'accuracy'])]), title="Distribution of per-read accuracies", xlab="Accuracy", ylab="Count", legend=False)
     report.plot_histograms(OrderedDict([('Dummy', st[
@@ -60,35 +69,36 @@ def read_precision_qc(st, report):
 
 
 if __name__ == '__main__':
-    args=parser.parse_args()
-    tag=args.t if args.t is not None else os.path.basename(args.bam)
+    args = parser.parse_args()
+    tag = args.t if args.t is not None else os.path.basename(args.bam)
 
-    plotter=report.Report(args.r)
+    plotter = report.Report(args.r)
 
-    read_stats=stats.read_stats(args.bam, region=args.c, min_aqual=args.q, with_clipps=args.e)
-    read_stats['tag']=tag
-    base_stats=read_stats['base_stats']
-    precision_stats=read_stats['read_stats']
+    read_stats = stats.read_stats(
+        args.bam, region=args.c, min_aqual=args.q, with_clipps=args.e)
+    read_stats['tag'] = tag
+    base_stats = read_stats['base_stats']
+    precision_stats = read_stats['read_stats']
 
     base_stats_qc(base_stats, plotter)
     read_precision_qc(precision_stats, plotter)
 
     plotter.close()
 
-    global_stats=OrderedDict([
+    global_stats = OrderedDict([
         ('Accuracy', [read_stats['base_stats']['accuracy']]),
         ('Identity', [read_stats['base_stats']['identity']]),
         ('Mapped', [read_stats['mapped']]),
         ('Unapped', [read_stats['unmapped']]),
         ('Tag', [read_stats['tag']]), ])
-    global_stats=pd.DataFrame(global_stats)
+    global_stats = pd.DataFrame(global_stats)
     print global_stats
 
     if args.g is not None:
         global_stats.to_csv(args.g, sep="\t", index=False)
 
     if args.l is not None:
-        read_df=pd.DataFrame(precision_stats)
+        read_df = pd.DataFrame(precision_stats)
         read_df.to_csv(args.l, sep="\t", index=False)
 
     if args.p is not None:
