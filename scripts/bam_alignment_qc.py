@@ -64,17 +64,32 @@ parser.add_argument(
 
 
 def find_max_pos(d):
-    """ Find maximum position in reference. """
+    """ Find maximum position in reference.
+
+    :param d: Dictionary wit position-based values.
+    :returns: Maximum position.
+    :rtype: int
+    """
     return max(d.keys())
 
 
 def find_max_qual(d):
-    """ Find maximum quality value in parsed dataset. """
+    """ Find maximum quality value in parsed dataset.
+
+    :param d: Dictionary with quality values.
+    :returns: Maximum quality value across all positions.
+    :rtype: int
+    """
     return max(itertools.chain.from_iterable(d.itervalues()))
 
 
 def mean_qual_per_pos(d):
-    """ Calculate mean quality scores per position """
+    """ Calculate mean quality scores per position.
+
+    :param d: Dictionary of quality values per positions.
+    :returns: Dictionary with mean quality score per position.
+    :rtype: dict
+    """
     mq = {}
     for pos, quals in d.iteritems():
         mq[pos] = seq_util.mean_qscore(quals)
@@ -82,7 +97,12 @@ def mean_qual_per_pos(d):
 
 
 def stats_to_matrix(rst):
-    """ Convert dict with quality values per position to data matrix. """
+    """Convert dictionary with quality values per position to data matrix.
+
+    :param rst: Dictionary of quality values per position.
+    :returns: Matrix of quality values per position.
+    :rtype: np.ndarray
+    """
     max_pos = find_max_pos(rst)
     max_qual = find_max_qual(rst)
     mat = np.zeros((max_qual + 1, max_pos + 1), dtype=float)
@@ -93,6 +113,12 @@ def stats_to_matrix(rst):
 
 
 def normalise_data(d):
+    """ Normalise nested dictionary such as the values in the inner dictionary sum to one.
+
+    :param d: Nested dictionary.
+    :returns: Normalised nested dictionary.
+    :rtype: dict
+    """
     nd = {}
     for k, v in d.iteritems():
         total = float(sum(v.values()))
@@ -103,7 +129,11 @@ def normalise_data(d):
 
 
 def ref_qual_qc(st, report):
-    """ Plot per reference statistics. """
+    """ Plot per reference statistics.
+
+    :param st: Dictionary with statistics.
+    :param report: Report object.
+    """
     for ref, stats in st['qualities'].iteritems():
         mat = stats_to_matrix(stats)
         report.plot_heatmap(mat, title="Quality values across {}".format(
@@ -116,7 +146,11 @@ def ref_qual_qc(st, report):
 
 
 def base_stats_qc(st, report):
-    """ Plot base statistics. """
+    """ Plot base statistics.
+
+    :param st: Dictionary with statistics.
+    :param report: Report object.
+    """
 
     bs = st.copy()
     del bs['accuracy']
@@ -128,7 +162,11 @@ def base_stats_qc(st, report):
 
 
 def read_qual_qc(st, report):
-    """ Plot histograms of various read statistics. """
+    """ Plot histograms of various read statistics.
+
+    :param st: Dictionary with statistics.
+    :param report: Report object.
+    """
     plotter.plot_bars_simple(OrderedDict([('Unmapped', st['unmapped']), ('Mapped', st[
                              'mapped']), ('Mqual < {}'.format(args.q), len(st['mqfail_alignment_lengths']))]), title="Read statistics", xlab="Type", ylab="Count")
     report.plot_histograms(OrderedDict([('Unmapped', st['unaligned_quals']), ('Mapped', st[
@@ -148,7 +186,11 @@ def read_qual_qc(st, report):
 
 
 def indel_dist_qc(st, report):
-    """ Plot histograms of indel distribution statistics. """
+    """ Plot histograms of indel distribution statistics.
+
+    :param st: Dictionary with statistics.
+    :param report: Report object.
+    """
     report.plot_dicts(OrderedDict([('Dummy', st['deletion_lengths'])]), title="Distribution of deletion lengths",
                       xlab="Deletion length", ylab="Count", legend=False, hist_style=True)
     report.plot_dicts(OrderedDict([('Dummy', st['insertion_lengths'])]), title="Distribution of insertion lengths",
@@ -158,6 +200,12 @@ def indel_dist_qc(st, report):
 
 
 def enumerate_contexts(csizes):
+    """Enumerate all base context with the specified left and right context sizes. The context length is csizes[0] + csizes[1] + 1.
+
+    :param csizes: Tupple of left and right context sizes.
+    :returns: List of all context sorted by the central base (and then lexicographically).
+    :rtype: list
+    """
     template = [seq_util.bases] * (sum(csizes) + 1)
     contexts = sorted([''.join(c) for c in itertools.product(*template)], key=lambda x:
                       (x[csizes[0]:len(x) - csizes[1]], x[0:csizes[0]], x[len(x) - csizes[1]:len(x)]))
@@ -165,7 +213,11 @@ def enumerate_contexts(csizes):
 
 
 def error_stat_qc(st, report, csizes, ommit_diagonal=False):
-    """Plot error counts in context."""
+    """Plot error counts in context.
+
+    :param st: Dictionary with statistics.
+    :param report: Report object.
+    """
     contexts = enumerate_contexts(csizes)
     bases_plus = list(seq_util.bases)
     bases_plus.extend(['-', '*'])
