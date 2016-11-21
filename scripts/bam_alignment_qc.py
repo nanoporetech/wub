@@ -31,9 +31,7 @@ parser = argparse.ArgumentParser(
         * Plot of alignment lengths vs. mean base qualities.
         * Basewise statistics: total alignment length, number of insertions, deleltions, matches and mismatches.
         * Precision statistics: accuracy and identity.
-        * Frequency of errors in the context specifed by the left and right context sizes (-n). Definition of context: for substitutions
-        the event is happening from the "central base", in the case of indels the events are located between the central base and the base before. The columns of the
-        heatmap are normalised to sum to one and then the diagonal element are set to zero.
+        * Frequency of errors in the context specifed by the left and right context sizes (-n). Definition of context: for substitutions the event is happening from the "central base", in the case of indels the events are located between the central base and the base before. The columns of the heatmap are normalised to sum to one and then the diagonal element are set to zero.
         * Distribution of deletion lengths.
         * Distribution of insertion lengths.
         * Base composition of insertions.
