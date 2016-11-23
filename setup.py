@@ -18,6 +18,7 @@ requirements = [
     'pandas',
     'pysam',
     'tqdm',
+    'h5py',
 ]
 
 test_requirements = [
