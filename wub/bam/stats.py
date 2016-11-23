@@ -10,18 +10,17 @@ def _update_read_stats(r, res, min_aqual):
     """ Update read statistics. """
     if r.is_unmapped:
         res['unmapped'] += 1
-        res['unaligned_quals'].append(seq_util.mean_qscore(r.query_qualities))
         res['unaligned_lengths'].append(r.infer_query_length(False))
     elif r.mapping_quality >= min_aqual:
         res['mapped'] += 1
-        res['aligned_quals'].append(seq_util.mean_qscore(r.query_qualities))
+        res['aligned_quals'].append(seq_util.mean_qscore(r.query_qualities), qround=False)
         res['alignment_lengths'].append(r.query_alignment_length)
         res['aligned_lengths'].append(r.infer_query_length())
         res['mapping_quals'].append(r.mapping_quality)
     else:
         res['mapped'] += 1
         res['mqfail_aligned_quals'].append(
-            seq_util.mean_qscore(r.query_qualities))
+            seq_util.mean_qscore(r.query_qualities), qround=False)
         res['mqfail_alignment_lengths'].append(r.query_alignment_length)
         res['mqfail_aligned_lengths'].append(r.infer_query_length())
         res['mapping_quals'].append(r.mapping_quality)
