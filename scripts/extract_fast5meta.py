@@ -64,7 +64,7 @@ if __name__ == '__main__':
     stats = defaultdict(list)
 
     # Maybe refactor this to util.fast5?
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.t) as executor:
         # Launch worker threads:
         future_to_file = {executor.submit(get_fast5_meta, f5): fast5 for f5 in files}
         future_iter = concurrent.futures.as_completed(future_to_file)
