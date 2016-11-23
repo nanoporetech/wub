@@ -22,11 +22,7 @@ def all_fast5(fast5_dir):
     :returns: List of all FAST5 paths.
     :rtype: list
     """
-    all_files = []
-    for root, dirs, files in os.walk(fast5_dir):
-        pool = [join(root, name) for name in files if name.endswith('.fast5')]
-        all_files.extend(pool)
-    return all_files
+    return [join(fast5_dir, name) for name in os.listdir(fast5_dir) if name.endswith('.fast5')]
 
 
 def get_fast5_meta(fname):
