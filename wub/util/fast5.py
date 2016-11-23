@@ -9,12 +9,12 @@ def load_read_data(fname, read_number=None, start=None, end=None, events=True, i
     :param read_number: Optional read number, for use with multi-read files.
     :param start: Start index of events to return. If None then starts at 0.
     :param end: End index of events to return. If None then returns to the end
-        of the data.
+    of the data.
     :param events: Flag indicating whether event data should be returned.
     :param instance: Specifies the 3 digit number of the EventDetection analyses group
-        to pull events from.
+    to pull events from.
     :returns: A tuple containing the data as a numpy record array, the channel,
-        the read_number, and metadata from the fast5 file.
+    the read_number, and metadata from the fast5 file.
     """
     instance = str(instance).zfill(3)
     a = fname.rfind('_file')
