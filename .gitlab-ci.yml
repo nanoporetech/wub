@@ -12,7 +12,7 @@ before_script:
     - apt-add-repository universe
     - apt-get update
     - apt-get install -y python-pip make python-numpy python-matplotlib python-biopython python-pandas python-pysam mummer last-align
-    - pip install --upgrade sphinx sphinx-argparse sphinx_rtd_theme pytest pycmd 
+    - pip install --upgrade sphinx sphinx-argparse sphinx_rtd_theme pytest pycmd futures
     - pip install -e ./
 
   
