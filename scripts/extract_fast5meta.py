@@ -16,6 +16,12 @@ from wub.util import fast5
 
 
 def all_fast5(fast5_dir):
+    """Generate a list of all fast5 files in a directory.
+
+    :param fast5_dir: Target directory.
+    :returns: List of all FAST5 paths.
+    :rtype: list
+    """
     all_files = []
     for root, dirs, files in os.walk(fast5_dir):
         pool = [join(root, name) for name in files if name.endswith('.fast5')]
@@ -24,6 +30,12 @@ def all_fast5(fast5_dir):
 
 
 def get_fast5_meta(fname):
+    """Get FAST5 metadata.
+
+    :param fname: Path to FAST5.
+    :returns: Metadata.
+    :rtype: dict
+    """
     _, channel, read_number, meta = fast5.load_read_data(fname)
     meta['channel'] = channel
     meta['read_number'] = read_number
@@ -55,6 +67,7 @@ if __name__ == '__main__':
 
     stats = defaultdict(list)
 
+    # Maybe refactor this to util.fast5?
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         # Launch worker threads:
         future_to_file = {executor.submit(get_fast5_meta, f5): fast5 for f5 in files}
