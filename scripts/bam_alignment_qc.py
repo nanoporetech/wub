@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import tqdm
 
 import os
 import pandas as pd
@@ -59,6 +60,8 @@ parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bam_alignment_qc.pdf).", default="bam_alignment_qc.pdf")
 parser.add_argument(
     '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (bam_alignment_qc.pk).", default="bam_alignment_qc.pk")
+parser.add_argument(
+    '-Q', action="store_true", help="Be quiet and do not show progress bars.", default=False)
 parser.add_argument(
     'bam', metavar='bam', type=str, help="Input BAM file.")
 
@@ -128,13 +131,19 @@ def normalise_data(d):
     return nd
 
 
-def ref_qual_qc(st, report):
+def ref_qual_qc(st, report, verbose):
     """ Plot per reference statistics.
 
     :param st: Dictionary with statistics.
     :param report: Report object.
+    :param verbose: Verbosity level.
     """
-    for ref, stats in st['qualities'].iteritems():
+    quals_iter = st['qualities'].iteritems()
+    if verbose:
+        print "Generating per-reference plots."
+        quals_iter = tqdm.tqdm(quals_iter, total=len(st['qualities']))
+
+    for ref, stats in quals_iter:
         mat = stats_to_matrix(stats)
         report.plot_heatmap(mat, title="Quality values across {}".format(
             ref), xlab="Position", ylab="Quality bin")
@@ -238,6 +247,7 @@ def error_stat_qc(st, report, csizes, ommit_diagonal=False):
 
 if __name__ == '__main__':
     args = parser.parse_args()
+    verbose = not args.Q
     tag = args.t
     if tag is None:
         tag = os.path.basename(args.bam)
@@ -249,7 +259,7 @@ if __name__ == '__main__':
     references = seq_util.read_seq_records_dict(args.f)
 
     err_read_stats = stats.error_and_read_stats(
-        args.bam, references, region=args.c, context_sizes=context_sizes, min_aqual=args.q)
+        args.bam, references, region=args.c, context_sizes=context_sizes, min_aqual=args.q, verbose=verbose)
     read_stats = err_read_stats['read_stats']
     error_stats = err_read_stats['events']
     base_stats = err_read_stats['base_stats']
@@ -262,8 +272,8 @@ if __name__ == '__main__':
 
     pileup_stats = None
     if not args.x:
-        pileup_stats = stats.pileup_stats(args.bam, args.c)
-        ref_qual_qc(pileup_stats, plotter)
+        pileup_stats = stats.pileup_stats(args.bam, args.c, verbose=verbose)
+        ref_qual_qc(pileup_stats, plotter, verbose)
 
     plotter.close()
 
