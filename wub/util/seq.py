@@ -157,18 +157,22 @@ def record_lengths(input_iter):
     return lengths
 
 
-def prob_to_phred(error_prob, max_q=93):
+def prob_to_phred(error_prob, max_q=93, qround=True):
     """Convert error probability into phred score.
 
     :param error_prob: Base error probability.
     :param max_q: Maximum quality value.
+    :param qround: Round calculated score.
     :returns: Phred score.
     :rtype: int
     """
     if error_prob == 0:
         return max_q
     q = -10 * np.log10(error_prob)
-    return int(round(min(max_q, q)))
+    if qround:
+        return int(round(min(max_q, q)))
+    else:
+        return min(max_q, q)
 
 
 def phred_to_prob(phred):
@@ -181,10 +185,11 @@ def phred_to_prob(phred):
     return np.power(10, -phred / 10.0)
 
 
-def mean_qscore(scores):
+def mean_qscore(scores,qround=True):
     """ Returns the phred score corresponding to the mean of the probabilities
     associated with the phred scores provided.
     :param scores: Iterable of phred scores.
+    :param qround: Round after calculating mean score.
     :returns: Phred score corresponding to the average error rate, as
         estimated from the input phred scores.
     """
@@ -194,7 +199,7 @@ def mean_qscore(scores):
     for val in scores:
         sum_prob += phred_to_prob(val)
     mean_prob = sum_prob / float(len(scores))
-    mean_phred = prob_to_phred(mean_prob)
+    mean_phred = prob_to_phred(mean_prob, qround=qround)
     return mean_phred
 
 
