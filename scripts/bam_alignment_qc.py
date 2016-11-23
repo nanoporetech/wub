@@ -92,7 +92,7 @@ def mean_qual_per_pos(d):
     """
     mq = {}
     for pos, quals in d.iteritems():
-        mq[pos] = seq_util.mean_qscore(quals)
+        mq[pos] = seq_util.mean_qscore(quals, qround=False)
     return mq
 
 
