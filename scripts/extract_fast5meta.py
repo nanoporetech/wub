@@ -4,13 +4,12 @@
 import argparse
 import tqdm
 import concurrent.futures
+import multiprocessing
 
 import os
 from os.path import join
 import pandas as pd
-import numpy as np
 from collections import defaultdict
-import itertools
 
 from wub.util import fast5
 
@@ -60,11 +59,12 @@ if __name__ == '__main__':
         print "Locating FAST5 files in directory: {}".format(args.fast5dir)
 
     files = all_fast5(args.fast5dir)
+    workers = args.t if args.t is not None else multiprocessing.cpu_count() * 5
 
     stats = defaultdict(list)
 
     # Maybe refactor this to util.fast5?
-    with concurrent.futures.ThreadPoolExecutor(max_workers=args.t) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
         # Launch worker threads:
         future_to_file = {executor.submit(get_fast5_meta, f5): fast5 for f5 in files}
         future_iter = concurrent.futures.as_completed(future_to_file)
