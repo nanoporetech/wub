@@ -57,6 +57,7 @@ def reverse_complement(seq):
         return seq
     return reduce(lambda x, y: x + y, map(base_complement, seq[::-1]))
 
+
 def base_composition(seq):
     """ Return letter counts of a string (base) sequence.
 
@@ -66,6 +67,7 @@ def base_composition(seq):
 
     """
     return dict(Counter(seq))
+
 
 def mock_qualities(record, mock_qual):
     """Add mock quality values to SeqRecord object.
@@ -185,13 +187,12 @@ def phred_to_prob(phred):
     return np.power(10, -phred / 10.0)
 
 
-def mean_qscore(scores,qround=True):
-    """ Returns the phred score corresponding to the mean of the probabilities
-    associated with the phred scores provided.
+def mean_qscore(scores, qround=True):
+    """ Returns the phred score corresponding to the mean of the probabilities associated with the phred scores provided.
+
     :param scores: Iterable of phred scores.
     :param qround: Round after calculating mean score.
-    :returns: Phred score corresponding to the average error rate, as
-        estimated from the input phred scores.
+    :returns: Phred score corresponding to the average error rate, as estimated from the input phred scores.
     """
     if len(scores) == 0:
         return 0.0
