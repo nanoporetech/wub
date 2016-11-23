@@ -17,6 +17,7 @@ requirements = [
     'editdistance',
     'pandas',
     'pysam',
+    'tqdm',
 ]
 
 test_requirements = [
