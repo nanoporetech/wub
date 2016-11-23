@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import h5py
+import numpy as np
+
 def load_read_data(fname, read_number=None, start=None, end=None, events=True, instance=0):
     """ Loads the read data for a specified read from a read fast5 file (taken from chimaera).
     :param fname: The fast5 file to read data from.
