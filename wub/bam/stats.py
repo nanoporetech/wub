@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from collections import defaultdict, OrderedDict
+import tqdm
 
 from wub.bam import common as bam_common
 from wub.util import seq as seq_util
@@ -13,26 +15,27 @@ def _update_read_stats(r, res, min_aqual):
         res['unaligned_lengths'].append(r.infer_query_length(False))
     elif r.mapping_quality >= min_aqual:
         res['mapped'] += 1
-        res['aligned_quals'].append(seq_util.mean_qscore(r.query_qualities), qround=False)
+        res['aligned_quals'].append(seq_util.mean_qscore(r.query_qualities, qround=False))
         res['alignment_lengths'].append(r.query_alignment_length)
         res['aligned_lengths'].append(r.infer_query_length())
         res['mapping_quals'].append(r.mapping_quality)
     else:
         res['mapped'] += 1
         res['mqfail_aligned_quals'].append(
-            seq_util.mean_qscore(r.query_qualities), qround=False)
+            seq_util.mean_qscore(r.query_qualities, qround=False))
         res['mqfail_alignment_lengths'].append(r.query_alignment_length)
         res['mqfail_aligned_lengths'].append(r.infer_query_length())
         res['mapping_quals'].append(r.mapping_quality)
 
 
-def read_stats(bam, min_aqual=0, region=None, with_clipps=False):
+def read_stats(bam, min_aqual=0, region=None, with_clipps=False, verbose=True):
     """ Parse reads in BAM file and record various statistics.
 
     :param bam: BAM file.
     :param min_aqual: Minimum mapping quality, skip read if mapping quality is lower.
     :param region: smatools region.
     :param with_clipps: Take into account clipps when calculating accuracy.
+    :param verbose: Show progress bar.
     :returns: A dictionary with various global and per-read statistics.
     :rtype: dict
     """
@@ -68,7 +71,13 @@ def read_stats(bam, min_aqual=0, region=None, with_clipps=False):
     ue = True
     if region is not None:
         ue = False
-    bam_iter = bam_reader.fetch(region=region)
+    bam_iter = bam_reader.fetch(region=region, until_eof=ue)
+
+    total_reads = bam_reader.mapped + bam_reader.unmapped
+    if verbose and region is None:
+        sys.stdout.write("Gathering read statistics from file: {}\n".format(bam))
+        bam_iter = tqdm.tqdm(bam_iter, total=total_reads)
+
     for r in bam_iter:
         # Update basic read statistics:
         _update_read_stats(r, res, min_aqual)
@@ -94,18 +103,29 @@ def read_stats(bam, min_aqual=0, region=None, with_clipps=False):
     return res
 
 
-def pileup_stats(bam, region=None):
+def pileup_stats(bam, region=None, verbose=True):
     """ Parse pileup columns and extract quality values.
 
     :param bam: Input BAM file.
     :param region: samtools region.
+    :param verbose: Show progress bar.
     :returns: Dictionaries per reference with per-base coverage and quality values.
     :rtype: dict
     """
     st = defaultdict(lambda: defaultdict(list))
     cst = defaultdict(lambda: defaultdict(int))
     samfile = bam_common.pysam_open(bam, in_format='BAM')
-    for pileupcolumn in samfile.pileup(region=region):
+    
+    pileup_iter = samfile.pileup(region=region)
+    if verbose:
+        sys.stdout.write("Gathering pileup statistics from file: {}\n".format(bam))
+        total_bases = sum(samfile.lengths)
+        if region is not None:
+            tmp = region.split(":")
+            total_bases = int(tmp[2]) - int(tmp[1])
+        pileup_iter = tqdm.tqdm(pileup_iter, total=total_bases)
+
+    for pileupcolumn in pileup_iter:
         # print pileupcolumn.reference_name, pileupcolumn.reference_pos,
         # pileupcolumn.nsegments
         cst[pileupcolumn.reference_name][
@@ -233,7 +253,7 @@ def _update_events(r, ref, events, indel_dists, context_sizes, base_stats):
                 deletion, match_pos, context_sizes, ref, events, indel_dists['deletion_lengths'], r, t)
 
 
-def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual=0):
+def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual=0, verbose=True):
     """Gather read statistics and context-dependend error statistics from BAM file.
     WARNING: context overstepping reference start/end boundaries are not registered.
 
@@ -245,6 +265,7 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
     :param context_sizes: The size of the left and right contexts.
     :param region: samtools regions.
     :param min_qual: Minimum mappign quality.
+    :param verbose: Show progress bar.
     :returns: Dictionary with read and error statistics.
     :rtype: dict
     """
@@ -266,8 +287,14 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
 
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
     base_stats = {'match': 0, 'mismatch': 0, 'deletion': 0, 'insertion': 0}
+    
+    read_iter = bam_reader.fetch(region=region, until_eof=True)
+    if verbose:
+        sys.stdout.write("Gathering read and error statistics from file: {}\n".format(bam))
+        total_reads = bam_reader.mapped + bam_reader.unmapped
+        read_iter = tqdm.tqdm(read_iter, total=total_reads)
 
-    for r in bam_reader.fetch(region=region, until_eof=True):
+    for r in read_iter:
         _update_read_stats(r, read_stats, min_aqual)
         if r.is_unmapped:
             continue
