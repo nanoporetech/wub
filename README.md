@@ -5,13 +5,36 @@ Tools and software library developed by the ONT Applications group
 Installation
 ------------
 
-Install the package via pip:
+Set up a virtual environment (optional). Unfortunately installing the package with `--user` can cause problems with other ONT tools
+so it might be a good idea to set up a virtual environment before install:
+
+```
+virtualenv  --system-site-packages wub_env
+source wub_env/bin/activate
+pip install --upgrade pip
+pip install requests[security]
+```
+
+Then install the package via pip:
 
 ```
 pip install git+https://git.oxfordnanolabs.local/apps/wub.git
 ```
 
-Or clone the repository and install using `setup.py`:
+If you installed the package in a virtual environment then do not forget to
+load it before using the package:
+
+```
+source wub_env/bin/activate
+```
+
+Run the following to leave the virtual environment:
+
+```
+deactivate
+```
+
+You can also clone the repository and install using `setup.py`:
 
 ```
 git clone https://git.oxfordnanolabs.local/apps/wub.git
