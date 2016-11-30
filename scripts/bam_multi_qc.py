@@ -148,7 +148,7 @@ if __name__ == '__main__':
             data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'], hist_style=True)
 
     # Plot per-reference statistics:
-    if args.x is not None:
+    if args.x is not True:
         ref_stat_types = OrderedDict([
             ('coverage', {'title': "Relative coverage: ",
                           'xlab': 'Position', 'ylab': 'Relative coverage'}),
