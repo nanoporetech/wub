@@ -29,6 +29,8 @@ parser.add_argument(
 parser.add_argument(
     '-f', metavar='format', type=str, help="Input format (BAM).", default='BAM')
 parser.add_argument(
+    '-Q', action="store_true", help="Be quiet and do not print progress bar (False).", default=False)
+parser.add_argument(
     'bam_one', metavar='bam_one', type=str, help="First input BAM file.")
 parser.add_argument(
     'bam_two', metavar='bam_two', type=str, help="Second input BAM file.")
@@ -37,7 +39,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     stats = bam_compare.bam_compare(
-        args.bam_one, args.bam_two, coarse_tolerance=args.w, strict_flags=args.g, in_format=args.f)
+        args.bam_one, args.bam_two, coarse_tolerance=args.w, strict_flags=args.g, in_format=args.f, verbose=not args.Q)
 
     plotter = report.Report(args.r)
 
@@ -50,7 +52,6 @@ if __name__ == '__main__':
         'TotalQueries', 'StrictFlagMismatch', 'RefMismatch'))
     plotter.plot_bars_simple(
         query_stats, title="Per query statistics (continued)", xlab="Field", ylab="Count", auto_limit=False)
-
 
     aligned_bases = OrderedDict(
         (os.path.basename(bam), stats[bam]['AlignedBases']) for bam in stats['BamFiles'])

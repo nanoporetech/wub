@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Compares alignments in two BAM files."""
 
+import tqdm
 from itertools import izip, izip_longest, chain
 from collections import OrderedDict
 from wub.bam import common as bam_common
@@ -21,17 +22,28 @@ def is_coarse_match(aln_diff, tolerance):
     return True
 
 
-def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_format='BAM'):
+def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_format='BAM', verbose=False):
     """Count reads mapping to references in a BAM file.
 
     :param alignment_file: BAM file.
     :param min_aln_qual: Minimum mapping quality.
+    :param verbose: Show progress bar.
     :returns: Dictionary with read counts per reference.
     :rtype: dict
     """
 
     aln_iter_one = bam_common.pysam_open(aln_one, in_format)
     aln_iter_two = bam_common.pysam_open(aln_two, in_format)
+
+   
+    total = None
+    if in_format == "BAM":
+        total_one = aln_iter_one.mapped + aln_iter_two.unmapped
+        total_two = aln_iter_two.mapped + aln_iter_two.unmapped
+
+        if total_one != total_two:
+            raise Exception("The two input files ({} {}) have a different number of records!".format(aln_one, aln_two))
+        total =  total_one
 
     # Comparison summary structure:
     stats = OrderedDict([
@@ -53,7 +65,12 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         ('AlignedSimilarity', 0.0),
         ])
 
-    for segments in izip(aln_iter_one.fetch(until_eof=True), aln_iter_two.fetch(until_eof=True)):
+    records_iter = izip(aln_iter_one.fetch(until_eof=True), aln_iter_two.fetch(until_eof=True))
+
+    if verbose and in_format == "BAM":
+        records_iter = tqdm.tqdm(records_iter, total=total)
+
+    for segments in records_iter:
         aln_diff = compare_alignments(segments[0], segments[1], strict_flags)
         stats['TotalQueries'] += 1
 
