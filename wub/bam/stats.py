@@ -13,9 +13,12 @@ def _update_read_stats(r, res, min_aqual):
     if r.is_unmapped:
         res['unmapped'] += 1
         res['unaligned_lengths'].append(r.infer_query_length(False))
+        res['unaligned_quals'].append(
+            seq_util.mean_qscore(r.query_qualities, qround=False))
     elif r.mapping_quality >= min_aqual:
         res['mapped'] += 1
-        res['aligned_quals'].append(seq_util.mean_qscore(r.query_qualities, qround=False))
+        res['aligned_quals'].append(
+            seq_util.mean_qscore(r.query_qualities, qround=False))
         res['alignment_lengths'].append(r.query_alignment_length)
         res['aligned_lengths'].append(r.infer_query_length())
         res['mapping_quals'].append(r.mapping_quality)
@@ -75,7 +78,8 @@ def read_stats(bam, min_aqual=0, region=None, with_clipps=False, verbose=True):
 
     total_reads = bam_reader.mapped + bam_reader.unmapped
     if verbose and region is None:
-        sys.stdout.write("Gathering read statistics from file: {}\n".format(bam))
+        sys.stdout.write(
+            "Gathering read statistics from file: {}\n".format(bam))
         bam_iter = tqdm.tqdm(bam_iter, total=total_reads)
 
     for r in bam_iter:
@@ -115,10 +119,11 @@ def pileup_stats(bam, region=None, verbose=True):
     st = defaultdict(lambda: defaultdict(list))
     cst = defaultdict(lambda: defaultdict(int))
     samfile = bam_common.pysam_open(bam, in_format='BAM')
-    
+
     pileup_iter = samfile.pileup(region=region)
     if verbose:
-        sys.stdout.write("Gathering pileup statistics from file: {}\n".format(bam))
+        sys.stdout.write(
+            "Gathering pileup statistics from file: {}\n".format(bam))
         total_bases = sum(samfile.lengths)
         if region is not None:
             tmp = region.split(":")
@@ -180,7 +185,8 @@ def _register_deletion(deletion, match_pos, context_sizes, ref, events, deletion
             _register_event(events, query=r.query_sequence, ref=ref.seq, qpos=t[
                 0], rpos=t[0], etype='deletion', context_sizes=context_sizes, fixed_context=deletion[1] + str(ref.seq[match_pos:right_contex_end]))
         deletion_lengths[deletion[0]] += 1
-        # Reset deletion size to zero and context to None: we left deleltion event.
+        # Reset deletion size to zero and context to None: we left deletion
+        # event.
         deletion[0] = 0
         deletion[1] = None
 
@@ -287,10 +293,11 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
 
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
     base_stats = {'match': 0, 'mismatch': 0, 'deletion': 0, 'insertion': 0}
-    
+
     read_iter = bam_reader.fetch(region=region, until_eof=True)
     if verbose:
-        sys.stdout.write("Gathering read and error statistics from file: {}\n".format(bam))
+        sys.stdout.write(
+            "Gathering read and error statistics from file: {}\n".format(bam))
         total_reads = bam_reader.mapped + bam_reader.unmapped
         read_iter = tqdm.tqdm(read_iter, total=total_reads)
 
