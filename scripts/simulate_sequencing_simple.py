@@ -6,6 +6,7 @@ import sys
 
 import numpy as np
 from collections import OrderedDict
+import tqdm
 
 from wub.simulate import seq as sim_seq
 from wub.simulate import genome as sim_genome
@@ -43,6 +44,8 @@ parser.add_argument(
     '-q', metavar='mock_quality', type=int, help="Mock base quality for fastq output (40).", default=40)
 parser.add_argument(
     '-s', metavar='true_sam', type=str, help="Save true alignments in this SAM file (None).", default=None)
+parser.add_argument(
+    '-Q', action="store_true", help="Be quiet and do not print progress bar (False).", default=False)
 parser.add_argument('-z', metavar='random_seed', type=int,
                     help="Random seed (None).", default=None)
 parser.add_argument('input_fasta', nargs='?', help='Input genome in fasta format (default: stdin).',
@@ -159,6 +162,9 @@ if __name__ == '__main__':
 
     simulation_iterator = simulate_sequencing(
         chromosomes, args.m, args.a, args.l, args.u, args.e, error_weights, args.b, args.q, args.n, sw)
+
+    if not args.Q and args.output_fastq != sys.stdout:
+        simulation_iterator = tqdm.tqdm(simulation_iterator, total=args.n)
 
     for simmed, sam in simulation_iterator:
         seq_util.write_seq_records(
