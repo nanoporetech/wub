@@ -37,6 +37,8 @@ parser.add_argument(
 parser.add_argument(
     '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
 parser.add_argument(
+    '-Q', action="store_true", help="Be quiet and do not print progress bar (False).", default=False)
+parser.add_argument(
     'bam', metavar='bam', type=str, help="Input BAM file.")
 
 
@@ -75,7 +77,7 @@ if __name__ == '__main__':
     plotter = report.Report(args.r)
 
     read_stats = stats.read_stats(
-        args.bam, region=args.c, min_aqual=args.q, with_clipps=args.e)
+        args.bam, region=args.c, min_aqual=args.q, with_clipps=args.e, verbose=not args.Q)
     read_stats['tag'] = tag
     base_stats = read_stats['base_stats']
     precision_stats = read_stats['read_stats']
