@@ -23,12 +23,14 @@ parser.add_argument(
 parser.add_argument(
     '-s', action="store_true", help="Sort results before saving in tsv format (False).", default=False)
 parser.add_argument(
+    '-Q', action="store_true", help="Be quiet and do not print progress bar (False).", default=False)
+parser.add_argument(
     'bam', metavar='bam_file', type=str, help="Input BAM file.")
 
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    counts = read_counter.count_reads(args.bam, in_format=args.f, min_aln_qual=args.a)
+    counts = read_counter.count_reads(args.bam, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q)
 
     if args.s:
         counts = OrderedDict(sorted((item for item in counts.iteritems()), key=lambda x: x[1], reverse=True))
