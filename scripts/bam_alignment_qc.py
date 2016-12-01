@@ -272,7 +272,7 @@ if __name__ == '__main__':
 
     pileup_stats = None
     if not args.x:
-        pileup_stats = stats.pileup_stats(args.bam, args.c, verbose=verbose)
+        pileup_stats = stats.pileup_stats(args.bam, region=args.c, verbose=verbose)
         ref_qual_qc(pileup_stats, plotter, verbose)
 
     plotter.close()

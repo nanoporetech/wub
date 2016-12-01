@@ -121,6 +121,8 @@ def pileup_stats(bam, region=None, verbose=True):
     samfile = bam_common.pysam_open(bam, in_format='BAM')
 
     pileup_iter = samfile.pileup(region=region)
+    tmp = region.split(":")
+    ref, start, end = tmp[0], int(tmp[1])-1, int(tmp[2])
     if verbose:
         sys.stdout.write(
             "Gathering pileup statistics from file: {}\n".format(bam))
@@ -131,6 +133,8 @@ def pileup_stats(bam, region=None, verbose=True):
         pileup_iter = tqdm.tqdm(pileup_iter, total=total_bases)
 
     for pileupcolumn in pileup_iter:
+        if region is not None and (pileupcolumn.reference_pos < start or pileupcolumn.reference_pos >= end):
+            continue
         # print pileupcolumn.reference_name, pileupcolumn.reference_pos,
         # pileupcolumn.nsegments
         cst[pileupcolumn.reference_name][
