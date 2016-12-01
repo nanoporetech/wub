@@ -15,6 +15,7 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     import seaborn as sns
 warnings.resetwarnings()
+_ = sns
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(

@@ -5,15 +5,11 @@ import argparse
 
 import os
 import pandas as pd
-import numpy as np
 from collections import OrderedDict
-import itertools
 
 from wub.util import misc
 from wub.vis import report
 from wub.bam import stats
-from wub.util import seq as seq_util
-from wub.util import misc
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(

@@ -35,15 +35,15 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
     aln_iter_one = bam_common.pysam_open(aln_one, in_format)
     aln_iter_two = bam_common.pysam_open(aln_two, in_format)
 
-   
     total = None
     if in_format == "BAM":
         total_one = aln_iter_one.mapped + aln_iter_two.unmapped
         total_two = aln_iter_two.mapped + aln_iter_two.unmapped
 
         if total_one != total_two:
-            raise Exception("The two input files ({} {}) have a different number of records!".format(aln_one, aln_two))
-        total =  total_one
+            raise Exception(
+                "The two input files ({} {}) have a different number of records!".format(aln_one, aln_two))
+        total = total_one
 
     # Comparison summary structure:
     stats = OrderedDict([
@@ -65,7 +65,8 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         ('AlignedSimilarity', 0.0),
         ])
 
-    records_iter = izip(aln_iter_one.fetch(until_eof=True), aln_iter_two.fetch(until_eof=True))
+    records_iter = izip(
+        aln_iter_one.fetch(until_eof=True), aln_iter_two.fetch(until_eof=True))
 
     if verbose and in_format == "BAM":
         records_iter = tqdm.tqdm(records_iter, total=total)
@@ -107,7 +108,8 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
 
             stats['CommonAlignedBases'] += aln_diff['bases']
             stats['CommonMatchingBases'] += aln_diff['cons_score']
-            stats['PerQueryBaseSim'].append(aln_diff['cons_score'] / float(aln_diff['bases']))
+            stats['PerQueryBaseSim'].append(
+                aln_diff['cons_score'] / float(aln_diff['bases']))
             stats['PerQueryBaseSimClipped'].append(float(
                 aln_diff['cons_score']) / min(segments[0].infer_query_length(), segments[1].infer_query_length()))
 
@@ -162,8 +164,10 @@ def calc_consistency_score(segment_one, segment_two, offset_one, offset_two):
     :retruns: Number of matching base alignments.
     :rtype: int
      """
-    matches_one = aligned_pairs_to_matches(segment_one.get_aligned_pairs(), offset_one)
-    matches_two = aligned_pairs_to_matches(segment_two.get_aligned_pairs(), offset_two)
+    matches_one = aligned_pairs_to_matches(
+        segment_one.get_aligned_pairs(), offset_one)
+    matches_two = aligned_pairs_to_matches(
+        segment_two.get_aligned_pairs(), offset_two)
 
     score = 0
     for matches in izip_longest(matches_one, matches_two, fillvalue=False):
@@ -230,13 +234,16 @@ def compare_alignments(segment_one, segment_two, strict_flags=False):
         ('cons_score', None),
         ])
 
-    aln_diff['mapped'] = (not segment_one.is_unmapped, not segment_two.is_unmapped)
+    aln_diff['mapped'] = (
+        not segment_one.is_unmapped, not segment_two.is_unmapped)
 
     # Count hard clipped bases:
-    aln_diff['hard_clipped'] = (count_clipped(segment_one, 5), count_clipped(segment_two, 5))
+    aln_diff['hard_clipped'] = (
+        count_clipped(segment_one, 5), count_clipped(segment_two, 5))
 
     # Count soft clipped bases:
-    aln_diff['soft_clipped'] = (count_clipped(segment_one, 4), count_clipped(segment_two, 4))
+    aln_diff['soft_clipped'] = (
+        count_clipped(segment_one, 4), count_clipped(segment_two, 4))
 
     # One or both unmapped:
     if aln_diff['mapped'] == (False, False):
@@ -277,11 +284,14 @@ def compare_alignments(segment_one, segment_two, strict_flags=False):
         aln_diff['seq_match'] = True
 
     # Register number of bases:
-    aln_diff['bases'] = max(segment_one.infer_query_length(), segment_two.infer_query_length())
+    aln_diff['bases'] = max(
+        segment_one.infer_query_length(), segment_two.infer_query_length())
 
     # Register reference positions:
-    aln_diff['start_pos'] = (segment_one.reference_start, segment_two.reference_start)
-    aln_diff['end_pos'] = (segment_one.reference_end, segment_two.reference_end)
+    aln_diff['start_pos'] = (
+        segment_one.reference_start, segment_two.reference_start)
+    aln_diff['end_pos'] = (
+        segment_one.reference_end, segment_two.reference_end)
 
     # Figure out hard clipping offsets:
     offset_one = get_hard_clip_offset(segment_one)

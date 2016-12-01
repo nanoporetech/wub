@@ -5,16 +5,14 @@ import argparse
 import tqdm
 
 import os
-import pandas as pd
 import numpy as np
 from collections import OrderedDict
 import itertools
 
 from wub.util import misc
 from wub.vis import report
-from wub.bam import stats
+from wub.bam import bam_stats
 from wub.util import seq as seq_util
-from wub.util import misc
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
@@ -258,7 +256,7 @@ if __name__ == '__main__':
 
     references = seq_util.read_seq_records_dict(args.f)
 
-    err_read_stats = stats.error_and_read_stats(
+    err_read_stats = bam_stats.error_and_read_stats(
         args.bam, references, region=args.c, context_sizes=context_sizes, min_aqual=args.q, verbose=verbose)
     read_stats = err_read_stats['read_stats']
     error_stats = err_read_stats['events']
@@ -272,7 +270,7 @@ if __name__ == '__main__':
 
     pileup_stats = None
     if not args.x:
-        pileup_stats = stats.pileup_stats(args.bam, region=args.c, verbose=verbose)
+        pileup_stats = bam_stats.pileup_stats(args.bam, region=args.c, verbose=verbose)
         ref_qual_qc(pileup_stats, plotter, verbose)
 
     plotter.close()

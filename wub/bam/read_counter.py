@@ -33,7 +33,6 @@ def count_reads(alignment_file, in_format='BAM', min_aln_qual=0, verbose=False):
         if in_format == "BAM":
             aln_iter = tqdm.tqdm(aln_iter, total=total_reads)
 
-
     for segment in aln_iter:
         if segment.is_unmapped:
             continue

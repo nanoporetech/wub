@@ -121,10 +121,10 @@ def pileup_stats(bam, region=None, verbose=True):
     samfile = bam_common.pysam_open(bam, in_format='BAM')
 
     pileup_iter = samfile.pileup(region=region)
-    ref, start, end = None, None, None
+    start, end = None, None
     if region is not None:
         tmp = region.split(":")
-        ref, start, end = tmp[0], int(tmp[1])-1, int(tmp[2])
+        _, start, end = tmp[0], int(tmp[1]) - 1, int(tmp[2])
     if verbose:
         sys.stdout.write(
             "Gathering pileup statistics from file: {}\n".format(bam))
