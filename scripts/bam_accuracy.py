@@ -91,7 +91,7 @@ if __name__ == '__main__':
         ('Accuracy', [read_stats['base_stats']['accuracy']]),
         ('Identity', [read_stats['base_stats']['identity']]),
         ('Mapped', [read_stats['mapped']]),
-        ('Unapped', [read_stats['unmapped']]),
+        ('Unmapped', [read_stats['unmapped']]),
         ('Tag', [read_stats['tag']]), ])
     global_stats = pd.DataFrame(global_stats)
     print
