@@ -76,7 +76,10 @@ def read_stats(bam, min_aqual=0, region=None, with_clipps=False, verbose=True):
         ue = False
     bam_iter = bam_reader.fetch(region=region, until_eof=ue)
 
-    total_reads = bam_reader.mapped + bam_reader.unmapped
+    try:
+        total_reads = bam_reader.mapped + bam_reader.unmapped
+    except:
+        total_reads = None
     if verbose and region is None:
         sys.stdout.write(
             "Gathering read statistics from file: {}\n".format(bam))
@@ -304,7 +307,10 @@ def error_and_read_stats(bam, refs, context_sizes=(1, 1), region=None, min_aqual
     if verbose:
         sys.stdout.write(
             "Gathering read and error statistics from file: {}\n".format(bam))
-        total_reads = bam_reader.mapped + bam_reader.unmapped
+        try:
+            total_reads = bam_reader.mapped + bam_reader.unmapped
+        except:
+            total_reads = None
         read_iter = tqdm.tqdm(read_iter, total=total_reads)
 
     for r in read_iter:
