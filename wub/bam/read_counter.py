@@ -27,7 +27,10 @@ def count_reads(alignment_file, in_format='BAM', min_aln_qual=0, verbose=False):
     aln_iter = pysam.AlignmentFile(alignment_file, mode)
 
     if verbose and in_format == "BAM":
-        total_reads = aln_iter.mapped + aln_iter.unmapped
+        try:
+            total_reads = aln_iter.mapped + aln_iter.unmapped
+        except:
+            total_reads = None
         sys.stdout.write(
             "Gathering read statistics from file: {}\n".format(alignment_file))
         if in_format == "BAM":
