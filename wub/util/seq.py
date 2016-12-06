@@ -68,6 +68,16 @@ def base_composition(seq):
     """
     return dict(Counter(seq))
 
+def gc_content(seq):
+    """ Return fraction of GC bases in sequence.
+
+    :param seq: Input sequence.
+    :returns: GC content.
+    :rtype: float
+
+    """
+    return (seq.count('G') + seq.count('g') + seq.count('C') + seq.count('c'))/float(len(seq))
+
 
 def mock_qualities(record, mock_qual):
     """Add mock quality values to SeqRecord object.
