@@ -2,12 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import sys
 
 import pandas as pd
 from collections import OrderedDict
 
 from wub.bam import read_counter
 from wub.util import misc
+from wub.util import seq as seq_util
+
+import tqdm
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
@@ -16,6 +20,8 @@ parser.add_argument(
     '-a', metavar='min_aqual', type=int, help="Minimum mapping quality (0).", default=0)
 parser.add_argument(
     '-f', metavar='in_format', type=str, help="Input format (BAM).", default='BAM')
+parser.add_argument(
+    '-z', metavar='ref_fasta', type=str, help="Reference fasta. GC content and length columns are added if present (None).", default=None)
 parser.add_argument(
     '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
 parser.add_argument(
@@ -30,12 +36,28 @@ parser.add_argument(
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    counts = read_counter.count_reads(args.bam, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q)
+    counts = read_counter.count_reads(
+        args.bam, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q)
 
     if args.s:
-        counts = OrderedDict(sorted((item for item in counts.iteritems()), key=lambda x: x[1], reverse=True))
+        counts = OrderedDict(
+            sorted((item for item in counts.iteritems()), key=lambda x: x[1], reverse=True))
 
     data = OrderedDict([('Reference', counts.keys()), ('Count', counts.values())])
+
+    if args.z is not None:
+        lengths, gc_contents = {}, {}
+        ref_iter = seq_util.read_seq_records(args.z)
+        if not args.Q:
+            sys.stderr.write("Calculating sequence features:\n")
+            ref_iter = tqdm.tqdm(ref_iter)
+
+        for ref in ref_iter:
+            lengths[ref.id] = len(ref)
+            gc_contents[ref.id] = seq_util.gc_content(str(ref.seq))
+        data['Length'] = [lengths[tr] for tr in counts.iterkeys()]
+        data['GC'] = [gc_contents[tr] for tr in counts.iterkeys()]
+
     data_frame = pd.DataFrame(data)
 
     if args.t is not None:
