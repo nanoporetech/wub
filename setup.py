@@ -19,7 +19,7 @@ requirements = [
     'pysam',
     'tqdm',
     'h5py',
-    'statmodels'
+    'statsmodels'
 ]
 
 test_requirements = [
