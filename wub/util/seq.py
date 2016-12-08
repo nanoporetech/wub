@@ -2,6 +2,7 @@
 
 import sys
 from itertools import izip
+import itertools
 from collections import namedtuple, OrderedDict, Counter
 import numpy as np
 from Bio import SeqIO
@@ -68,6 +69,23 @@ def base_composition(seq):
     """
     return dict(Counter(seq))
 
+
+def kmer_composition(seq, size):
+    """ Return kmer counts of a nucleotide sequence.
+
+    :param seq: Input sequence.
+    :param size: kmer length.
+    :returns: kmer counts.
+    :rtype: OrderedDict
+
+    """
+    composition = OrderedDict()
+    for kmer in itertools.product(*([bases] * size)):
+        kmer = ''.join(kmer)
+        composition[kmer] = seq.count(kmer)
+    return composition
+
+
 def gc_content(seq):
     """ Return fraction of GC bases in sequence.
 
@@ -76,7 +94,7 @@ def gc_content(seq):
     :rtype: float
 
     """
-    return (seq.count('G') + seq.count('g') + seq.count('C') + seq.count('c'))/float(len(seq))
+    return (seq.count('G') + seq.count('g') + seq.count('C') + seq.count('c')) / float(len(seq))
 
 
 def mock_qualities(record, mock_qual):

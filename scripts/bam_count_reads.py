@@ -23,7 +23,7 @@ parser.add_argument(
 parser.add_argument(
     '-z', metavar='ref_fasta', type=str, help="Reference fasta. GC content and length columns are added if present (None).", default=None)
 parser.add_argument(
-    '-b', action="store_true", help="Include base frequencies in output (False).", default=False)
+    '-k', metavar="kmers", type=str, help="Include k-mer frequencies of specifed length in output (None).", default=None)
 parser.add_argument(
     '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
 parser.add_argument(
@@ -40,10 +40,14 @@ if __name__ == '__main__':
         args.bam, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q)
     counts = OrderedDict(counts.iteritems())
 
+    calc_kmers = [int(k) for k in args.k.split(",")]
+
     data = OrderedDict()
 
+    # Calculate sequence properties:
     if args.z is not None:
-        lengths, gc_contents, base_freqs = {}, {}, defaultdict(dict)
+        lengths, gc_contents, kmer_freqs = {}, {}, defaultdict(
+            lambda: defaultdict(dict))
         ref_iter = seq_util.read_seq_records(args.z)
         if not args.Q:
             sys.stderr.write("Calculating sequence features:\n")
@@ -55,10 +59,12 @@ if __name__ == '__main__':
                 counts[ref.id] = 0
             lengths[ref.id] = len(ref)
             gc_contents[ref.id] = seq_util.gc_content(str(ref.seq))
-            if args.b:
-                bf = seq_util.base_composition(ref.seq)
-                for base, count in bf.iteritems():
-                    base_freqs[ref.id][base] = float(count) / len(ref)
+            if args.k is not None:
+                for kmer_size in calc_kmers:
+                    bf = seq_util.kmer_composition(ref.seq, kmer_size)
+                    for kmer, count in bf.iteritems():
+                        kmer_freqs[kmer_size][ref.id][
+                            kmer] = float(count) / len(ref)
 
         data['Length'] = [lengths[tr] for tr in counts.iterkeys()]
         data['GC'] = [gc_contents[tr] for tr in counts.iterkeys()]
@@ -66,12 +72,14 @@ if __name__ == '__main__':
     data['Reference'] = counts.keys()
     data['Count'] = counts.values()
 
-    if args.b and args.z:
-        for base in seq_util.bases:
-            tmp = []
-            for ref in counts.iterkeys():
-                tmp.append(base_freqs[ref][base])
-            data[base] = tmp
+    # Calculate kmer frequencies:
+    if args.k is not None and args.z:
+        for ks in calc_kmers:
+            for kmer in kmer_freqs[ks].itervalues().next().iterkeys():
+                tmp = []
+                for ref in counts.iterkeys():
+                    tmp.append(kmer_freqs[ks][ref][kmer])
+                data[kmer] = tmp
 
     data_frame = pd.DataFrame(data)
     data_frame = data_frame.sort(['Count'], ascending=False)
