@@ -53,6 +53,9 @@ if __name__ == '__main__':
             ref_iter = tqdm.tqdm(ref_iter)
 
         for ref in ref_iter:
+            # Augment counts dictionary with missing reference entries:
+            if ref.id not in counts:
+                counts[ref.id] = 0
             lengths[ref.id] = len(ref)
             gc_contents[ref.id] = seq_util.gc_content(str(ref.seq))
         data['Length'] = [lengths[tr] for tr in counts.iterkeys()]
