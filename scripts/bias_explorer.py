@@ -7,8 +7,10 @@ import numpy as np
 
 import pandas as pd
 from wub.vis import report
+from wub.util import seq as seq_util
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
+from scipy import stats
 
 
 import warnings
@@ -21,7 +23,7 @@ warnings.resetwarnings()
 parser = argparse.ArgumentParser(
     description="""Explore the effects of length and GC content on transcript coverage using multivariate regression.
 
-    This script takes the output of bam_count_reads.py (with the -z option) and uses a Poisson GLM to fit transcript
+    This script takes the output of bam_count_reads.py (with the -z option) and uses a NegativeBinomial GLM to fit transcript
     length and GC contenti (quadratic fit) on the counts. If the true transcript proportions (Target) are inculded using the -t option#
     then they are included in the model.
 
@@ -30,6 +32,8 @@ parser = argparse.ArgumentParser(
     """)
 parser.add_argument(
     '-t', metavar='target_tsv', type=str, help="Tab separated file containing the target counts (\"true concentrations\") (None).", default=None)
+parser.add_argument(
+    '-b', action='store_true', help="Do not include individual base frequencies as predictors (False).", default=False)
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bias_explorer.pdf).", default='bias_explorer.pdf')
 parser.add_argument(
@@ -47,8 +51,12 @@ def global_model(md, with_target):
     else:
         formula = 'Count ~ Length + GC + GC2'
 
+    if not args.b:
+        for base in seq_util.bases:
+            formula += " + {} + {}2".format(base, base)
+
     print "\nFitting: ", formula, "\n"
-    res = smf.glm(formula=formula, data=md, family=sm.families.Poisson()).fit()
+    res = smf.glm(formula=formula, data=md, family=sm.families.NegativeBinomial()).fit()
     print res.summary()
     print "Null deviance: ", res.null_deviance, "Null deviance/Deviance: ", res.null_deviance / res.deviance
 
@@ -58,6 +66,8 @@ def global_model(md, with_target):
     plotter.plt.ylabel("Predicted count")
     plotter.pages.savefig()
     plotter.plt.close()
+    print stats.spearmanr(md["Count"], res.fittedvalues)
+    print stats.pearsonr(md["Count"], res.fittedvalues)
 
 
 def gc_model(md):
@@ -69,7 +79,7 @@ def gc_model(md):
     print
     print "\nFitting: ", formula, "\n"
     results = smf.glm(
-        formula=formula, data=md, family=sm.families.Poisson()).fit()
+        formula=formula, data=md, family=sm.families.NegativeBinomial()).fit()
     print results.summary()
     print "Null deviance: ", results.null_deviance, "Null deviance/Deviance: ", results.null_deviance / results.deviance
 
@@ -82,6 +92,29 @@ def gc_model(md):
     plotter.pages.savefig()
     plotter.plt.close()
 
+def base_model(md, base):
+    """Quadratic fit of GC content on counts.
+    :param md: Input data frame.
+    """
+    md = md.sort([base])
+    formula = 'Count ~ {} + {}2'.format(base, base)
+    print
+    print "\nFitting: ", formula, "\n"
+    results = smf.glm(
+        formula=formula, data=md, family=sm.families.NegativeBinomial()).fit()
+    print results.summary()
+    print "Null deviance: ", results.null_deviance, "Null deviance/Deviance: ", results.null_deviance / results.deviance
+
+    plotter.plt.plot(md[base], md["Count"], 'o', label='data')
+    plotter.plt.plot(md[base], results.fittedvalues, '-', label='Predicted')
+    plotter.plt.title("{} frequency vs. read counts".format(base))
+    plotter.plt.xlabel("{} frequency".format(base))
+    plotter.plt.ylabel("Count")
+    plotter.plt.legend(loc='best')
+    plotter.pages.savefig()
+    plotter.plt.close()
+
+
 
 def length_model(md):
     """Quadratic fit of transcript length on counts.
@@ -92,7 +125,7 @@ def length_model(md):
     formula = 'Count ~ Length + Length2'
     print "\nFitting: ", formula, "\n"
     results = smf.glm(
-        formula=formula, data=md, family=sm.families.Poisson()).fit()
+        formula=formula, data=md, family=sm.families.NegativeBinomial()).fit()
     print results.summary()
     print "Null deviance: ", results.null_deviance, "Null deviance/Deviance: ", results.null_deviance / results.deviance
 
@@ -126,9 +159,13 @@ if __name__ == '__main__':
     else:
         md = data
 
-    fields = ['Count', 'Length', 'GC']
+    # Augment data frame with square base frequencies:
+    if not args.b:
+        for base in seq_util.bases:
+            md[base + "2"] = md[base] ** 2
 
     # Matrix scatter plot of counts and features:
+    fields = ['Count', 'Length', 'GC']
     pd.tools.plotting.scatter_matrix(data[fields], diagonal="kde")
     plotter.pages.savefig()
     plotter.plt.close()
@@ -139,5 +176,8 @@ if __name__ == '__main__':
     global_model(md, with_target)
     gc_model(md)
     length_model(md)
+    if not args.b:
+        for base in seq_util.bases:
+            base_model(md, base)
 
     plotter.close()
