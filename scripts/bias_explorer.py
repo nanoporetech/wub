@@ -60,14 +60,16 @@ def global_model(md, with_target):
     print res.summary()
     print "Null deviance: ", res.null_deviance, "Null deviance/Deviance: ", res.null_deviance / res.deviance
 
+    slope, intercept, r_value, p_value, std_err = stats.linregress(md["Count"], res.fittedvalues)
     plotter.plt.plot(md["Count"], res.fittedvalues, 'o')
+    y_values = [slope * i + intercept for i in md["Count"]]
+    plotter.plt.plot(md["Count"], y_values, 'g-', label="r={:.3f}, p={:.3f}".format(r_value, p_value))
+    plotter.plt.legend(loc='best')
     plotter.plt.title("Actual vs. predicted read counts")
     plotter.plt.xlabel("Count")
     plotter.plt.ylabel("Predicted count")
     plotter.pages.savefig()
     plotter.plt.close()
-    print stats.spearmanr(md["Count"], res.fittedvalues)
-    print stats.pearsonr(md["Count"], res.fittedvalues)
 
 
 def gc_model(md):
