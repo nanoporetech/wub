@@ -40,8 +40,7 @@ if __name__ == '__main__':
         args.bam, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q)
 
     if args.s:
-        counts = OrderedDict(
-            sorted((item for item in counts.iteritems()), key=lambda x: x[1], reverse=True))
+        counts = OrderedDict(counts.iteritems())
 
     data = OrderedDict()
 
@@ -64,6 +63,7 @@ if __name__ == '__main__':
     data['Reference'] = counts.keys()
     data['Count'] = counts.values()
     data_frame = pd.DataFrame(data)
+    data_frame = data_frame.sort(['Count'], ascending=False)
 
     if args.t is not None:
         data_frame.to_csv(args.t, sep='\t', index=False)
