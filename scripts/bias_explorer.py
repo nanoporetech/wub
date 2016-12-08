@@ -20,7 +20,7 @@ warnings.resetwarnings()
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
     description="""Explore the effects of length and GC content on transcript coverage using multivariate regression.
-    
+
     This script takes the output of bam_count_reads.py (with the -z option) and uses a Poisson GLM to fit transcript
     length and GC contenti (quadratic fit) on the counts. If the true transcript proportions (Target) are inculded using the -t option#
     then they are included in the model.
@@ -53,6 +53,7 @@ def global_model(md, with_target):
     print "Null deviance: ", res.null_deviance, "Null deviance/Deviance: ", res.null_deviance / res.deviance
 
     plotter.plt.plot(md["Count"], res.fittedvalues, 'o')
+    plotter.plt.title("Actual vs. predicted read counts")
     plotter.plt.xlabel("Count")
     plotter.plt.ylabel("Predicted count")
     plotter.pages.savefig()
@@ -67,12 +68,16 @@ def gc_model(md):
     formula = 'Count ~ GC + GC2'
     print
     print "\nFitting: ", formula, "\n"
-    results = smf.glm(formula=formula, data=md, family=sm.families.Poisson()).fit()
+    results = smf.glm(
+        formula=formula, data=md, family=sm.families.Poisson()).fit()
     print results.summary()
     print "Null deviance: ", results.null_deviance, "Null deviance/Deviance: ", results.null_deviance / results.deviance
 
     plotter.plt.plot(md["GC"], md["Count"], 'o', label='data')
-    plotter.plt.plot(md["GC"], results.fittedvalues, '-', label='OLS')
+    plotter.plt.plot(md["GC"], results.fittedvalues, '-', label='Predicted')
+    plotter.plt.title("GC content vs. read counts")
+    plotter.plt.xlabel("GC content")
+    plotter.plt.ylabel("Count")
     plotter.plt.legend(loc='best')
     plotter.pages.savefig()
     plotter.plt.close()
@@ -86,13 +91,18 @@ def length_model(md):
     md = md.sort(['Length'])
     formula = 'Count ~ Length + Length2'
     print "\nFitting: ", formula, "\n"
-    results = smf.glm(formula=formula, data=md, family=sm.families.Poisson()).fit()
+    results = smf.glm(
+        formula=formula, data=md, family=sm.families.Poisson()).fit()
     print results.summary()
     print "Null deviance: ", results.null_deviance, "Null deviance/Deviance: ", results.null_deviance / results.deviance
 
     plotter.plt.plot(md["Length"], md["Count"], 'o', label='data')
-    plotter.plt.plot(md["Length"], results.fittedvalues, '-', label='OLS')
+    plotter.plt.plot(
+        md["Length"], results.fittedvalues, '-', label='Predicted')
     plotter.plt.legend(loc='best')
+    plotter.plt.title("Length content vs. read counts")
+    plotter.plt.xlabel("Length")
+    plotter.plt.ylabel("Count")
     plotter.pages.savefig()
     plotter.plt.close()
 
@@ -101,7 +111,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     plotter = report.Report(args.r)
-    
+
     # Load data:
     data = pd.read_csv(args.counts, sep="\t")
 
@@ -122,7 +132,6 @@ if __name__ == '__main__':
     pd.tools.plotting.scatter_matrix(data[fields], diagonal="kde")
     plotter.pages.savefig()
     plotter.plt.close()
-
 
     md["GC2"] = md["GC"] ** 2
     md["Length2"] = md["Length"] ** 2
