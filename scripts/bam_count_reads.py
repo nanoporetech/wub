@@ -43,7 +43,7 @@ if __name__ == '__main__':
         counts = OrderedDict(
             sorted((item for item in counts.iteritems()), key=lambda x: x[1], reverse=True))
 
-    data = OrderedDict([('Reference', counts.keys()), ('Count', counts.values())])
+    data = OrderedDict()
 
     if args.z is not None:
         lengths, gc_contents = {}, {}
@@ -61,6 +61,8 @@ if __name__ == '__main__':
         data['Length'] = [lengths[tr] for tr in counts.iterkeys()]
         data['GC'] = [gc_contents[tr] for tr in counts.iterkeys()]
 
+    data['Reference'] = counts.keys()
+    data['Count'] = counts.values()
     data_frame = pd.DataFrame(data)
 
     if args.t is not None:
