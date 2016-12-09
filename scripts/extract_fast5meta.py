@@ -79,6 +79,8 @@ if __name__ == '__main__':
             try:
                 data = future.result()
                 for name, value in data.iteritems():
+                    if value is None:
+                        continue
                     stats[name].append(value)
             except Exception as exc:
                 print('%r generated an exception: %s' % (f5, exc))
