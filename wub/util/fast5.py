@@ -4,7 +4,24 @@ import h5py
 import numpy as np
 
 
-def load_read_data(fname, read_number=None, start=None, end=None, events=True, instance=0):
+def _load_raw(fast5, read_number, scale=True):
+    """ Load ans scale raw data from FAST5 file. """
+    dataset_name = 'Raw/Reads/Read_{}/Signal'.format(read_number)
+    raw = fast5[dataset_name]
+    if scale:
+        channel_info = fast5['UniqueGlobalKey/channel_id'].attrs
+        digi = channel_info['digitisation']
+        parange = channel_info['range']
+        offset = channel_info['offset']
+        scaling = parange / digi
+        data = np.empty(len(raw), dtype=np.float32)
+        data[:] = scaling * (raw + offset)
+    else:
+        data = raw
+    return data
+
+
+def load_read_data(fname, read_number=None, start=None, end=None, events=True, raw=False, instance=0):
     """ Loads the read data for a specified read from a read fast5 file (taken from chimaera).
     :param fname: The fast5 file to read data from.
     :param read_number: Optional read number, for use with multi-read files.
@@ -72,6 +89,11 @@ def load_read_data(fname, read_number=None, start=None, end=None, events=True, i
                 data = event_data[start:end]
         else:
             data = None
+        # Extract raw data:
+        raw_data = None
+        if raw:
+            raw_data = _load_raw(fast5, read_number)
+
     meta = {'h5path': h5path, 'file_number': file_number, 'sampling_rate': sampling_rate,
-            'uuid': uuid}
+            'uuid': uuid, 'raw': raw_data}
     return data, channel, read_number, meta
