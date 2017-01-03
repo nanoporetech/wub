@@ -63,8 +63,8 @@ def global_model(md, with_target, label=False):
     if not args.b:
         for kmer in itertools.product(*([seq_util.bases] * 2)):
             kmer = ''.join(kmer)
-            formula += " + {} + {}2".format(kmer, kmer)
-            #formula += " + {}".format(kmer)
+            # formula += " + {} + {}2".format(kmer, kmer)
+            formula += " + {}".format(kmer)
 
     print "\nFitting: ", formula, "\n"
     res = smf.glm(
