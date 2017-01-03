@@ -23,7 +23,7 @@ parser.add_argument(
 parser.add_argument(
     '-z', metavar='ref_fasta', type=str, help="Reference fasta. GC content and length columns are added if present (None).", default=None)
 parser.add_argument(
-    '-k', metavar="kmers", type=str, help="Include k-mer frequencies of specifed length in output (None).", default=None)
+    '-k', metavar="kmers", type=str, help="Include k-mer frequencies of specifed length in output (1,2).", default="1,2")
 parser.add_argument(
     '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
 parser.add_argument(
