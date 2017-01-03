@@ -34,13 +34,14 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     '-t', metavar='target_tsv', type=str, help="Tab separated file containing the target counts (\"true concentrations\") (None).", default=None)
 parser.add_argument(
-    '-b', action='store_true', help="Do not include individual base frequencies as predictors (False).", default=False)
+    '-b', action='store_true', help="Do not include dinucleotide frequencies as predictors (False).", default=False)
 parser.add_argument(
     '-l', action='store_true', help="Label points and make plots ugly (False).", default=False)
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bias_explorer.pdf).", default='bias_explorer.pdf')
 parser.add_argument(
     'counts', metavar='counts', type=str, help="Tab separated file with counts and features. Produced by bam_count_read.py with the -z option.")
+
 
 def label_points(target, md, predicted, fontsize=6):
     for ref, x, y in zip(md["Reference"], md[target], predicted):
@@ -56,12 +57,14 @@ def global_model(md, with_target, label=False):
     if with_target:
         formula = 'Count ~ Target + Length + Length2 + GC + GC2'
     else:
-        formula = 'Count ~ Length + Length2 '
+        formula = 'Count ~ Length + Length2 + GC + GC2'
 
+    # Add dinucleotide frequencies:
     if not args.b:
-        for base in seq_util.bases:
-            formula += " + {} + {}2".format(base, base)
-            pass
+        for kmer in itertools.product(*([seq_util.bases] * 2)):
+            kmer = ''.join(kmer)
+            formula += " + {} + {}2".format(kmer, kmer)
+            #formula += " + {}".format(kmer)
 
     print "\nFitting: ", formula, "\n"
     res = smf.glm(
@@ -155,7 +158,7 @@ def length_model(md, label):
     if label:
         label_points("Length", md, md["Count"])
     plotter.plt.legend(loc='best')
-    plotter.plt.title("Length content vs. read counts")
+    plotter.plt.title("Length vs. read counts")
     plotter.plt.xlabel("Length")
     plotter.plt.ylabel("Count")
     plotter.pages.savefig()
@@ -181,10 +184,11 @@ if __name__ == '__main__':
     else:
         md = data
 
-    # Augment data frame with square base frequencies:
+    # Augment data frame with square dinucleotide frequencies:
     if not args.b:
-        for base in seq_util.bases:
-            md[base + "2"] = md[base] ** 2
+        for kmer in itertools.product(*([seq_util.bases] * 2)):
+            kmer = ''.join(kmer)
+            md[kmer + "2"] = md[kmer] ** 2
 
     # Matrix scatter plot of counts and features:
     fields = ['Count', 'Length', 'GC']
@@ -199,7 +203,8 @@ if __name__ == '__main__':
     gc_model(md, args.l)
     length_model(md, args.l)
     if not args.b:
-        for base in seq_util.bases:
+        for base in itertools.product(*([seq_util.bases] * 2)):
+            base = ''.join(base)
             base_model(md, base, args.l)
 
     plotter.close()
