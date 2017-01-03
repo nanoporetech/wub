@@ -11,6 +11,7 @@ from wub.util import seq as seq_util
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 from scipy import stats
+import itertools
 
 
 import warnings
@@ -35,44 +36,57 @@ parser.add_argument(
 parser.add_argument(
     '-b', action='store_true', help="Do not include individual base frequencies as predictors (False).", default=False)
 parser.add_argument(
+    '-l', action='store_true', help="Label points and make plots ugly (False).", default=False)
+parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bias_explorer.pdf).", default='bias_explorer.pdf')
 parser.add_argument(
     'counts', metavar='counts', type=str, help="Tab separated file with counts and features. Produced by bam_count_read.py with the -z option.")
 
+def label_points(target, md, predicted, fontsize=6):
+    for ref, x, y in zip(md["Reference"], md[target], predicted):
+        plotter.plt.text(x, y, ref, fontsize=fontsize)
 
-def global_model(md, with_target):
+
+def global_model(md, with_target, label=False):
     """Fit all predictors on counts.
     :param md: Input data frame.
     :param with_target: Include Target if true.
     """
     md = md.sort(['Count'])
     if with_target:
-        formula = 'Count ~ Target + Length + GC + GC2'
+        formula = 'Count ~ Target + Length + Length2 + GC + GC2'
     else:
-        formula = 'Count ~ Length + GC + GC2'
+        formula = 'Count ~ Length + Length2 '
 
     if not args.b:
         for base in seq_util.bases:
             formula += " + {} + {}2".format(base, base)
+            pass
 
     print "\nFitting: ", formula, "\n"
-    res = smf.glm(formula=formula, data=md, family=sm.families.NegativeBinomial()).fit()
+    res = smf.glm(
+        formula=formula, data=md, family=sm.families.NegativeBinomial()).fit()
     print res.summary()
     print "Null deviance: ", res.null_deviance, "Null deviance/Deviance: ", res.null_deviance / res.deviance
 
-    slope, intercept, r_value, p_value, std_err = stats.linregress(md["Count"], res.fittedvalues)
+    md.to_csv("merged.tsv", sep="\t", index=False)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(
+        md["Count"], res.fittedvalues)
     plotter.plt.plot(md["Count"], res.fittedvalues, 'o')
     y_values = [slope * i + intercept for i in md["Count"]]
-    plotter.plt.plot(md["Count"], y_values, 'g-', label="r={:.3f}, p={:.3f}".format(r_value, p_value))
+    plotter.plt.plot(
+        md["Count"], y_values, 'g-', label="r={:.3f}, p={:.3f}".format(r_value, p_value))
     plotter.plt.legend(loc='best')
     plotter.plt.title("Actual vs. predicted read counts")
     plotter.plt.xlabel("Count")
     plotter.plt.ylabel("Predicted count")
+    if label:
+        label_points("Count", md, res.fittedvalues)
     plotter.pages.savefig()
     plotter.plt.close()
 
 
-def gc_model(md):
+def gc_model(md, label=False):
     """Quadratic fit of GC content on counts.
     :param md: Input data frame.
     """
@@ -87,6 +101,8 @@ def gc_model(md):
 
     plotter.plt.plot(md["GC"], md["Count"], 'o', label='data')
     plotter.plt.plot(md["GC"], results.fittedvalues, '-', label='Predicted')
+    if label:
+        label_points("GC", md, md["Count"])
     plotter.plt.title("GC content vs. read counts")
     plotter.plt.xlabel("GC content")
     plotter.plt.ylabel("Count")
@@ -94,7 +110,8 @@ def gc_model(md):
     plotter.pages.savefig()
     plotter.plt.close()
 
-def base_model(md, base):
+
+def base_model(md, base, label=False):
     """Quadratic fit of GC content on counts.
     :param md: Input data frame.
     """
@@ -109,6 +126,8 @@ def base_model(md, base):
 
     plotter.plt.plot(md[base], md["Count"], 'o', label='data')
     plotter.plt.plot(md[base], results.fittedvalues, '-', label='Predicted')
+    if label:
+        label_points(base, md, md["Count"])
     plotter.plt.title("{} frequency vs. read counts".format(base))
     plotter.plt.xlabel("{} frequency".format(base))
     plotter.plt.ylabel("Count")
@@ -117,8 +136,7 @@ def base_model(md, base):
     plotter.plt.close()
 
 
-
-def length_model(md):
+def length_model(md, label):
     """Quadratic fit of transcript length on counts.
     :param md: Input data frame.
     """
@@ -134,6 +152,8 @@ def length_model(md):
     plotter.plt.plot(md["Length"], md["Count"], 'o', label='data')
     plotter.plt.plot(
         md["Length"], results.fittedvalues, '-', label='Predicted')
+    if label:
+        label_points("Length", md, md["Count"])
     plotter.plt.legend(loc='best')
     plotter.plt.title("Length content vs. read counts")
     plotter.plt.xlabel("Length")
@@ -175,11 +195,11 @@ if __name__ == '__main__':
     md["GC2"] = md["GC"] ** 2
     md["Length2"] = md["Length"] ** 2
 
-    global_model(md, with_target)
-    gc_model(md)
-    length_model(md)
+    global_model(md, with_target, args.l)
+    gc_model(md, args.l)
+    length_model(md, args.l)
     if not args.b:
         for base in seq_util.bases:
-            base_model(md, base)
+            base_model(md, base, args.l)
 
     plotter.close()
