@@ -25,10 +25,10 @@ parser = argparse.ArgumentParser(
     description="""Explore the effects of length and GC content on transcript coverage using multivariate regression.
 
     This script takes the output of bam_count_reads.py (with the -z option) and uses a NegativeBinomial GLM to fit transcript
-    length and GC contenti (quadratic fit) on the counts. If the true transcript proportions (Target) are inculded using the -t option#
-    then they are included in the model.
+    length and GC content (quadratic fit) on the counts. If the true transcript proportions (Target) are inculded using the -t option
+    then they are included in the model. I the -b switch is not specified then the dinucleotide frequnecies are alos included as predictors.
 
-    Then a quadratic fir is performed with the GC content and Length against the counts individually.
+    Then a quadratic fit is performed with the GC content and Length against the counts individually.
     Various plots are produced in the report PDF.
     """)
 parser.add_argument(
