@@ -36,9 +36,13 @@ parser.add_argument(
 parser.add_argument(
     '-b', action='store_true', help="Do not include dinucleotide frequencies as predictors (False).", default=False)
 parser.add_argument(
+    '-q', action='store_true', help="Include square of dinucleotide frequencies as predictors (False).", default=False)
+parser.add_argument(
     '-l', action='store_true', help="Label points and make plots ugly (False).", default=False)
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bias_explorer.pdf).", default='bias_explorer.pdf')
+parser.add_argument(
+    '-m', metavar='merged_tsv', type=str, help="Save merged data frame in this file (None).", default=None)
 parser.add_argument(
     'counts', metavar='counts', type=str, help="Tab separated file with counts and features. Produced by bam_count_read.py with the -z option.")
 
@@ -63,8 +67,10 @@ def global_model(md, with_target, label=False):
     if not args.b:
         for kmer in itertools.product(*([seq_util.bases] * 2)):
             kmer = ''.join(kmer)
-            # formula += " + {} + {}2".format(kmer, kmer)
-            formula += " + {}".format(kmer)
+            if args.q:
+                formula += " + {} + {}2".format(kmer, kmer)
+            else:
+                formula += " + {}".format(kmer)
 
     print "\nFitting: ", formula, "\n"
     res = smf.glm(
@@ -72,7 +78,9 @@ def global_model(md, with_target, label=False):
     print res.summary()
     print "Null deviance: ", res.null_deviance, "Null deviance/Deviance: ", res.null_deviance / res.deviance
 
-    md.to_csv("merged.tsv", sep="\t", index=False)
+    if args.m is not None:
+        md.to_csv(args.m, sep="\t", index=False)
+
     slope, intercept, r_value, p_value, std_err = stats.linregress(
         md["Count"], res.fittedvalues)
     plotter.plt.plot(md["Count"], res.fittedvalues, 'o')
@@ -196,6 +204,7 @@ if __name__ == '__main__':
     plotter.pages.savefig()
     plotter.plt.close()
 
+    # Add squared features for GC and Length:
     md["GC2"] = md["GC"] ** 2
     md["Length2"] = md["Length"] ** 2
 
