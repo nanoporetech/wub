@@ -67,7 +67,7 @@ if __name__ == '__main__':
                             kmer] = float(count) / len(ref)
 
         data['Length'] = [lengths[tr] for tr in counts.iterkeys()]
-        data['GC'] = [gc_contents[tr] for tr in counts.iterkeys()]
+        data['GC_content'] = [gc_contents[tr] for tr in counts.iterkeys()]
 
     data['Reference'] = counts.keys()
     data['Count'] = counts.values()
