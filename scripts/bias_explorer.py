@@ -59,9 +59,9 @@ def global_model(md, with_target, label=False):
     """
     md = md.sort(['Count'])
     if with_target:
-        formula = 'Count ~ Target + Length + Length2 + GC + GC2'
+        formula = 'Count ~ Target + Length + Length2 + GC_content + GC_content2'
     else:
-        formula = 'Count ~ Length + Length2 + GC + GC2'
+        formula = 'Count ~ Length + Length2 + GC_content + GC_content2'
 
     # Add dinucleotide frequencies:
     if not args.b:
@@ -101,8 +101,8 @@ def gc_model(md, label=False):
     """Quadratic fit of GC content on counts.
     :param md: Input data frame.
     """
-    md = md.sort(['GC'])
-    formula = 'Count ~ GC + GC2'
+    md = md.sort(['GC_content'])
+    formula = 'Count ~ GC_content + GC_content2'
     print
     print "\nFitting: ", formula, "\n"
     results = smf.glm(
@@ -110,10 +110,10 @@ def gc_model(md, label=False):
     print results.summary()
     print "Null deviance: ", results.null_deviance, "Null deviance/Deviance: ", results.null_deviance / results.deviance
 
-    plotter.plt.plot(md["GC"], md["Count"], 'o', label='data')
-    plotter.plt.plot(md["GC"], results.fittedvalues, '-', label='Predicted')
+    plotter.plt.plot(md["GC_content"], md["Count"], 'o', label='data')
+    plotter.plt.plot(md["GC_content"], results.fittedvalues, '-', label='Predicted')
     if label:
-        label_points("GC", md, md["Count"])
+        label_points("GC_content", md, md["Count"])
     plotter.plt.title("GC content vs. read counts")
     plotter.plt.xlabel("GC content")
     plotter.plt.ylabel("Count")
@@ -199,13 +199,13 @@ if __name__ == '__main__':
             md[kmer + "2"] = md[kmer] ** 2
 
     # Matrix scatter plot of counts and features:
-    fields = ['Count', 'Length', 'GC']
+    fields = ['Count', 'Length', 'GC_content']
     pd.tools.plotting.scatter_matrix(data[fields], diagonal="kde")
     plotter.pages.savefig()
     plotter.plt.close()
 
     # Add squared features for GC and Length:
-    md["GC2"] = md["GC"] ** 2
+    md["GC_content2"] = md["GC_content"] ** 2
     md["Length2"] = md["Length"] ** 2
 
     global_model(md, with_target, args.l)
