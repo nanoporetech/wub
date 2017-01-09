@@ -121,6 +121,17 @@ def gc_model(md, label=False):
     plotter.pages.savefig()
     plotter.plt.close()
 
+    plotter.plt.plot(md["GC_content"], results.resid_response, 'o', label='Residuals')
+    if label:
+        label_points("GC_content", md, results.resid_response)
+    plotter.plt.title("GC content vs. response residuals")
+    plotter.plt.xlabel("GC content")
+    plotter.plt.ylabel("Residuals")
+    plotter.plt.legend(loc='best')
+    plotter.pages.savefig()
+    plotter.plt.close()
+
+
 
 def base_model(md, base, label=False):
     """Quadratic fit of GC content on counts.
@@ -146,6 +157,17 @@ def base_model(md, base, label=False):
     plotter.pages.savefig()
     plotter.plt.close()
 
+    plotter.plt.plot(md[base], results.resid_response, 'o', label='Residuals')
+    if label:
+        label_points(base, md, results.resid_response)
+    plotter.plt.title("{} frequency vs. response residuals".format(base))
+    plotter.plt.xlabel("{} frequency".format(base))
+    plotter.plt.ylabel("Residual")
+    plotter.plt.legend(loc='best')
+    plotter.pages.savefig()
+    plotter.plt.close()
+
+
 
 def length_model(md, label):
     """Quadratic fit of transcript length on counts.
@@ -169,6 +191,17 @@ def length_model(md, label):
     plotter.plt.title("Length vs. read counts")
     plotter.plt.xlabel("Length")
     plotter.plt.ylabel("Count")
+    plotter.pages.savefig()
+    plotter.plt.close()
+
+    plotter.plt.plot(
+        md["Length"], results.resid_response, 'o', label='Predicted')
+    if label:
+        label_points("Length", md, results.resid_response)
+    plotter.plt.legend(loc='best')
+    plotter.plt.title("Length vs. response residuals")
+    plotter.plt.xlabel("Length")
+    plotter.plt.ylabel("Residual")
     plotter.pages.savefig()
     plotter.plt.close()
 
