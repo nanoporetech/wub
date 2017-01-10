@@ -2,7 +2,60 @@
 """Yet uncategorised utility functions."""
 
 import cPickle
+import os.path
 
+
+def get_fname(fname):
+    '''
+    get the file name without extension
+
+    :param fname: file name
+    :return: file name
+    :rtype: str
+    '''
+    return os.path.splitext(os.path.basename(fname))[0]
+
+
+def get_extension(fname):
+    '''
+    get the file extension
+
+    :param fname: file name
+    :return: file extention
+    :rtype: str format '.*'
+    '''
+    return os.path.splitext(os.path.basename(fname))[1]
+
+def _getextension(fast):
+    '''
+    finds and check for the correct extension
+
+    :param fast: fastq or fasta file
+    :return: "fastq" or "fasta"
+    :rtype: str
+    '''
+
+    extension = get_extension(fast)
+    if extension in ('.fa', '.fasta'):
+        extension = "fasta"
+    elif extension in ('.fq', '.fastq'):
+        extension = "fastq"
+    else:
+        raise Exception('Incorrect file format')
+        exit()
+        # print >> sys.stderr, "Incorrect file format"
+    return extension
+
+def mkdir(path):
+    '''
+    if the dir does not exists it
+
+    :param path:
+    :return:
+    '''
+    if not os.path.exists(path):
+        path = os.makedirs(path)
+    return path
 
 def pickle_load(fname):
     """ Load object from pickle.
