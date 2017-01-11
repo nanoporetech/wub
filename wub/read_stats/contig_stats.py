@@ -62,6 +62,15 @@ def nanoQ(rec):
 
 
 def N50v2(df, col, percent=50):
+    '''
+    Calculate the N50 by default however, by changing percent to 75 N75 can be calculated
+
+    :param df: dataframe with seqlen column
+    :param col: column with sequence length
+    :param percent: percentage to be calculated
+    :return:
+    :rtype: str
+    '''
 
     df1 = df.copy()
     df1 = df1.sort_values(col, ascending=False).reset_index(drop=True)
