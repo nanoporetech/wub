@@ -3,9 +3,72 @@
 import sys
 from collections import defaultdict, OrderedDict
 import tqdm
+import numpy as np
 
 from wub.bam import common as bam_common
 from wub.util import seq as seq_util
+
+
+def _frag_dict_to_array(fd, chrom_lengths):
+    """ Convert fragment coverage dictionary into a numpy array. """
+    res = {}
+    for ref, frags in fd.iteritems():
+        cov = np.zeros((chrom_lengths[ref],), dtype=int)
+        for pos, count in frags.iteritems():
+            cov[pos] = count
+        res[ref] = cov
+    return res
+
+
+def frag_coverage(bam, chrom_lengths, region=None, min_aqual=0, verbose=True):
+    """ Calculate fragment coverage vectors on the forward and reverse strands.
+
+    :param bam: Input bam file.
+    :param chrom_lengths: Dictionary of chromosome names and lengths.
+    :param region: Restrict parsing to the specified region.
+    :param min_aqual: Minimum mapping quality.
+    :param verbose: Display progress bar.
+    :returns: Forward and reverse fragment coverage vectors.
+    :rtype: dict
+    """
+
+    frags_fwd = defaultdict(lambda: defaultdict(int))
+    frags_rev = defaultdict(lambda: defaultdict(int))
+
+    bam_reader = bam_common.pysam_open(bam, in_format='BAM')
+    ue = True
+    if region is not None:
+        ue = False
+    bam_iter = bam_reader.fetch(region=region, until_eof=ue)
+
+    try:
+        total_reads = bam_reader.mapped + bam_reader.unmapped
+    except:
+        total_reads = None
+    if verbose and region is None:
+        sys.stdout.write(
+            "Gathering fragment statistics from file: {}\n".format(bam))
+        bam_iter = tqdm.tqdm(bam_iter, total=total_reads)
+
+    for r in bam_iter:
+        # Skip unmapped reads:
+        if r.is_unmapped:
+            continue
+        # Skip if mapping quality is too low:
+        if r.mapq <= min_aqual:
+            continue
+        pos = r.reference_start
+        ref = r.reference_name
+        if r.is_reverse:
+            frags_rev[r.reference_name][pos] += 1
+        else:
+            frags_fwd[r.reference_name][pos] += 1
+
+    frags_fwd = _frag_dict_to_array(frags_fwd, chrom_lengths)
+    frags_rev = _frag_dict_to_array(frags_rev, chrom_lengths)
+
+    res = {'frags_fwd': frags_fwd, 'frags_rev': frags_rev}
+    return res
 
 
 def _update_read_stats(r, res, min_aqual):
