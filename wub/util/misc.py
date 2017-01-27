@@ -48,13 +48,14 @@ def _getextension(fast):
 
 def mkdir(path):
     '''
-    if the dir does not exists it
+    if the dir does not exists it create it
 
-    :param path:
-    :return:
+    :param path: dir path
+    :return: path
+    :rtype: str
     '''
     if not os.path.exists(path):
-        path = os.makedirs(path)
+        os.makedirs(path)
     return path
 
 def pickle_load(fname):
