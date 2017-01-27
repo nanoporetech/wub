@@ -74,7 +74,7 @@ def _process_ref_coverage(plotter, cov, strand, scale_pos, scale_cov):
     return x, y
 
 
-def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, title="", bins=None, log_scale=True):
+def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, title="", bins=None, log_scale=True, hist_title=""):
     """ Plot fragment coverage over a reference. """
     fig = plotter.plt.figure()
 
@@ -88,9 +88,11 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
 
     cov_fwd = np.zeros((bins), dtype=float)
     cov_rev = np.zeros((bins), dtype=float)
+    ref_cov = []
 
     # Acumulate position-scaled coverage in coverage vectors:
     for chrom in chroms.keys():
+        ref_cov.extend(st['ref_cov'][chrom])
         if chrom in st['frags_fwd']:
             fx, fy = _process_ref_coverage(
                 plotter, cov=st['frags_fwd'][chrom], strand='fwd', scale_pos=scale_pos, scale_cov=scale_cov)
@@ -115,7 +117,13 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
         ylab = "log(" + ylab + ")"
 
     _set_properties_and_close(plotter, fig, title=title, xlab="Scaled position", ylab=ylab)
-    return {'global_cov_fwd': cov_fwd, 'global_cov_rev': cov_rev}
+
+    # Plot reference coverage histogram:
+    ref_cov = np.array(ref_cov, dtype=float)
+    plotter.plot_histograms({'dummy': ref_cov}, title=hist_title,
+                            xlab="Reference coverage", ylab="Count", bins=100, legend=False)
+
+    return {'global_cov_fwd': cov_fwd, 'global_cov_rev': cov_rev, 'ref_cov': ref_cov}
 
 
 if __name__ == '__main__':
@@ -135,13 +143,14 @@ if __name__ == '__main__':
     chrom_lengths = {name: len(so) for name, so in references.iteritems()}
 
     # Parse fragments:
-    st = bam_stats.frag_coverage(args.bam, chrom_lengths, args.c, args.q, verbose)
+    st = bam_stats.frag_coverage(
+        args.bam, chrom_lengths, args.c, args.q, verbose=verbose, ref_cov=True)
 
     res = {'chrom_covs': {}, 'tag': tag}
 
     # Plot global coverage:
     res['global_cov'] = _plot_frag_coverage(
-        st, chrom_lengths, plotter, title="Global fragment coverage for {}".format(tag), log_scale=not args.o, bins=args.b)
+        st, chrom_lengths, plotter, title="Global fragment coverage for {}".format(tag), hist_title="Global reference coverage for {}".format(tag), log_scale=not args.o, bins=args.b)
 
     # Plot coverage in intervals:
     for interval in intervals:
@@ -156,7 +165,7 @@ if __name__ == '__main__':
             int_chroms[ref] = length
         # Generate coverage plot:
         _plot_frag_coverage(
-            st, int_chroms, plotter, title="Coverage in interval [{},{}) for {}".format(interval[0], interval[1], tag), log_scale=not args.o, bins=args.b)
+            st, int_chroms, plotter, title="Coverage in interval [{},{}) for {}".format(interval[0], interval[1], tag), hist_title="Reference coverage in interval [{},{}) for {}".format(interval[0], interval[1], tag), log_scale=not args.o, bins=args.b)
 
     def _get_coverage(chrom, st):
         """ Utility function for sorting references by coverage. """
@@ -183,7 +192,7 @@ if __name__ == '__main__':
         # Plot per-reference coverage vectors.
         for chrom, length in tr_iter:
             res['chrom_covs'][chrom] = _plot_frag_coverage(
-                st, {chrom: length}, plotter, title="Fragment coverage for {}:{}".format(tag, chrom), log_scale=not args.o)
+                st, {chrom: length}, plotter, title="Fragment coverage for {}:{}".format(tag, chrom), hist_title="Reference coverage for {}:{}".format(tag, chrom), log_scale=not args.o)
 
     plotter.close()
 

@@ -20,7 +20,7 @@ def _frag_dict_to_array(fd, chrom_lengths):
     return res
 
 
-def frag_coverage(bam, chrom_lengths, region=None, min_aqual=0, verbose=True):
+def frag_coverage(bam, chrom_lengths, region=None, min_aqual=0, ref_cov=True, verbose=True):
     """ Calculate fragment coverage vectors on the forward and reverse strands.
 
     :param bam: Input bam file.
@@ -34,6 +34,8 @@ def frag_coverage(bam, chrom_lengths, region=None, min_aqual=0, verbose=True):
 
     frags_fwd = defaultdict(lambda: defaultdict(int))
     frags_rev = defaultdict(lambda: defaultdict(int))
+
+    aln_ref_cov = (defaultdict(list))
 
     bam_reader = bam_common.pysam_open(bam, in_format='BAM')
     ue = True
@@ -64,10 +66,13 @@ def frag_coverage(bam, chrom_lengths, region=None, min_aqual=0, verbose=True):
         else:
             frags_fwd[r.reference_name][pos] += 1
 
+        if ref_cov:
+            aln_ref_cov[ref].append(r.reference_length / float(chrom_lengths[ref]))
+
     frags_fwd = _frag_dict_to_array(frags_fwd, chrom_lengths)
     frags_rev = _frag_dict_to_array(frags_rev, chrom_lengths)
 
-    res = {'frags_fwd': frags_fwd, 'frags_rev': frags_rev}
+    res = {'frags_fwd': frags_fwd, 'frags_rev': frags_rev, 'ref_cov': aln_ref_cov}
     return res
 
 
