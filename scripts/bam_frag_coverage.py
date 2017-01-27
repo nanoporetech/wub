@@ -102,6 +102,9 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
                 plotter, cov=st['frags_rev'][chrom], strand='rev', scale_pos=scale_pos, scale_cov=scale_cov)
             cov_rev += np.interp(x, rx, ry)
     plot_fwd, plot_rev = cov_fwd, cov_rev
+    
+    if (np.sum(cov_fwd) + np.sum(cov_rev)) == 0:
+        return {'global_cov_fwd': None, 'global_cov_rev': None, 'ref_cov': None}
 
     # Perform log transform of coverage:
     if log_scale:
