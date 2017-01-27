@@ -10,6 +10,7 @@ from collections import OrderedDict
 from Bio import SeqIO
 
 from wub.util import misc
+from wub.util import parse as parse_util
 from wub.vis import report
 from wub.bam import stats as bam_stats
 
@@ -27,6 +28,8 @@ parser.add_argument(
     '-f', metavar='reference', type=str, help="Reference fasta.", required=True)
 parser.add_argument(
     '-c', metavar='region', type=str, help="BAM region (None).", required=False, default=None)
+parser.add_argument(
+    '-i', metavar='intervals', type=str, help="Length intervals ("").", required=False, default="")
 parser.add_argument(
     '-b', metavar='bins', type=int, help="Number of bins (None = auto).", required=False, default=None)
 parser.add_argument(
@@ -124,6 +127,9 @@ if __name__ == '__main__':
 
     plotter = report.Report(args.r)
 
+    # Parse length intervals:
+    intervals = parse_util.interval_string_to_tuples(args.i)
+
     # Laod reference lengths:
     references = SeqIO.index(args.f, format='fasta')
     chrom_lengths = {name: len(so) for name, so in references.iteritems()}
@@ -133,8 +139,24 @@ if __name__ == '__main__':
 
     res = {'chrom_covs': {}, 'tag': tag}
 
+    # Plot global coverage:
     res['global_cov'] = _plot_frag_coverage(
         st, chrom_lengths, plotter, title="Global fragment coverage for {}".format(tag), log_scale=not args.o, bins=args.b)
+
+    # Plot coverage in intervals:
+    for interval in intervals:
+        # Filter transcripts falling in the specified
+        # length interval:
+        int_chroms = {}
+        for ref, length in chrom_lengths.iteritems():
+            if length < interval[0]:
+                continue
+            if interval[1] != 0 and length > interval[1]:
+                continue
+            int_chroms[ref] = length
+        # Generate coverage plot:
+        _plot_frag_coverage(
+            st, int_chroms, plotter, title="Coverage in interval [{},{}) for {}".format(interval[0], interval[1], tag), log_scale=not args.o, bins=args.b)
 
     def _get_coverage(chrom, st):
         """ Utility function for sorting references by coverage. """
