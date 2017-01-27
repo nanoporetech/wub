@@ -34,6 +34,23 @@ def args_string_to_dict(args_string, elements_separator=",", keyvalue_separator=
     return parsed
 
 
+def interval_string_to_tuples(interval_string, elements_separator="|", interval_separator=","):
+    """ Convert a two-level separated list into a dictionary.
+
+    :param interval_string: Two-level separated string.
+    :param elements_separator: Separator between elements.
+    :param keyvalue_separator: Separator between interval boundaries.
+    :returns: tuple
+    :rtype: tuple
+    """
+    if len(interval_string) == 0:
+        return tuple()
+    pairs = [pair.strip() for pair in interval_string.split(elements_separator)]
+    elements = OrderedDict(pair.split(interval_separator) for pair in pairs)
+    parsed = tuple((int(k.strip()), int(v.strip())) for k, v in elements.iteritems())
+    return parsed
+
+
 def normalise_array(array):
     """ Normalise numpy array so the elments sum to 1.0.
 

@@ -42,7 +42,7 @@ class Report:
         self.pages.savefig(fig)
         plt.close(fig)
 
-    def plot_arrays(self, data_map, title="", xlab="", ylab="", marker='.', legend_loc='upper right', legend=True):
+    def plot_arrays(self, data_map, title="", xlab="", ylab="", marker='.', legend_loc='best', legend=True):
         """Plot multiple pairs of data arrays.
 
         :param self: object.
@@ -150,7 +150,7 @@ class Report:
 
         self._set_properties_and_close(fig, title, xlab, ylab)
 
-    def plot_dicts(self, data_map, title="", xlab="", ylab="", marker='-', legend_loc='upper right', legend=True, hist_style=False, cmap=plt.cm.rainbow, alpha=0.6):
+    def plot_dicts(self, data_map, title="", xlab="", ylab="", marker='-', legend_loc='best', legend=True, hist_style=False, cmap=plt.cm.rainbow, alpha=0.6):
         """Plot elements of multiple dictionaries on a single plot.
 
         :param self: object.
@@ -185,7 +185,7 @@ class Report:
 
         self._set_properties_and_close(fig, title, xlab, ylab)
 
-    def plot_histograms(self, data_map, title="", xlab="", ylab="", bins=50, alpha=0.7, legend_loc='upper right', legend=True):
+    def plot_histograms(self, data_map, title="", xlab="", ylab="", bins=50, alpha=0.7, legend_loc='best', legend=True):
         """Plot histograms of multiple data arrays.
 
         :param self: object.

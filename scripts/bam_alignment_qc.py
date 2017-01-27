@@ -11,7 +11,7 @@ import itertools
 
 from wub.util import misc
 from wub.vis import report
-from wub.bam import bam_stats
+from wub.bam import stats as bam_stats
 from wub.util import seq as seq_util
 
 # Parse command line arguments:

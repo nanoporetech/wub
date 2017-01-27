@@ -25,7 +25,7 @@ parser.add_argument(
 parser.add_argument(
     '-u', metavar='high_trunc', type=int, help="Upper truncation point (None).", default=None)
 parser.add_argument('-b', metavar='base_freqs', type=str,
-                    help="Relative base frequencies in A,C,G,T order (1,1,1,1).", default="1,1,1,1")
+                    help="Relative base frequencies in A,C,G,T order (1,1,1,1) or \"random\".", default="1,1,1,1")
 parser.add_argument('-z', metavar='random_seed', type=int,
                     help="Random seed (None).", default=None)
 parser.add_argument('output_fasta', nargs='?', help='Output fasta (default: stdout)',
@@ -39,7 +39,11 @@ if __name__ == '__main__':
     if args.z is not None:
         np.random.seed(args.z)
 
-    base_frequencies = np.array(parse_util.separated_list_to_floats(args.b))
+    if args.b == "random":
+        base_frequencies = np.random.uniform(size=4)
+        base_frequencies = base_frequencies / np.sum(base_frequencies)
+    else:
+        base_frequencies = np.array(parse_util.separated_list_to_floats(args.b))
     # Normalise relative base frequencies to probabilities:
     base_frequencies = parse_util.normalise_array(base_frequencies)
 

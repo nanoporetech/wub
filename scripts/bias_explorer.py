@@ -13,6 +13,7 @@ import statsmodels.formula.api as smf
 from scipy import stats
 import itertools
 
+from sklearn.decomposition import PCA
 
 import warnings
 with warnings.catch_warnings():
@@ -59,18 +60,56 @@ def global_model(md, with_target, label=False):
     """
     md = md.sort(['Count'])
     if with_target:
-        formula = 'Count ~ Target + Length + Length2 + GC_content + GC_content2'
+        formula = 'Count ~ Length + GC_content'
     else:
         formula = 'Count ~ Length + Length2 + GC_content + GC_content2'
 
     # Add dinucleotide frequencies:
+    formula = 'Count ~ Length + GC_content + GC_content2 '
+    #formula = 'Count ~ Length + GC_content'
+    targets = []
     if not args.b:
         for kmer in itertools.product(*([seq_util.bases] * 2)):
             kmer = ''.join(kmer)
+            targets.append(kmer)
             if args.q:
                 formula += " + {} + {}2".format(kmer, kmer)
-            else:
+            else:#
+                pass
                 formula += " + {}".format(kmer)
+
+    for i in xrange(2,5):
+        md['Length' + str(i)] = md['Length'] ** i
+        md['GC_content' + str(i)] = md['GC_content'] ** i
+        formula += " + Length{}".format(i)
+        formula += " + GC_content{}".format(i)
+
+    #print md[targets].shape
+    #pca = pca = PCA(n_components=0.95, svd_solver='full')
+    #pca.fit(md[targets].transpose())
+    #print pca.explained_variance_ratio_
+    #XX = pca.components_.transpose()
+
+    #XX = pd.DataFrame(XX, columns=["PC" + str(i) for i in xrange(pca.n_components_)])
+    #XX = pd.DataFrame({})
+    #print XX
+    #XX['Count'] = md['Count']
+    #XX['Length'] = md['Length']
+    #XX['Length2'] = md['Length2']
+    #XX['GC_content'] = md['GC_content']
+    #XX['GC_content2'] = md['GC_content2']
+    #XX['Target'] = md['Target']
+    #res = smf.glm(formula="Count ~  Length  + Length2 + GC_content + GC_content2 + PC0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6", data=XX, family=sm.families.NegativeBinomial()).fit()res = smf.glm(formula="Count ~  Length  + Length2 + GC_content + GC_content2", data=XX, family=sm.families.NegativeBinomial()).fit()
+    #res = smf.glm(formula="Count ~  Length  + Length2 + GC_content + GC_content2", data=XX, family=sm.families.NegativeBinomial()).fit()
+    #print res.summary()
+    #slope, intercept, r_value, p_value, std_err =stats.linregress(
+    #    md["Target"], md['Count'])
+    #print r_value, p_value
+    #slope, intercept, r_value, p_value, std_err =stats.linregress(
+    #    (md["Target"]),  np.mean(md['Count']) + res.resid_response)
+    #print r_value, p_value
+    #print stats.spearmanr(md["Target"], np.mean(md['Count']) + res.resid_response)
+
 
     print "\nFitting: ", formula, "\n"
     res = smf.glm(
@@ -81,20 +120,45 @@ def global_model(md, with_target, label=False):
     if args.m is not None:
         md.to_csv(args.m, sep="\t", index=False)
 
-    slope, intercept, r_value, p_value, std_err = stats.linregress(
-        md["Count"], res.fittedvalues)
-    plotter.plt.plot(md["Count"], res.fittedvalues, 'o')
+    slope, intercept, r_value, p_value, std_err =stats.linregress(
+        md["Target"], md['Count'])
+    #print r_value, p_value
+    r, p = stats.spearmanr(md["Target"], md['Count'])
+
+    print "Correlation Target ~ Count: r = {}, p = {}".format(r, p)
+
+    Y = ((np.mean(md['Count'])) + (res.resid_response))
+    slope, intercept, r_value, p_value, std_err =stats.linregress(
+        ((md["Target"])), Y)
+    print "THIS:", r_value, p_value
+    r, p  = stats.spearmanr(md["Target"], Y)
+    print "Correlation Target ~ Corrected: r = {}, p = {}".format(r, p)
+
     y_values = [slope * i + intercept for i in md["Count"]]
+    xxx = np.array(md["Target"])
     plotter.plt.plot(
-        md["Count"], y_values, 'g-', label="r={:.3f}, p={:.3f}".format(r_value, p_value))
+        (xxx), Y, 'o', label="r={:.3f}, p={:.3f}".format(r_value, p_value))
     plotter.plt.legend(loc='best')
-    plotter.plt.title("Actual vs. predicted read counts")
-    plotter.plt.xlabel("Count")
-    plotter.plt.ylabel("Predicted count")
+    plotter.plt.title("RESID")
+    plotter.plt.xlabel("Target")
+    plotter.plt.ylabel("Corrected")
     if label:
-        label_points("Count", md, res.fittedvalues)
+        label_points("Target", md, np.mean(md['Count']) + (res.resid_response)  )
     plotter.pages.savefig()
     plotter.plt.close()
+
+    xxx = np.array(md["Target"])
+    plotter.plt.plot(
+        (xxx), md['Count'], 'o')
+    plotter.plt.legend(loc='best')
+    plotter.plt.title("Raw")
+    plotter.plt.xlabel("Target")
+    plotter.plt.ylabel("Corrected")
+    if label:
+        label_points("Target", md, np.mean(md['Count']) + (res.resid_response)  )
+    plotter.pages.savefig()
+    plotter.plt.close()
+
 
 
 def gc_model(md, label=False):
@@ -219,7 +283,8 @@ if __name__ == '__main__':
     if args.t is not None:
         target = pd.read_csv(args.t, sep="\t")
         target['Target'] = target['Count']
-        del target['Count']
+        target = target[['Reference','Target']]
+        #del target['Count']
         md = target.merge(data, how='outer', on='Reference').dropna()
         with_target = True
     else:
