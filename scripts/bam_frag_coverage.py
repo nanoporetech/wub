@@ -70,7 +70,8 @@ def _process_ref_coverage(plotter, cov, strand, scale_pos, scale_cov):
     if scale_cov:
         y = y / np.sum(y)
     if strand == 'rev':
-        y = -y
+        pass
+        #y = -y
     return x, y
 
 
@@ -109,7 +110,7 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
     # Perform log transform of coverage:
     if log_scale:
         plot_fwd = np.log(plot_fwd + 1.0)
-        plot_rev = -np.log(-plot_rev + 1.0)
+        plot_rev = np.log(plot_rev + 1.0)
 
     lwd = 0.8
     plotter.plt.plot(X, plot_fwd, '-', label='+', linewidth=lwd)
