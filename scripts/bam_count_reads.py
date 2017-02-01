@@ -34,7 +34,7 @@ parser.add_argument(
     '-R', action="store_true", help="Count reads from SAM stream in stdin. Only read count fields are written. Header required! (False).", default=False)
 parser.add_argument(
     '-F', metavar='yield_freq', type=int, help="Yield counts after every -Fth mapped record when doing online counting (100).", default=100)
-parser.add_argument('bam', nargs='?', help='Input fasta (default: stdin).',
+parser.add_argument('bam', nargs='?', help='Input file (default: stdin).',
                     type=argparse.FileType('r'), default=sys.stdin)
 
 
