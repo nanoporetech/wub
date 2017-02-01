@@ -31,13 +31,18 @@ parser.add_argument(
 parser.add_argument(
     '-Q', action="store_true", help="Be quiet and do not print progress bar (False).", default=False)
 parser.add_argument(
-    'bam', metavar='bam_file', type=str, help="Input BAM file.")
+    '-R', action="store_true", help="Count reads from SAM stream in stdin. Only read count fields are written. Header required! (False).", default=False)
+parser.add_argument(
+    '-F', metavar='yield_freq', type=int, help="Yield counts after every -Fth mapped record when doing online counting (100).", default=100)
+parser.add_argument('bam', nargs='?', help='Input fasta (default: stdin).',
+                    type=argparse.FileType('r'), default=sys.stdin)
 
-if __name__ == '__main__':
-    args = parser.parse_args()
 
+def _offline_counter(args):
+    """ Offline counting from SAM/BAM file. """
+    # Offline counting from SAM/BAM file:
     counts = read_counter.count_reads(
-        args.bam, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q)
+        args.bam.name, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q)
     counts = OrderedDict(counts.iteritems())
 
     calc_kmers = [int(k) for k in args.k.split(",")]
@@ -82,10 +87,39 @@ if __name__ == '__main__':
                 data[kmer] = tmp
 
     data_frame = pd.DataFrame(data)
-    data_frame = data_frame.sort(['Count'], ascending=False)
+    data_frame = data_frame.sort(['Count', 'Reference'], ascending=False)
 
     if args.t is not None:
         data_frame.to_csv(args.t, sep='\t', index=False)
 
     if args.p is not None:
         misc.pickle_dump(data, args.p)
+
+
+def _online_counter(args):
+    """ Online counting from SAM stream. """
+    # Open counts stream:
+    counts_iter = read_counter.count_reads_realtime(
+        alignment_file='-', in_format=args.f, min_aln_qual=args.a, verbose=not args.Q, yield_freq=args.F)
+
+    for counts in counts_iter:
+        data_frame = pd.DataFrame(
+            OrderedDict([('Reference', counts.keys()), ('Count', counts.values())]))
+        data_frame = data_frame.sort(['Count', 'Reference'], ascending=False)
+
+        if args.t is not None:
+            data_frame.to_csv(args.t, sep='\t', index=False)
+        if args.p is not None:
+            misc.pickle_dump(counts, args.p)
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+
+    if not args.R:
+        # Offline counting from SAM/BAM file:
+        if args.bam == sys.stdin:
+            raise Exception("Input file not specified!")
+        _offline_counter(args)
+    else:
+        # Online counting from SAM on stdin.
+        _online_counter(args)
