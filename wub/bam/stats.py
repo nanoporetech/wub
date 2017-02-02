@@ -81,19 +81,22 @@ def _update_read_stats(r, res, min_aqual):
     if r.is_unmapped:
         res['unmapped'] += 1
         res['unaligned_lengths'].append(r.infer_query_length(False))
-        res['unaligned_quals'].append(
-            seq_util.mean_qscore(r.query_qualities, qround=False))
+        if r.query_qualities is not None:
+            res['unaligned_quals'].append(
+                seq_util.mean_qscore(r.query_qualities, qround=False))
     elif r.mapping_quality >= min_aqual:
         res['mapped'] += 1
-        res['aligned_quals'].append(
-            seq_util.mean_qscore(r.query_qualities, qround=False))
+        if r.query_qualities is not None:
+            res['aligned_quals'].append(
+                seq_util.mean_qscore(r.query_qualities, qround=False))
         res['alignment_lengths'].append(r.query_alignment_length)
         res['aligned_lengths'].append(r.infer_query_length())
         res['mapping_quals'].append(r.mapping_quality)
     else:
         res['mapped'] += 1
-        res['mqfail_aligned_quals'].append(
-            seq_util.mean_qscore(r.query_qualities, qround=False))
+        if r.query_qualities is not None:
+            res['mqfail_aligned_quals'].append(
+                seq_util.mean_qscore(r.query_qualities, qround=False))
         res['mqfail_alignment_lengths'].append(r.query_alignment_length)
         res['mqfail_aligned_lengths'].append(r.infer_query_length())
         res['mapping_quals'].append(r.mapping_quality)
