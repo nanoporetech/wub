@@ -118,7 +118,7 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
 
     ylab = "Fragment coverage"
     if log_scale:
-        ylab = "log(" + ylab + ")"
+        ylab = "log(" + ylab + "+1)"
 
     _set_properties_and_close(plotter, fig, title=title, xlab="Scaled position", ylab=ylab)
 
