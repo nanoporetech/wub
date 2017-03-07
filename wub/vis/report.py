@@ -217,3 +217,52 @@ class Report:
         :rtype: object
         """
         self.pages.close()
+
+
+    def plot_line(self, data, x, y, title="",  xlab="", ylab=""):
+        '''
+        Generate a line plot from pandas dataframe
+
+        :param data: pandas dataframe
+        :param x: X axis data
+        :param y: Y axis data
+        :param title: Figure title
+        :param xlab: X axis label
+        :param ylab: Y axis label
+        :return: None
+        :rtype: object
+        '''
+        fig = plt.figure()
+
+        plt.plot(data[x], data[y], 'k-', linewidth=1.5)
+
+        self._set_properties_and_close(fig, title, xlab, ylab)
+
+
+    def plot_scatter(self, data, x, y, title="",  xlab="", ylab="", alpha=0.5, ylim=None, xlim=None):
+        '''
+        Generates a scatter plot from a pandas dataframe
+
+        :param data: Pandas dataframe
+        :param x: X axis data
+        :param y: Y axis data
+        :param title: Figure title
+        :param xlab: X axis label
+        :param ylab: Y axis label
+        :param alpha: opacity of data pionts
+        :param ylim: Y axis limit
+        :param xlim: X axis limit
+        :return: None
+        :rtype: object
+        '''
+
+
+        fig = plt.figure()
+        plt.scatter(data[x], data[y], alpha=alpha)
+
+        plt.ylim(ylim)
+        plt.xlim(xlim)
+        self._set_properties_and_close(fig, title, xlab, ylab)
+
+
+

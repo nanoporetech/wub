@@ -61,3 +61,6 @@ target/
 #misc
 .env/
 .idea/
+._.DS_Store
+*.DS_Store
+*.pyc
