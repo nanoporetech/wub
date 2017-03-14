@@ -41,7 +41,7 @@ def N50(df, col, percent=50):
     csum = csum[::-1]
     csum = csum.cumsum()
     n50 = csum.max() * percent / 100
-    #result = df.where(df['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
+    # result = df.where(df['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
     for i, cs in enumerate(csum):
         if cs >= n50:
             break
