@@ -37,6 +37,7 @@ def N50(df, col, percent=50):
 
     df = df.copy()
     df['cumsum'] = df[col].copy().sort(ascending=False)
+    print df
     df['cumsum'] = df['cumsum'].cumsum()
     n50 = df['cumsum'].max() * percent / 100
 
