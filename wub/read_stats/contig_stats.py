@@ -36,13 +36,16 @@ def N50(df, col, percent=50):
     :rtype: int
     '''
 
-    df = df.copy()
-    tmp = np.array(df[col], dtype=int).copy()
-    tmp.sort()
-    df['cumsum'] = tmp[::-1]
-    df['cumsum'] = df['cumsum'].cumsum()
-    n50 = df['cumsum'].max() * percent / 100
-    return df.where(df['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
+    csum = np.array(df[col], dtype=int)
+    csum.sort()
+    csum = csum[::-1]
+    csum = csum.cumsum()
+    n50 = csum.max() * percent / 100
+    #result = df.where(df['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
+    for i, cs in enumerate(csum):
+        if cs >= n50:
+            break
+    return df[col][len(df[col]) - i]
 
 
 def _cumsum(df, col):
