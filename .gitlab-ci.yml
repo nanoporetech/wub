@@ -1,4 +1,4 @@
-image: ubuntu:14.04
+image: ubuntu:latest
 
 stages:
     - test
