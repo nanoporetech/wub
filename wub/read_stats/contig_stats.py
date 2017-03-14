@@ -38,7 +38,7 @@ def N50(df, col, percent=50):
     # df1 = df.copy()
     # df1 = df1.sort_values(col, ascending=False).reset_index(drop=True)
     df = df.copy()
-    df['cumsum'] = df[col].cumsum()
+    df['cumsum'] = df[col].sort(ascending=False).cumsum()
     n50 = df['cumsum'].max() * percent / 100
 
     # need to get the mean if n % 2 == 0
