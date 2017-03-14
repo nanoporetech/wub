@@ -1,6 +1,6 @@
 import unittest
 
-from wub import contig_stats
+from wub.read_stats import contig_stats
 
 
 class TestUtilSeq(unittest.TestCase):
