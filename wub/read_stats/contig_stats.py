@@ -3,6 +3,7 @@ import sys
 import os
 import math
 import pandas as pd
+import numpy as np
 from wub.util.misc import _getextension
 from wub.util.seq import mean_qscore, read_seq_records
 
@@ -36,11 +37,11 @@ def N50(df, col, percent=50):
     '''
 
     df = df.copy()
-    df['cumsum'] = df[col].copy().sort(ascending=False)
-    print df
+    tmp = np.array(df[col], dtype=int).copy()
+    tmp.sort()
+    df['cumsum'] = tmp[::-1]
     df['cumsum'] = df['cumsum'].cumsum()
     n50 = df['cumsum'].max() * percent / 100
-
     return df.where(df['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
 
 
