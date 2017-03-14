@@ -48,22 +48,6 @@ def N50(df, col, percent=50):
     return df[col][len(df[col]) - i]
 
 
-def _cumsum(df, col):
-    '''
-    Calculates the cumulative sum of column
-
-    :param df: dataframe with sequence length
-    :param col: identify the sequence length
-    :return: dataframe with cumulative sum of length
-    :rtype: dataframe
-    '''
-
-    df = df.sort(col, ascending=False).reset_index(drop=True)
-    df['cumsum'] = df[col].cumsum()
-
-    return df
-
-
 def L50(df, col, percent=50):
     '''
     Calculate the L50 by default however, by changing percent to 75, N75 can be calculated
