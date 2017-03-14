@@ -1,17 +1,14 @@
-#!/usr/bin/env python
-__author__ = 'prughani'
-
-import argparse
-
 from Bio import SeqIO
-import sys, os, math
+import sys
+import os
+import math
 import pandas as pd
+import numpy as np
 from wub.util.misc import _getextension
 from wub.util.seq import mean_qscore, read_seq_records
 
 # test = '/nfs/us-home/DATA/share/prughani/assemblies/arabidopsis/ref/cat_arabidopsis_thaliana.fasta'
 # test = '/home/OXFORDNANOLABS/prughani/md8/MD_8_Reads_7_28_16_basecalled_gt8_filtered.fastq'
-
 
 
 def readfast(fast):
@@ -39,21 +36,14 @@ def N50(df, col, percent=50):
     :rtype: int
     '''
 
-    # df1 = df.copy()
-    # df1 = df1.sort_values(col, ascending=False).reset_index(drop=True)
-    df1 = _cumsum(df, col)
-    df1['cumsum'] = df1[col].cumsum()
-    n50 = df1['cumsum'].max() * percent / 100
+    df = df.copy()
+    tmp = np.array(df[col], dtype=int).copy()
+    tmp.sort()
+    df['cumsum'] = tmp[::-1]
+    df['cumsum'] = df['cumsum'].cumsum()
+    n50 = df['cumsum'].max() * percent / 100
+    return df.where(df['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
 
-    ## need to get the mean if n % 2 == 0
-
-    #     if n % 2 == 0:
-    #         val = df1.where(df1['cumsum']>=n)[col].dropna()[0:2]
-    #         print val.mean()
-
-    #     else:
-    #         val = df1.where(df1['cumsum']>=n)[col].dropna().head(1).tolist()[0]
-    return df1.where(df1['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
 
 def _cumsum(df, col):
     '''
@@ -65,10 +55,11 @@ def _cumsum(df, col):
     :rtype: dataframe
     '''
 
-    df = df.sort_values(col, ascending=False).reset_index(drop=True)
+    df = df.sort(col, ascending=False).reset_index(drop=True)
     df['cumsum'] = df[col].cumsum()
 
     return df
+
 
 def L50(df, col, percent=50):
     '''
@@ -94,10 +85,9 @@ def GC_per_read(seq_rec, fq=False):
     :rtype: dataframe
     '''
 
-
     d = []
 
-    bases=["A", "T", "C", "G", 'N']
+    bases = ["A", "T", "C", "G", 'N']
     # total_lengths = 0
     for rec in seq_rec:
         tmp = {"SeqID": rec.id, "Seqlen": len(rec.seq), "A": 0, "T": 0, "G": 0, "C": 0, "N": 0}
@@ -105,15 +95,17 @@ def GC_per_read(seq_rec, fq=False):
             tmp[base] += rec.seq.count(base)
 
         if fq:
-            tmp['mean_q'] = round(mean_qscore(rec.letter_annotations["phred_quality"], qround=False), 2)
+            tmp['mean_q'] = round(mean_qscore(rec.letter_annotations[
+                                  "phred_quality"], qround=False), 2)
 
         d.append(tmp)
 
-    raw  = pd.DataFrame(d).set_index('SeqID')
-    raw['GC content (%)'] = raw.apply(lambda x :float((x['G']) + x['C']) / x['Seqlen'] * 100.0, axis=1)
+    raw = pd.DataFrame(d).set_index('SeqID')
+    raw['GC content (%)'] = raw.apply(lambda x: float(
+        (x['G']) + x['C']) / x['Seqlen'] * 100.0, axis=1)
 
     for base in bases:
-        raw[base+' (%)'] = (raw[base] / raw["Seqlen"]) * 100.0
+        raw[base + ' (%)'] = (raw[base] / raw["Seqlen"]) * 100.0
     raw["other base"] = raw['Seqlen'] - raw[bases].sum(axis=1)
     return raw
 
@@ -137,7 +129,6 @@ def get_stats(df):
     total_len = int(df["Seqlen"].sum())
     total_bases = df[bases].sum().sum()
 
-
     stats['N75'] = N50(df, 'Seqlen', 75)
     stats['N50'] = N50(df, 'Seqlen', 50)
     stats['N25'] = N50(df, 'Seqlen', 25)
@@ -153,17 +144,16 @@ def get_stats(df):
     stats['Total length (Mb)'] = total_len / Mbase
 
     stats['Total bases (Mb)'] = total_len / Mbase
-    stats['Other bases (Mb)'] = (total_len - total_bases)/ Mbase
+    stats['Other bases (Mb)'] = (total_len - total_bases) / Mbase
     stats['No. contigs'] = df['Seqlen'].count()
 
-    stats["Greater then 10 Kb"] = df[df['Seqlen']>=10000.0].Seqlen.count()
+    stats["Greater then 10 Kb"] = df[df['Seqlen'] >= 10000.0].Seqlen.count()
     stats["Greater then 100 Kb"] = df[df['Seqlen'] >= 100000.0].Seqlen.count()
     stats["Greater then 500 Kb"] = df[df['Seqlen'] >= 500000.0].Seqlen.count()
     stats["Greater then 1 Mb"] = df[df['Seqlen'] >= 1000000.0].Seqlen.count()
 
     stats['Yield > 10kb (Mb)'] = df[df['Seqlen'] >= 10000.0]['Seqlen'].sum() / Mbase
     stats['Yield > 50kb (Mb)'] = df[df['Seqlen'] >= 50000.0]['Seqlen'].sum() / Mbase
-
 
     if 'mean_q' in df.columns:
         stats['Max Qscore'] = df['mean_q'].max()
@@ -173,11 +163,9 @@ def get_stats(df):
         stats['Yield >Q6 (Mb)'] = df[df['mean_q'] >= 6.0]['Seqlen'].sum() / Mbase
         stats['Yield >Q9 (Mb)'] = df[df['mean_q'] >= 9.0]['Seqlen'].sum() / Mbase
 
-
-    stats["GC content"] = float(df[['G',"C"]].sum().sum())/ total_len * 100.0
+    stats["GC content"] = float(df[['G', "C"]].sum().sum()) / total_len * 100.0
     for base in bases:
 
-        stats[base + ' (%)'] =  float(df[base].sum()) / total_len * 100.0
+        stats[base + ' (%)'] = float(df[base].sum()) / total_len * 100.0
 
     return stats.round(2)
-
