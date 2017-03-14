@@ -81,12 +81,10 @@ Contributing
 
 TODO
 ----
-- mummer wrapper to generate mummerplots.
-- a tool for claculating basic assembly statistics. N50, contig size distributions, GC content, etc.
-- **TESTING**, **TESTING**, **TESTING**
+- 
 
 ### What is a wub anyway?
 
-It's a short, memorable name not on pypi yet. Also either [this](https://en.wikipedia.org/wiki/Beyond_Lies_the_Wub) or [this](http://www.urbandictionary.com/define.php?term=Wub).
+It's a short, memorable name not on pypi yet. 
 
 
