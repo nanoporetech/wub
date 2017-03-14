@@ -65,7 +65,7 @@ def _cumsum(df, col):
     :rtype: dataframe
     '''
 
-    df = df.sort_values(col, ascending=False).reset_index(drop=True)
+    df = df.sort(col, ascending=False).reset_index(drop=True)
     df['cumsum'] = df[col].cumsum()
 
     return df
