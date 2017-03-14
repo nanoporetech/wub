@@ -35,20 +35,11 @@ def N50(df, col, percent=50):
     :rtype: int
     '''
 
-    # df1 = df.copy()
-    # df1 = df1.sort_values(col, ascending=False).reset_index(drop=True)
     df = df.copy()
-    df['cumsum'] = df[col].copy().sort(ascending=False).cumsum()
+    df['cumsum'] = df[col].copy().sort(ascending=False)
+    df['cumsum'] = df['cumsum'].cumsum()
     n50 = df['cumsum'].max() * percent / 100
 
-    # need to get the mean if n % 2 == 0
-
-    #     if n % 2 == 0:
-    #         val = df1.where(df1['cumsum']>=n)[col].dropna()[0:2]
-    #         print val.mean()
-
-    #     else:
-    #         val = df1.where(df1['cumsum']>=n)[col].dropna().head(1).tolist()[0]
     return df.where(df['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
 
 
