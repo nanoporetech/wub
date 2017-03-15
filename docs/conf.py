@@ -15,6 +15,7 @@
 import sys
 import os
 import imp
+import subprocess
 
 # If extensions (or modules to document with autodoc) are in another
 # directory, add these directories to sys.path here. If the directory is
@@ -36,6 +37,10 @@ TITLE='Wub package documentation'
 DESCRIPTION='Tools and software library developed by the ONT Applications group.'
 
 import wub
+
+# Generate API documentation:
+if subprocess.call(['sphinx-apidoc', '-o', './', "../{}".format(MODULE)]) != 0:
+    sys.stderr.write('Failed to generate API documentation!\n')
 
 # -- General configuration ---------------------------------------------
 
@@ -296,7 +301,6 @@ sys.stderr.write("Found following scripts:\n{}\n{}\n{}\n".format(
     location, scripts_abs, scripts
 ))
 
-
 print >>OUT, """
 .. _command_line_tools:
 
@@ -328,4 +332,3 @@ for script in scripts:
     except Exception as e:
         sys.stderr.write('Error making docs for {}:\n{}\n'.format(script_name, e))
         pass
-
