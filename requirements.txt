@@ -5,5 +5,6 @@ watchdog==0.8.3
 flake8==2.6.0
 coverage==4.1
 Sphinx==1.4.4
+sphinx-argparse
 pytest==2.9.2
 
