@@ -8,4 +8,5 @@ Sphinx
 sphinx-argparse
 sphinx_rtd_theme
 pytest==2.9.2
+git+https://github.com/nanoporetech/wub.git
 
