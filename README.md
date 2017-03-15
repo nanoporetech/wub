@@ -78,8 +78,4 @@ Contributing
 
 TODO
 ----
-- Add documentation link.
 
-### What is a wub anyway?
-
-It's a short, memorable name not on pypi yet. 
