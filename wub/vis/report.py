@@ -218,7 +218,6 @@ class Report:
         """
         self.pages.close()
 
-
     def plot_line(self, data, x, y, title="",  xlab="", ylab=""):
         '''
         Generate a line plot from pandas dataframe
@@ -238,7 +237,6 @@ class Report:
 
         self._set_properties_and_close(fig, title, xlab, ylab)
 
-
     def plot_scatter(self, data, x, y, title="",  xlab="", ylab="", alpha=0.5, ylim=None, xlim=None):
         '''
         Generates a scatter plot from a pandas dataframe
@@ -256,13 +254,9 @@ class Report:
         :rtype: object
         '''
 
-
         fig = plt.figure()
         plt.scatter(data[x], data[y], alpha=alpha)
 
         plt.ylim(ylim)
         plt.xlim(xlim)
         self._set_properties_and_close(fig, title, xlab, ylab)
-
-
-

@@ -26,6 +26,7 @@ def get_extension(fname):
     '''
     return os.path.splitext(os.path.basename(fname))[1]
 
+
 def _getextension(fast):
     '''
     finds and check for the correct extension
@@ -46,6 +47,7 @@ def _getextension(fast):
         # print >> sys.stderr, "Incorrect file format"
     return extension
 
+
 def mkdir(path):
     '''
     if the dir does not exists it create it
@@ -57,6 +59,7 @@ def mkdir(path):
     if not os.path.exists(path):
         os.makedirs(path)
     return path
+
 
 def pickle_load(fname):
     """ Load object from pickle.

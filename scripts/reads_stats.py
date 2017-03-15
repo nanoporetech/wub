@@ -1,12 +1,8 @@
 #!/usr/bin/env python
-__author__ = 'prughani'
-
 import argparse
-import pandas as pd
 import os
 from wub.read_stats import contig_stats as cstats
 from wub.util import misc
-
 
 
 def main():
@@ -15,12 +11,10 @@ def main():
     fastx = args.fastx
     tag = args.tag
 
-
     if savepath is None:
         savepath = os.getcwd()
     else:
         savepath = misc.mkdir(savepath)
-
 
     if tag is None:
         tag = misc.get_fname(fastx)
@@ -30,12 +24,9 @@ def main():
     else:
         fq = False
 
-
     rawdata = cstats.GC_per_read(cstats.readfast(fastx), fq=fq)
 
-
     print os.path.join(savepath, '{}_summary.stats'.format(tag))
-
 
     if args.raw:
         rawdata.to_csv(os.path.join(savepath, '{}_raw.stats'.format(tag)))
@@ -46,14 +37,15 @@ def main():
 
     if args.report:
         from wub.vis import report
-        Plotter  = report.Report(os.path.join(savepath, '{}.pdf'.format(tag)))
+        Plotter = report.Report(os.path.join(savepath, '{}.pdf'.format(tag)))
 
         rawdata = rawdata.sort_values('Seqlen', ascending=True)
 
         rawdata['cumsum'] = rawdata["Seqlen"].cumsum()
-        rawdata['norm'] = 100.0 * rawdata['cumsum']/rawdata['cumsum'].max()
+        rawdata['norm'] = 100.0 * rawdata['cumsum'] / rawdata['cumsum'].max()
 
-        Plotter.plot_line(data=rawdata, x='Seqlen', y='norm', title='Normalized cumulative plot', xlab='length (bp)', ylab="normalized (%)",)
+        Plotter.plot_line(data=rawdata, x='Seqlen', y='norm',
+                          title='Normalized cumulative plot', xlab='length (bp)', ylab="normalized (%)",)
 
         # df1.sort_values('Seqlen', ascending=False)
         # df1["cumsum1"] = df1['Seqlen'].cumsum()
@@ -64,12 +56,11 @@ def main():
         if 'mean_q' in rawdata:
 
             Plotter.plot_scatter(data=rawdata, x='mean_q', y='Seqlen', title='Mean Q score vs length',
-                                 xlab='Mean Q', ylab='length', alpha=0.5, xlim=rawdata['mean_q'].min()-0.5 , ylim=rawdata['Seqlen'].min()-0.5 )
+                                 xlab='Mean Q', ylab='length', alpha=0.5, xlim=rawdata['mean_q'].min() - 0.5, ylim=rawdata['Seqlen'].min() - 0.5)
 
         Plotter.close()
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description='Calculates the GC content and N50')
 
     parser.add_argument('--fastx', '-i',
@@ -93,7 +84,7 @@ if __name__ == "__main__":
                         action='store_true',
                         required=False,
                         default=None,
-                        help = "Report PDF default[False]")
+                        help="Report PDF default[False]")
 
     parser.add_argument('--tag', '-n',
                         metavar='STR',

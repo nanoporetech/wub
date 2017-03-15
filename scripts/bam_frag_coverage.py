@@ -71,7 +71,6 @@ def _process_ref_coverage(plotter, cov, strand, scale_pos, scale_cov):
         y = y / np.sum(y)
     if strand == 'rev':
         pass
-        #y = -y
     return x, y
 
 
@@ -103,7 +102,7 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
                 plotter, cov=st['frags_rev'][chrom], strand='rev', scale_pos=scale_pos, scale_cov=scale_cov)
             cov_rev += np.interp(x, rx, ry)
     plot_fwd, plot_rev = cov_fwd, cov_rev
-    
+
     if (np.sum(cov_fwd) + np.sum(cov_rev)) == 0:
         return {'global_cov_fwd': None, 'global_cov_rev': None, 'ref_cov': None}
 
@@ -120,7 +119,8 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
     if log_scale:
         ylab = "log(" + ylab + "+1)"
 
-    _set_properties_and_close(plotter, fig, title=title, xlab="Scaled position", ylab=ylab)
+    _set_properties_and_close(
+        plotter, fig, title=title, xlab="Scaled position", ylab=ylab)
 
     # Plot reference coverage histogram:
     ref_cov = np.array(ref_cov, dtype=float)
@@ -183,7 +183,8 @@ if __name__ == '__main__':
     if args.x:
         # Sort references by coverage (code could be nicer):
         sorted_chroms = OrderedDict()
-        tmp = sorted(chrom_lengths.keys(), key=lambda x: _get_coverage(x, st), reverse=True)
+        tmp = sorted(chrom_lengths.keys(),
+                     key=lambda x: _get_coverage(x, st), reverse=True)
         for x in tmp:
             sorted_chroms[x] = chrom_lengths[x]
         chrom_lengths = sorted_chroms

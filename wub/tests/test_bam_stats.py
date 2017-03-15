@@ -3,7 +3,6 @@ import unittest
 from os import path
 from collections import OrderedDict
 from Bio import SeqIO
-import numpy as np
 from wub.bam import stats
 from wub.util import seq as seq_util
 
@@ -32,8 +31,7 @@ class TestBamStats(unittest.TestCase):
         self.assertEqual(res['indel_dists']['deletion_lengths'], {9: 1})
 
         # Test read statistics:
-        self.assertEqual(res['read_stats'], {'alignment_lengths': [87], 'mapping_quals': [47], 'unaligned_lengths': [], 'unaligned_quals': [
-            ], 'mqfail_alignment_lengths': [], 'mapped': 1, 'unmapped': 0, 'mqfail_aligned_quals': [], 'aligned_quals': [40], 'aligned_lengths': [87]})
+        self.assertEqual(res['read_stats'], {'alignment_lengths': [87], 'mapping_quals': [47], 'unaligned_lengths': [], 'unaligned_quals': [], 'mqfail_alignment_lengths': [], 'mapped': 1, 'unmapped': 0, 'mqfail_aligned_quals': [], 'aligned_quals': [40], 'aligned_lengths': [87]})
 
     def test_read_stats(self):
         """Test the gathering read statistics."""
