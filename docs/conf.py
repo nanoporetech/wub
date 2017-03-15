@@ -39,51 +39,8 @@ DESCRIPTION='Tools and software library developed by the ONT Applications group.
 import wub
 
 # Generate rst files for individual commands:
-scripts_rel = 'scripts'
-output_name = 'cmd_list.rst'
-attr_name = 'parser'
-blacklist = ['__init__.py']
-
-OUT = open(output_name, 'w')
-location = os.path.join(os.path.dirname(os.path.abspath(__file__)),'..')
-scripts_abs = os.path.join(location, scripts_rel)
-scripts = sorted(filter(lambda s: s[0] != '.' and s not in blacklist, os.listdir(scripts_abs)))
-
-sys.stderr.write("Found following scripts:\n{}\n{}\n{}\n".format(
-    location, scripts_abs, scripts
-))
-
-print >>OUT, """
-.. _command_line_tools:
-
-Command line tools
-==================
-"""
-
-for script in scripts:
-    script_name, script_ext = os.path.splitext(script)
-    if script_ext == '.pyc':
-        continue
-
-    try:
-        mod_name = '{}.{}'.format(scripts_rel, script_name)
-        #mod = __import__(mod_name, globals(), locals(), [attr_name])
-        mod = imp.load_source(script_name, os.path.join(scripts_abs, script))
-        script = script.replace('.py', '')
-
-        print >>OUT, '.. _{}:\n\n{}\n{}'.format(script, script, '-'*len(script))
-        if hasattr(mod, attr_name):
-            print >>OUT, """
-.. argparse::
-   :ref: {}.{}
-   :prog: {}
-""".format(mod_name, attr_name, script_name)
-        else:
-            print >>OUT, 'No documentation available'
-
-    except Exception as e:
-        sys.stderr.write('Error making docs for {}:\n{}\n'.format(script_name, e))
-        pass
+if subprocess.call("./cmd_tools.py > cmd_list.rst", shell=True) != 0:
+    sys.stderr.write('Failed to generate command tools documentation!\n')
 
 # Generate API documentation:
 if subprocess.call(['sphinx-apidoc', '-o', './', "../{}".format(MODULE)]) != 0:
