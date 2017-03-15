@@ -61,6 +61,11 @@ make docs
 
 Issue `make help` to get a list of `make` targets.
 
+Documentation
+-------------
+
+Online documentation is avalaible at [wub.readthedocs.io](http://wub.readthedocs.io/en/latest/).
+
 Contributing
 ------------
 
