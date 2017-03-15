@@ -1,6 +1,7 @@
 Tools and software library developed by the ONT Applications group
 ==================================================================
 
+[![CircleCI](https://circleci.com/gh/nanoporetech/wub.svg?style=svg)](https://circleci.com/gh/nanoporetech/wub) [![Documentation Status](https://readthedocs.org/projects/wub/badge/?version=latest)](http://wub.readthedocs.io/en/latest/?badge=latest)
 
 Installation
 ------------
