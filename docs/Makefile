@@ -53,11 +53,7 @@ clean:
 	rm -f $(MODULE).rst
 	rm -f modules.rst
 
-cmd-rst:
-	sphinx-apidoc -o ./ ../$(MODULE)
-	./cmd_tools.py > cmd_list.rst
-
-html: cmd-rst
+html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
