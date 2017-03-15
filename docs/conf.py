@@ -38,10 +38,6 @@ DESCRIPTION='Tools and software library developed by the ONT Applications group.
 
 import wub
 
-# Generate API documentation:
-if subprocess.call(['sphinx-apidoc', '-o', './', "../{}".format(MODULE)]) != 0:
-    sys.stderr.write('Failed to generate API documentation!\n')
-
 # Generate rst files for individual commands:
 scripts_rel = 'scripts'
 output_name = 'cmd_list.rst'
@@ -88,6 +84,11 @@ for script in scripts:
     except Exception as e:
         sys.stderr.write('Error making docs for {}:\n{}\n'.format(script_name, e))
         pass
+
+# Generate API documentation:
+if subprocess.call(['sphinx-apidoc', '-o', './', "../{}".format(MODULE)]) != 0:
+    sys.stderr.write('Failed to generate API documentation!\n')
+
 
 # -- General configuration ---------------------------------------------
 
