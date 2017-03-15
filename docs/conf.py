@@ -14,6 +14,8 @@
 
 import sys
 import os
+import imp
+import subprocess
 
 # If extensions (or modules to document with autodoc) are in another
 # directory, add these directories to sys.path here. If the directory is
@@ -35,6 +37,15 @@ TITLE='Wub package documentation'
 DESCRIPTION='Tools and software library developed by the ONT Applications group.'
 
 import wub
+
+# Generate rst files for individual commands:
+if subprocess.call("./cmd_tools.py > cmd_list.rst", shell=True) != 0:
+    sys.stderr.write('Failed to generate command tools documentation!\n')
+
+# Generate API documentation:
+if subprocess.call(['sphinx-apidoc', '-o', './', "../{}".format(MODULE)]) != 0:
+    sys.stderr.write('Failed to generate API documentation!\n')
+
 
 # -- General configuration ---------------------------------------------
 
