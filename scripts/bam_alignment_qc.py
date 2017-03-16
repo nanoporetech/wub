@@ -6,7 +6,7 @@ import tqdm
 
 import os
 import numpy as np
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 import itertools
 
 from wub.util import misc
@@ -54,6 +54,8 @@ parser.add_argument(
     '-t', metavar='bam_tag', type=str, default=None, help="Dataset tag (BAM basename).", required=False)
 parser.add_argument(
     '-q', metavar='aqual', type=int, default=0, help="Minimum alignment quality (0).")
+parser.add_argument(
+    '-i', metavar='qual_ints', type=int, default=6, help="Number of quality intervals (6).")
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bam_alignment_qc.pdf).", default="bam_alignment_qc.pdf")
 parser.add_argument(
@@ -168,7 +170,7 @@ def base_stats_qc(st, report):
         st['accuracy']), st['accuracy'])]), title="Precision statistics", xlab="Type", ylab="Count")
 
 
-def read_qual_qc(st, report):
+def read_qual_qc(st, report, qual_intervals=5):
     """ Plot histograms of various read statistics.
 
     :param st: Dictionary with statistics.
@@ -188,8 +190,23 @@ def read_qual_qc(st, report):
                            'alignment_lengths'])]), title="Distribution of alignment lengths", xlab="Alignment length", ylab="Count", legend=False)
     report.plot_histograms(OrderedDict([('MappingQuals', st[
                            'mapping_quals'])]), title="Distribution of mapping qualities", xlab="Mapping quality", ylab="Count", legend=False)
-    report.plot_arrays(OrderedDict([('Dummy', (st['alignment_lengths'], st[
-                       'aligned_quals']))]), title="Alignment lengths vs. mean base qualities", xlab="Alignment length", ylab="Mean base quality", legend=False)
+
+    # Process alignment qualities and lengths:
+    breaks = np.linspace(start=np.floor(np.min(st['aligned_quals'])), stop=np.ceil(
+        np.max(st['aligned_quals'])), num=qual_intervals + 1)
+    aq_map = OrderedDict()
+
+    decimals = 3
+    for i in xrange(len(breaks) - 1):
+        aq_map[(round(breaks[i], decimals), round(breaks[i + 1], decimals))] = []
+    intervals = aq_map.keys()
+
+    for i, aln_qual in enumerate(st['aligned_quals']):
+        index = np.searchsorted(breaks, aln_qual) - 1
+        aq_map[intervals[index]].append(st['alignment_lengths'][i])
+
+    report.plot_boxplots(aq_map, title="Mean base qualities vs. alignment lengths",
+                         xlab="Mean base quality", ylab="Alignment lengths", xticks_rotation=45)
 
 
 def indel_dist_qc(st, report):
@@ -263,7 +280,7 @@ if __name__ == '__main__':
     base_stats = err_read_stats['base_stats']
     indel_stats = err_read_stats['indel_dists']
 
-    read_qual_qc(read_stats, plotter)
+    read_qual_qc(read_stats, plotter, args.i)
     base_stats_qc(base_stats, plotter)
     error_stat_qc(error_stats, plotter, context_sizes, ommit_diagonal=True)
     indel_dist_qc(indel_stats, plotter)
