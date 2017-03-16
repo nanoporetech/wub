@@ -65,6 +65,24 @@ class Report:
             plt.legend(loc=legend_loc)
         self._set_properties_and_close(fig, title, xlab, ylab)
 
+    def plot_boxplots(self, data_map, title="", xlab="", ylab="", xticks_rotation=0, xticks_fontsize=5):
+        """Plot multiple pairs of data arrays.
+
+        :param self: object.
+        :param data_map: A dictionary with labels as keys and lists as data values.
+        :param title: Figure title.
+        :param xlab: X axis label.
+        :param ylab: Y axis label.
+        :param xticks_rotation: Rotation value for x tick labels.
+        :param xticks_fontsize: Fontsize for x tick labels.
+        :returns: None
+        :rtype: object
+        """
+        fig = plt.figure()
+        plt.boxplot(data_map.values())
+        plt.xticks(np.arange(len(data_map)) + 1, data_map.keys(), rotation=xticks_rotation, fontsize=xticks_fontsize)
+        self._set_properties_and_close(fig, title, xlab, ylab)
+
     def plot_bars_simple(self, data_map, title="", xlab="", ylab="", alpha=0.6, xticks_rotation=0, auto_limit=False):
         """Plot simple bar chart from input dictionary.
 
