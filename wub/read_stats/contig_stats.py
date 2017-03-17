@@ -42,7 +42,7 @@ def N50(df, col, percent=50):
     for i, cs in enumerate(csum):
         if cs >= n50:
             break
-    return df[col][len(df[col]) - i]
+    return df[col][len(df[col]) - i - 1]
 
 
 def L50(df, col, percent=50):
