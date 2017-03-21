@@ -151,7 +151,7 @@ def read_seq_records(input_object, format='fasta'):
     :param input_object: A file object or a file name.
     :param format: Input format (fasta by default).
     :returns: A dictionary with the parsed SeqRecord objects.
-    :rtype: dict
+    :rtype: generator
 
     """
     handle = input_object
@@ -166,7 +166,7 @@ def read_seq_records_dict(input_object, format='fasta'):
     :param input_object: A file object or a file name.
     :param format: Input format (fasta by default).
     :returns: An iterator of SeqRecord objects.
-    :rtype: generator
+    :rtype: dict
 
     """
     handle = input_object
