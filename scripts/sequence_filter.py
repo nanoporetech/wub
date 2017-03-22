@@ -19,6 +19,8 @@ parser.add_argument(
 parser.add_argument(
     '-l', metavar='min_length', type=int, help="Minimum length (0).", default=0)
 parser.add_argument(
+    '-c', action='store_true', help="Reverse complement sequences.", default=False)
+parser.add_argument(
     '-u', metavar='max_length', type=int, help="Maximum length (None).", default=None)
 parser.add_argument('input_fastx', nargs='?', help='Input file (default: stdin).',
                     type=argparse.FileType('r'), default=sys.stdin)
@@ -26,7 +28,7 @@ parser.add_argument('output_fastx', nargs='?', help='Output file (default: stdou
                     type=argparse.FileType('w'), default=sys.stdout)
 
 
-def record_filter(input_iter, in_format, min_qual, min_len, max_len):
+def record_filter(input_iter, in_format, min_qual, min_len, max_len, rev_comp):
     """ Filter SeqRecord objects by length and mean quality.
 
     :param input_iter: Iterator of SeqRecord objects.
@@ -34,6 +36,7 @@ def record_filter(input_iter, in_format, min_qual, min_len, max_len):
     :param min_qual: Minimum mean quality.
     :param min_len: Minimum length.
     :param max_len: Maximum length.
+    :param rev_comp: Reverse complement sequences if True.
     :returns: SeqRecord object.
     :rtype: generator
     """
@@ -48,6 +51,8 @@ def record_filter(input_iter, in_format, min_qual, min_len, max_len):
             continue
         if max_len is not None and len(record) > max_len:
             continue
+        if rev_comp:
+            record = record.reverse_complement()
         yield record
 
 if __name__ == '__main__':
@@ -56,6 +61,6 @@ if __name__ == '__main__':
     input_iterator = seq_util.read_seq_records(
         args.input_fastx, format=args.i)
 
-    output_iterator = record_filter(input_iterator, args.i, args.q, args.l, args.u)
+    output_iterator = record_filter(input_iterator, args.i, args.q, args.l, args.u, args.c)
 
     seq_util.write_seq_records(output_iterator, args.output_fastx, format=args.o)
