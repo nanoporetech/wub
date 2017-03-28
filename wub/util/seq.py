@@ -70,19 +70,19 @@ def base_composition(seq):
     return dict(Counter(seq))
 
 
-def kmer_composition(seq, size):
-    """ Return kmer counts of a nucleotide sequence.
+def word_composition(seq, size):
+    """ Return word counts of a nucleotide sequence.
 
     :param seq: Input sequence.
-    :param size: kmer length.
-    :returns: kmer counts.
+    :param size: word length.
+    :returns: word counts.
     :rtype: OrderedDict
 
     """
     composition = OrderedDict()
-    for kmer in itertools.product(*([bases] * size)):
-        kmer = ''.join(kmer)
-        composition[kmer] = seq.count(kmer)
+    for word in itertools.product(*([bases] * size)):
+        word = ''.join(word)
+        composition[word] = seq.count(word)
     return composition
 
 

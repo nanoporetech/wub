@@ -10,6 +10,13 @@ from collections import OrderedDict, defaultdict
 from wub.vis import report
 from wub.util import misc
 
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    import seaborn as sns
+warnings.resetwarnings()
+_ = sns
+
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
     description="""Compare alignment QC statistics of multiple samples.

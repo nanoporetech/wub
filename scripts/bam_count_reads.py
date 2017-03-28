@@ -23,7 +23,7 @@ parser.add_argument(
 parser.add_argument(
     '-z', metavar='ref_fasta', type=str, help="Reference fasta. GC content and length columns are added if present (None).", default=None)
 parser.add_argument(
-    '-k', metavar="kmers", type=str, help="Include k-mer frequencies of specifed length in output (1,2).", default="1,2")
+    '-k', metavar="words", type=str, help="Include word frequencies of specifed length in output (1,2).", default="1,2")
 parser.add_argument(
     '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
 parser.add_argument(
@@ -45,13 +45,13 @@ def _offline_counter(args):
         args.bam.name, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q)
     counts = OrderedDict(counts.iteritems())
 
-    calc_kmers = [int(k) for k in args.k.split(",")]
+    calc_words = [int(k) for k in args.k.split(",")]
 
     data = OrderedDict()
 
     # Calculate sequence properties:
     if args.z is not None:
-        lengths, gc_contents, kmer_freqs = {}, {}, defaultdict(
+        lengths, gc_contents, word_freqs = {}, {}, defaultdict(
             lambda: defaultdict(dict))
         ref_iter = seq_util.read_seq_records(args.z)
         if not args.Q:
@@ -65,11 +65,11 @@ def _offline_counter(args):
             lengths[ref.id] = len(ref)
             gc_contents[ref.id] = seq_util.gc_content(str(ref.seq))
             if args.k is not None:
-                for kmer_size in calc_kmers:
-                    bf = seq_util.kmer_composition(ref.seq, kmer_size)
-                    for kmer, count in bf.iteritems():
-                        kmer_freqs[kmer_size][ref.id][
-                            kmer] = float(count) / len(ref)
+                for word_size in calc_words:
+                    bf = seq_util.word_composition(ref.seq, word_size)
+                    for word, count in bf.iteritems():
+                        word_freqs[word_size][ref.id][
+                            word] = float(count) / len(ref)
 
         data['Length'] = [lengths[tr] for tr in counts.iterkeys()]
         data['GC_content'] = [gc_contents[tr] for tr in counts.iterkeys()]
@@ -77,14 +77,14 @@ def _offline_counter(args):
     data['Reference'] = counts.keys()
     data['Count'] = counts.values()
 
-    # Calculate kmer frequencies:
+    # Calculate word frequencies:
     if args.k is not None and args.z:
-        for ks in calc_kmers:
-            for kmer in kmer_freqs[ks].itervalues().next().iterkeys():
+        for ks in calc_words:
+            for word in word_freqs[ks].itervalues().next().iterkeys():
                 tmp = []
                 for ref in counts.iterkeys():
-                    tmp.append(kmer_freqs[ks][ref][kmer])
-                data[kmer] = tmp
+                    tmp.append(word_freqs[ks][ref][word])
+                data[word] = tmp
 
     data_frame = pd.DataFrame(data)
     data_frame = data_frame.sort(['Count', 'Reference'], ascending=False)
