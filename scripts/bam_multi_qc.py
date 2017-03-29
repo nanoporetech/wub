@@ -94,7 +94,7 @@ def plot_bars_sns(data_map, title, xlab, ylab, plotter):
     :param title: Plot title.
     :param xlab: X axis label.
     :param ylab: Y axis label.
-    :param plotter: A matplotlib.pyplot instance.
+    :param plotter: A wub.vis.report.Report instance.
     """
     data = pd.DataFrame({'Value': data_map.values(), 'Label': data_map.keys(),
                          'x': np.arange(len(data_map))})
@@ -104,7 +104,7 @@ def plot_bars_sns(data_map, title, xlab, ylab, plotter):
     ax.set_ylabel(ylab)
     ax.set_xticks([])
     plotter.pages.savefig()
-    plotter.clf()
+    plotter.plt.clf()
 
 
 if __name__ == '__main__':
