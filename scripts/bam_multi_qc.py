@@ -5,6 +5,7 @@ import argparse
 
 import numpy as np
 from collections import OrderedDict, defaultdict
+import pandas as pd
 
 
 from wub.vis import report
@@ -87,6 +88,25 @@ def mean_dict(d):
     return d
 
 
+def plot_bars_sns(data_map, title, xlab, ylab, plotter):
+    """Barplot using seaborn backend.
+    :param data_map: A dictionary of labels and values.
+    :param title: Plot title.
+    :param xlab: X axis label.
+    :param ylab: Y axis label.
+    :param plotter: A matplotlib.pyplot instance.
+    """
+    data = pd.DataFrame({'Value': data_map.values(), 'Label': data_map.keys(),
+                         'x': np.arange(len(data_map))})
+    ax = sns.barplot(x="x", y="Value", hue="Label", data=data, hue_order=data_map.keys())
+    ax.set_title(title)
+    ax.set_xlabel(xlab)
+    ax.set_ylabel(ylab)
+    ax.set_xticks([])
+    plotter.pages.savefig()
+    plotter.clf()
+
+
 if __name__ == '__main__':
     args = parser.parse_args()
     plotter = report.Report(args.r)
@@ -103,8 +123,8 @@ if __name__ == '__main__':
     for field, props in mapping_stat_types.iteritems():
         data_map = OrderedDict(
             [(tag, d['read_stats'][field]) for tag, d in stats.iteritems()])
-        plotter.plot_bars_simple(
-            data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'])
+        plot_bars_sns(
+            data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'], plotter=plotter)
 
     # Plot read statistics:
     read_stat_types = OrderedDict([
@@ -137,8 +157,8 @@ if __name__ == '__main__':
     for field, props in base_stat_types.iteritems():
         data_map = OrderedDict(
             [(tag, d['base_stats'][field]) for tag, d in stats.iteritems()])
-        plotter.plot_bars_simple(
-            data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'])
+        plot_bars_sns(
+            data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'], plotter=plotter)
 
     # Plot indel statistics:
     indel_stat_types = OrderedDict([
