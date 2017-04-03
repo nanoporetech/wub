@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import argparse
@@ -74,6 +73,12 @@ def _process_ref_coverage(plotter, cov, strand, scale_pos, scale_cov):
     return x, y
 
 
+def _calculate_coverage_score(data, percent=80):
+    """ Calculate fragment coverage score. """
+    percent = float(percent) / 100
+    return float(len(data[data > percent])) / len(data)
+
+
 def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, title="", bins=None, log_scale=True, hist_title=""):
     """ Plot fragment coverage over a reference. """
     fig = plotter.plt.figure()
@@ -124,7 +129,8 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
 
     # Plot reference coverage histogram:
     ref_cov = np.array(ref_cov, dtype=float)
-    plotter.plot_histograms({'dummy': ref_cov}, title=hist_title,
+    cov80_score = _calculate_coverage_score(ref_cov)
+    plotter.plot_histograms({'dummy': ref_cov}, title="{} cov80={}".format(hist_title, cov80_score),
                             xlab="Reference coverage", ylab="Count", bins=100, legend=False)
 
     return {'global_cov_fwd': cov_fwd, 'global_cov_rev': cov_rev, 'ref_cov': ref_cov}
@@ -169,7 +175,7 @@ if __name__ == '__main__':
             int_chroms[ref] = length
         # Generate coverage plot:
         _plot_frag_coverage(
-            st, int_chroms, plotter, title="Coverage in interval [{},{}) for {}".format(interval[0], interval[1], tag), hist_title="Reference coverage in interval [{},{}) for {}".format(interval[0], interval[1], tag), log_scale=not args.o, bins=args.b)
+            st, int_chroms, plotter, title="Coverage in interval [{},{}) for {} ".format(interval[0], interval[1], tag), hist_title="Reference coverage in interval [{},{}) for {}".format(interval[0], interval[1], tag), log_scale=not args.o, bins=args.b)
 
     def _get_coverage(chrom, st):
         """ Utility function for sorting references by coverage. """
