@@ -6,35 +6,35 @@ import os.path
 
 
 def get_fname(fname):
-    '''
-    get the file name without extension
+    """ get the file name without extension.
 
     :param fname: file name
     :return: file name
     :rtype: str
-    '''
+
+    """
     return os.path.splitext(os.path.basename(fname))[0]
 
 
 def get_extension(fname):
-    '''
-    get the file extension
+    """ get the file extension.
 
     :param fname: file name
     :return: file extention
     :rtype: str format '.*'
-    '''
+
+    """
     return os.path.splitext(os.path.basename(fname))[1]
 
 
 def _getextension(fast):
-    '''
-    finds and check for the correct extension
+    """ finds and check for the correct extension. If extension is not correct it will return Exception and exit.
 
     :param fast: fastq or fasta file
     :return: "fastq" or "fasta"
     :rtype: str
-    '''
+
+    """
 
     extension = get_extension(fast)
     if extension in ('.fa', '.fasta'):
@@ -49,13 +49,13 @@ def _getextension(fast):
 
 
 def mkdir(path):
-    '''
-    if the dir does not exists it create it
+    """ if the dir does not exists it create it
 
     :param path: dir path
     :return: path
     :rtype: str
-    '''
+
+    """
     if not os.path.exists(path):
         os.makedirs(path)
     return path
