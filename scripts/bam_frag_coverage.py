@@ -6,6 +6,7 @@ import tqdm
 import os
 import numpy as np
 from collections import OrderedDict
+from __future__ import print_function
 from Bio import SeqIO
 
 from wub.util import misc
@@ -197,7 +198,7 @@ if __name__ == '__main__':
 
         tr_iter = chrom_lengths.iteritems()
         if verbose:
-            print 'Plotting per-chromosome coverage:'
+            print('Plotting per-chromosome coverage:')
             tr_iter = tqdm.tqdm(tr_iter, total=len(chrom_lengths))
 
         # Plot per-reference coverage vectors.

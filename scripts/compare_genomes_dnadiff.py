@@ -3,7 +3,7 @@
 
 import sys
 import argparse
-
+from __future__ import print_function
 from wub.util import cmd as cmd_util
 from wub.wrappers import dnadiff
 from wub.util import misc
@@ -51,6 +51,6 @@ if __name__ == '__main__':
         misc.pickle_dump(results, args.p)
 
     for section, properties in results['Alignments'].iteritems():
-        print section, ":\t\tref\tquery"
+        print(section, ":\t\tref\tquery")
         for name, prop in properties.iteritems():
-            print "\t{}\t{}\t{}".format(name, prop.ref, prop.query)
+            print("\t{}\t{}\t{}".format(name, prop.ref, prop.query))

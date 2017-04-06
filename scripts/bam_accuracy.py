@@ -90,8 +90,6 @@ if __name__ == '__main__':
         ('Unmapped', [read_stats['unmapped']]),
         ('Tag', [read_stats['tag']]), ])
     global_stats = pd.DataFrame(global_stats)
-    print
-    print global_stats
 
     if args.g is not None:
         global_stats.to_csv(args.g, sep="\t", index=False)

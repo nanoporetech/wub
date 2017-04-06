@@ -8,6 +8,7 @@ import os
 import numpy as np
 from collections import OrderedDict, defaultdict
 import itertools
+from __future__ import print_function
 
 from wub.util import misc
 from wub.vis import report
@@ -140,7 +141,7 @@ def ref_qual_qc(st, report, verbose):
     """
     quals_iter = st['qualities'].iteritems()
     if verbose:
-        print "Generating per-reference plots."
+        print("Generating per-reference plots.")
         quals_iter = tqdm.tqdm(quals_iter, total=len(st['qualities']))
 
     for ref, stats in quals_iter:

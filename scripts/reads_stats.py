@@ -26,14 +26,14 @@ def main():
 
     rawdata = cstats.GC_per_read(cstats.readfast(fastx), fq=fq)
 
-    print os.path.join(savepath, '{}_summary.stats'.format(tag))
+    # print os.path.join(savepath, '{}_summary.stats'.format(tag))
 
     if args.raw:
         rawdata.to_csv(os.path.join(savepath, '{}_raw.stats'.format(tag)))
 
     summary = cstats.get_stats(df=rawdata)
     summary.to_csv(os.path.join(savepath, '{}_summary.stats'.format(tag)))
-    print summary.round(2).to_string()
+    # print summary.round(2).to_string()
 
     if args.report:
         from wub.vis import report
@@ -60,8 +60,10 @@ def main():
 
         Plotter.close()
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Calculates the GC content and N50')
+    parser = argparse.ArgumentParser(
+        description='Calculates the GC content and N50')
 
     parser.add_argument('--fastx', '-i',
                         metavar='FILE',
@@ -93,6 +95,6 @@ if __name__ == "__main__":
                         help='output name or tag. default[input name]')
 
     args = parser.parse_args()
-    print args
+    # print args
 
     main()

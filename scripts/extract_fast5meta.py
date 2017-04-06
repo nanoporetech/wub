@@ -5,6 +5,7 @@ import argparse
 import tqdm
 import concurrent.futures
 import multiprocessing
+from __future__ import print_function
 
 import os
 from os.path import join
@@ -37,6 +38,7 @@ def get_fast5_meta(fname):
     meta['file'] = fname
     return meta
 
+
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
     description="""Extract metadata from FAST5 files and save as tab separated file.
@@ -56,7 +58,7 @@ if __name__ == '__main__':
     verbose = not args.Q
 
     if verbose:
-        print "Locating FAST5 files in directory: {}".format(args.fast5dir)
+        print("Locating FAST5 files in directory: {}".format(args.fast5dir))
 
     files = all_fast5(args.fast5dir)
     workers = args.t if args.t is not None else multiprocessing.cpu_count() * 5
@@ -66,11 +68,12 @@ if __name__ == '__main__':
     # Maybe refactor this to util.fast5?
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
         # Launch worker threads:
-        future_to_file = {executor.submit(get_fast5_meta, f5): fast5 for f5 in files}
+        future_to_file = {executor.submit(
+            get_fast5_meta, f5): fast5 for f5 in files}
         future_iter = concurrent.futures.as_completed(future_to_file)
 
         if verbose:
-            print "Parsing FAST5 files:"
+            print("Parsing FAST5 files:")
             future_iter = tqdm.tqdm(future_iter, total=len(files))
 
         # Iterate over results:
