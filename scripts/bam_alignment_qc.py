@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import argparse
 import tqdm
 
@@ -8,7 +9,6 @@ import os
 import numpy as np
 from collections import OrderedDict, defaultdict
 import itertools
-from __future__ import print_function
 
 from wub.util import misc
 from wub.vis import report

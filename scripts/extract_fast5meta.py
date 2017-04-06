@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import argparse
 import tqdm
 import concurrent.futures
 import multiprocessing
-from __future__ import print_function
 
 import os
 from os.path import join

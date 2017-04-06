@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys
 import argparse
-from __future__ import print_function
 from wub.util import cmd as cmd_util
 from wub.wrappers import dnadiff
 from wub.util import misc

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import argparse
 import tqdm
 
 import os
 import numpy as np
 from collections import OrderedDict
-from __future__ import print_function
 from Bio import SeqIO
 
 from wub.util import misc
