@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Yet uncategorised utility functions."""
 
-import pickle as cPickle
+import pickle
 import os.path
 
 
@@ -69,7 +69,7 @@ def pickle_load(fname):
     :rtype: object
 
     """
-    return cPickle.load(file(fname))
+    return pickle.load(file(fname))
 
 
 def pickle_dump(obj, fname):
@@ -81,8 +81,5 @@ def pickle_dump(obj, fname):
     :rtype: str
 
     """
-    fh = open(fname, "w")
-    cPickle.dump(obj, fh)
-    fh.flush()
-    fh.close()
+    pickle.dump(obj, fname)
     return fname
