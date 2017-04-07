@@ -69,7 +69,7 @@ def pickle_load(fname):
     :rtype: object
 
     """
-    return pickle.load(file(fname))
+    return pickle.load(open(fname, 'rb'))
 
 
 def pickle_dump(obj, fname):
@@ -81,5 +81,8 @@ def pickle_dump(obj, fname):
     :rtype: str
 
     """
-    pickle.dump(obj, file(fname, 'w'))
+    fh = open(fname, 'wb')
+    pickle.dump(obj, fh)
+    fh.flush()
+    fh.close()
     return fname

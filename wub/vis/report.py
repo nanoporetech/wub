@@ -80,7 +80,7 @@ class Report:
         :rtype: object
         """
         fig = plt.figure()
-        plt.boxplot(data_map.values())
+        plt.boxplot(list(data_map.values()))
         plt.xticks(np.arange(len(data_map)) + 1, data_map.keys(), rotation=xticks_rotation, fontsize=xticks_fontsize)
         self._set_properties_and_close(fig, title, xlab, ylab)
 
@@ -100,8 +100,8 @@ class Report:
         """
         fig = plt.figure()
 
-        labels = data_map.keys()
-        data = data_map.values()
+        labels = list(data_map.keys())
+        data = list(data_map.values())
         positions = np.arange(len(labels))
         plt.bar(positions, data, align='center', alpha=alpha)
         plt.xticks(positions, labels, rotation=xticks_rotation)
@@ -190,12 +190,12 @@ class Report:
 
         if not hist_style:
             for label, d in six.iteritems(data_map):
-                x, y = d.keys(), d.values()
+                x, y = list(d.keys()), list(d.values())
                 plt.plot(x, y, marker, label=label)
         else:
             color = iter(cmap(np.linspace(0, 1, len(data_map))))
             for label, d in six.iteritems(data_map):
-                x, y = d.keys(), d.values()
+                x, y = list(d.keys()), list(d.values())
                 plt.bar(x, y, label=label,
                         align='center', color=next(color), alpha=alpha)
 

@@ -75,7 +75,7 @@ def find_max_pos(d):
     :returns: Maximum position.
     :rtype: int
     """
-    return max(d.keys())
+    return max(list(d.keys()))
 
 
 def find_max_qual(d):
@@ -85,7 +85,7 @@ def find_max_qual(d):
     :returns: Maximum quality value across all positions.
     :rtype: int
     """
-    return max(itertools.chain.from_iterable(six.itervalues(d)))
+    return max(itertools.chain.from_iterable(list(six.itervalues(d))))
 
 
 def mean_qual_per_pos(d):
@@ -201,7 +201,7 @@ def read_qual_qc(st, report, qual_intervals=5):
     decimals = 3
     for i in range(len(breaks) - 1):
         aq_map[(round(breaks[i], decimals), round(breaks[i + 1], decimals))] = []
-    intervals = aq_map.keys()
+    intervals = list(aq_map.keys())
 
     for i, aln_qual in enumerate(st['aligned_quals']):
         index = np.searchsorted(breaks, aln_qual) - 1
