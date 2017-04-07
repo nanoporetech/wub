@@ -81,5 +81,5 @@ def pickle_dump(obj, fname):
     :rtype: str
 
     """
-    pickle.dump(obj, fname)
+    pickle.dump(obj, file(fname, 'w'))
     return fname
