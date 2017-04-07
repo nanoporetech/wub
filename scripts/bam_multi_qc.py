@@ -93,9 +93,9 @@ def plot_bars_sns(data_map, title, xlab, ylab, plotter):
     :param ylab: Y axis label.
     :param plotter: A wub.vis.report.Report instance.
     """
-    data = pd.DataFrame({'Value': data_map.values(), 'Label': data_map.keys(),
+    data = pd.DataFrame({'Value': list(data_map.values()), 'Label': list(data_map.keys()),
                          'x': np.arange(len(data_map))})
-    ax = sns.barplot(x="x", y="Value", hue="Label", data=data, hue_order=data_map.keys())
+    ax = sns.barplot(x="x", y="Value", hue="Label", data=data, hue_order=list(data_map.keys()))
     ax.set_title(title)
     ax.set_xlabel(xlab)
     ax.set_ylabel(ylab)
