@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import six
 import argparse
 import sys
-
 import pandas as pd
 from collections import OrderedDict, defaultdict
-
 from wub.bam import read_counter
 from wub.util import misc
 from wub.util import seq as seq_util
@@ -43,7 +42,7 @@ def _offline_counter(args):
     # Offline counting from SAM/BAM file:
     counts = read_counter.count_reads(
         args.bam.name, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q)
-    counts = OrderedDict(counts.iteritems())
+    counts = OrderedDict(six.iteritems(counts))
 
     calc_words = [int(k) for k in args.k.split(",")]
 
@@ -67,12 +66,12 @@ def _offline_counter(args):
             if args.k is not None:
                 for word_size in calc_words:
                     bf = seq_util.word_composition(ref.seq, word_size)
-                    for word, count in bf.iteritems():
+                    for word, count in six.iteritems(bf):
                         word_freqs[word_size][ref.id][
                             word] = float(count) / len(ref)
 
-        data['Length'] = [lengths[tr] for tr in counts.iterkeys()]
-        data['GC_content'] = [gc_contents[tr] for tr in counts.iterkeys()]
+        data['Length'] = [lengths[tr] for tr in six.iterkeys(counts)]
+        data['GC_content'] = [gc_contents[tr] for tr in six.iterkeys(counts)]
 
     data['Reference'] = counts.keys()
     data['Count'] = counts.values()
@@ -80,9 +79,9 @@ def _offline_counter(args):
     # Calculate word frequencies:
     if args.k is not None and args.z:
         for ks in calc_words:
-            for word in word_freqs[ks].itervalues().next().iterkeys():
+            for word in word_freqs[ks].values().next().keys():
                 tmp = []
-                for ref in counts.iterkeys():
+                for ref in counts.keys():
                     tmp.append(word_freqs[ks][ref][word])
                 data[word] = tmp
 
@@ -111,6 +110,7 @@ def _online_counter(args):
             data_frame.to_csv(args.t, sep='\t', index=False)
         if args.p is not None:
             misc.pickle_dump(counts, args.p)
+
 
 if __name__ == '__main__':
     args = parser.parse_args()

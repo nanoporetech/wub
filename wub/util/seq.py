@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from itertools import izip
 import itertools
 from collections import namedtuple, OrderedDict, Counter
 import numpy as np
@@ -170,7 +169,7 @@ def read_seq_records_dict(input_object, format='fasta'):
 
     """
     handle = input_object
-    if type(handle) != file:
+    if type(handle) == str:
         handle = open(handle, "rU")
     return SeqIO.to_dict(SeqIO.parse(handle, format))
 
@@ -282,7 +281,7 @@ def alignment_stats(ref, query, gap_character='-'):
     substitutions = 0
     deletions = 0
     insertions = 0
-    for ref_sym, query_sym in izip(ref, query):
+    for ref_sym, query_sym in zip(ref, query):
         if ref_sym != query_sym:
             if query_sym == gap_character:
                 deletions += 1

@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+import six
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -56,7 +59,7 @@ class Report:
         """
         fig = plt.figure()
 
-        for label, data_arrays in data_map.iteritems():
+        for label, data_arrays in six.iteritems(data_map):
             plt.plot(data_arrays[0], data_arrays[1], marker, label=label)
 
         if legend:
@@ -186,12 +189,12 @@ class Report:
         fig = plt.figure()
 
         if not hist_style:
-            for label, d in data_map.iteritems():
+            for label, d in six.iteritems(data_map):
                 x, y = d.keys(), d.values()
                 plt.plot(x, y, marker, label=label)
         else:
             color = iter(cmap(np.linspace(0, 1, len(data_map))))
-            for label, d in data_map.iteritems():
+            for label, d in six.iteritems(data_map):
                 x, y = d.keys(), d.values()
                 plt.bar(x, y, label=label,
                         align='center', color=next(color), alpha=alpha)
@@ -217,7 +220,7 @@ class Report:
         """
         fig = plt.figure()
 
-        for label, data in data_map.iteritems():
+        for label, data in six.iteritems(data_map):
             if len(data) > 0:
                 plt.hist(data, bins=bins, label=label, alpha=alpha)
         if legend:

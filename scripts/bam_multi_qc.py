@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import six
 import argparse
-
 import numpy as np
 from collections import OrderedDict, defaultdict
 import pandas as pd
-
-
 from wub.vis import report
 from wub.util import misc
-
 import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
@@ -71,8 +68,8 @@ def normalise_dict(d):
     :returns: Normalised nested dictionary.
     :rtype: dict
     """
-    total = float(sum(d.itervalues()))
-    for k, v in d.iteritems():
+    total = float(sum(six.itervalues(d)))
+    for k, v in six.iteritems(d):
         d[k] = v / total
     return d
 
@@ -83,7 +80,7 @@ def mean_dict(d):
     :returns: A dictionary of means.
     :rtype: dict
     """
-    for k, v in d.iteritems():
+    for k, v in six.iteritems(d):
         d[k] = np.mean(v)
     return d
 
@@ -120,9 +117,9 @@ if __name__ == '__main__':
         ('unmapped', {
             'title': "Number of unmapped reads", 'xlab': 'Dataset', 'ylab': 'Count'}), ])
 
-    for field, props in mapping_stat_types.iteritems():
+    for field, props in six.iteritems(mapping_stat_types):
         data_map = OrderedDict(
-            [(tag, d['read_stats'][field]) for tag, d in stats.iteritems()])
+            [(tag, d['read_stats'][field]) for tag, d in six.iteritems(stats)])
         plot_bars_sns(
             data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'], plotter=plotter)
 
@@ -141,9 +138,9 @@ if __name__ == '__main__':
         ('mapping_quals', {
             'title': "Distribution of mapping qualities", 'xlab': 'Mapping quality', 'ylab': 'Count'}), ])
 
-    for field, props in read_stat_types.iteritems():
+    for field, props in six.iteritems(read_stat_types):
         data_map = OrderedDict(
-            [(tag, d['read_stats'][field]) for tag, d in stats.iteritems()])
+            [(tag, d['read_stats'][field]) for tag, d in six.iteritems(stats)])
         plotter.plot_histograms(
             data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'])
 
@@ -154,9 +151,9 @@ if __name__ == '__main__':
         ('identity', {
             'title': "Alignment identity", 'xlab': 'Dataset', 'ylab': 'Identity'}), ])
 
-    for field, props in base_stat_types.iteritems():
+    for field, props in six.iteritems(base_stat_types):
         data_map = OrderedDict(
-            [(tag, d['base_stats'][field]) for tag, d in stats.iteritems()])
+            [(tag, d['base_stats'][field]) for tag, d in six.iteritems(stats)])
         plot_bars_sns(
             data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'], plotter=plotter)
 
@@ -167,9 +164,9 @@ if __name__ == '__main__':
         ('insertion_lengths', {
             'title': "Distribution of insertion lengths", 'xlab': 'Length', 'ylab': 'Count'})])
 
-    for field, props in indel_stat_types.iteritems():
+    for field, props in six.iteritems(indel_stat_types):
         data_map = OrderedDict(
-            [(tag, d['indel_stats'][field]) for tag, d in stats.iteritems()])
+            [(tag, d['indel_stats'][field]) for tag, d in six.iteritems(stats)])
         plotter.plot_dicts(
             data_map, title=props['title'], xlab=props['xlab'], ylab=props['ylab'], hist_style=True)
 
@@ -182,20 +179,20 @@ if __name__ == '__main__':
                 'title': "Mean qualities per position: ", 'xlab': 'Position', 'ylab': 'Mean quality'}), ])
         cov_stats = defaultdict(dict)
 
-        for tag, d in stats.iteritems():
-            for ref, cov in d['pileup_stats']['coverage'].iteritems():
+        for tag, d in six.iteritems(stats):
+            for ref, cov in six.iteritems(d['pileup_stats']['coverage']):
                 cov_stats[ref][tag] = normalise_dict(cov)
 
-        for ref, data_map in cov_stats.iteritems():
+        for ref, data_map in six.iteritems(cov_stats):
             plotter.plot_dicts(data_map, title=ref_stat_types['coverage'][
                                'title'] + ref, xlab=ref_stat_types['coverage']['xlab'], ylab=ref_stat_types['coverage']['ylab'])
 
         qual_stats = defaultdict(dict)
-        for tag, d in stats.iteritems():
-            for ref, quals in d['pileup_stats']['qualities'].iteritems():
+        for tag, d in six.iteritems(stats):
+            for ref, quals in six.iteritems(d['pileup_stats']['qualities']):
                 cov_stats[ref][tag] = mean_dict(quals)
 
-        for ref, data_map in cov_stats.iteritems():
+        for ref, data_map in six.iteritems(cov_stats):
             plotter.plot_dicts(data_map, title=ref_stat_types['qualities'][
                                'title'] + ref, xlab=ref_stat_types['qualities']['xlab'], ylab=ref_stat_types['qualities']['ylab'])
 

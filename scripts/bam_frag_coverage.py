@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+import six
 import argparse
 import tqdm
-
 import os
 import numpy as np
 from collections import OrderedDict
 from Bio import SeqIO
-
 from wub.util import misc
 from wub.util import parse as parse_util
 from wub.vis import report
@@ -86,7 +85,7 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
 
     # Use average length as number of bins:
     if bins is None:
-        bins = int(np.mean(chroms.values()))
+        bins = int(np.mean(list(chroms.values())))
 
     # Generate positions and scale:
     X = np.arange(bins, dtype=float)
@@ -151,7 +150,7 @@ if __name__ == '__main__':
 
     # Laod reference lengths:
     references = SeqIO.index(args.f, format='fasta')
-    chrom_lengths = {name: len(so) for name, so in references.iteritems()}
+    chrom_lengths = {name: len(so) for name, so in six.iteritems(references)}
 
     # Parse fragments:
     st = bam_stats.frag_coverage(
@@ -168,7 +167,7 @@ if __name__ == '__main__':
         # Filter transcripts falling in the specified
         # length interval:
         int_chroms = {}
-        for ref, length in chrom_lengths.iteritems():
+        for ref, length in six.iteritems(chrom_lengths):
             if length < interval[0]:
                 continue
             if interval[1] != 0 and length > interval[1]:
@@ -196,7 +195,7 @@ if __name__ == '__main__':
             sorted_chroms[x] = chrom_lengths[x]
         chrom_lengths = sorted_chroms
 
-        tr_iter = chrom_lengths.iteritems()
+        tr_iter = six.iteritems(chrom_lengths)
         if verbose:
             print('Plotting per-chromosome coverage:')
             tr_iter = tqdm.tqdm(tr_iter, total=len(chrom_lengths))

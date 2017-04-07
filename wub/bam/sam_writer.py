@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import six
 from collections import OrderedDict
 
 
@@ -17,10 +18,10 @@ class SamWriter:
 
     def _write_header(self):
         """Write SAM header."""
-        for record_type, records in self.header.iteritems():
+        for record_type, records in six.iteritems(self.header):
             for record in records:
                 self.out_handler.write("@{}".format(record_type))
-                for key, value in record.iteritems():
+                for key, value in six.iteritems(record):
                     self.out_handler.write("\t{}:{}".format(key, value))
                 self.out_handler.write("\n")
 
@@ -67,7 +68,7 @@ class SamWriter:
         :returns: None
         :rtype: object
         """
-        self.out_handler.write("{}\n".format("\t".join(map(lambda x: str(x), record.itervalues()))))
+        self.out_handler.write("{}\n".format("\t".join(map(lambda x: str(x), six.itervalues(record)))))
 
     def close(self):
         """Close SAM file.

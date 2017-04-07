@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Wrapper for mummer's dnadiff """
 
+import six
 import os
 import re
 from collections import defaultdict
@@ -137,9 +138,9 @@ def _parse_complex_section(lines):
             sections[section].append(line)
 
     # Parse subsections and update results dictionary:
-    for section, lines in sections.iteritems():
+    for section, lines in six.iteritems(sections):
         parsed = _parse_simple_section(lines)
-        for name, prop in parsed.iteritems():
+        for name, prop in six.iteritems(parsed):
             results[section][name] = prop
     return results
 

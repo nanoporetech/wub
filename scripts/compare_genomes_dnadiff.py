@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+import six
 import sys
 import argparse
 from wub.util import cmd as cmd_util
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     if args.p is not None:
         misc.pickle_dump(results, args.p)
 
-    for section, properties in results['Alignments'].iteritems():
+    for section, properties in six.iteritems(results['Alignments']):
         print(section, ":\t\tref\tquery")
         for name, prop in properties.iteritems():
             print("\t{}\t{}\t{}".format(name, prop.ref, prop.query))

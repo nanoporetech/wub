@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import six
 import sys
 import numpy as np
 from collections import OrderedDict, namedtuple
@@ -30,7 +31,7 @@ def simulate_genome(number_chromosomes, mean_length, gamma_shape, low_truncation
          int(dist.sample_truncated_gamma(mean_length, gamma_shape, low_truncation, high_truncation)))
         for i in xrange(number_chromosomes))
     sim_iter = (seq_util.new_dna_record(sim_seq.simulate_sequence(length, base_frequencies), name)
-                for name, length in chrom_info.iteritems())
+                for name, length in six.iteritems(chrom_info))
     return sim_iter
 
 

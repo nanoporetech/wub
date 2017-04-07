@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Yet uncategorised utility functions."""
 
-import cPickle
+import pickle as cPickle
 import os.path
 
 

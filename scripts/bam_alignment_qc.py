@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+import six
 import argparse
 import tqdm
 
@@ -84,7 +85,7 @@ def find_max_qual(d):
     :returns: Maximum quality value across all positions.
     :rtype: int
     """
-    return max(itertools.chain.from_iterable(d.itervalues()))
+    return max(itertools.chain.from_iterable(six.itervalues(d)))
 
 
 def mean_qual_per_pos(d):
@@ -95,7 +96,7 @@ def mean_qual_per_pos(d):
     :rtype: dict
     """
     mq = {}
-    for pos, quals in d.iteritems():
+    for pos, quals in six.iteritems(d):
         mq[pos] = seq_util.mean_qscore(quals, qround=False)
     return mq
 
@@ -110,7 +111,7 @@ def stats_to_matrix(rst):
     max_pos = find_max_pos(rst)
     max_qual = find_max_qual(rst)
     mat = np.zeros((max_qual + 1, max_pos + 1), dtype=float)
-    for pos, quals in rst.iteritems():
+    for pos, quals in six.iteritems(rst):
         for q in quals:
             mat[q][pos] += 1
     return mat
@@ -124,10 +125,10 @@ def normalise_data(d):
     :rtype: dict
     """
     nd = {}
-    for k, v in d.iteritems():
+    for k, v in six.iteritems(d):
         total = float(sum(v.values()))
         nd[k] = {}
-        for ik, iv in v.iteritems():
+        for ik, iv in six.iteritems(v):
             nd[k][ik] = iv / total
     return nd
 
@@ -139,7 +140,7 @@ def ref_qual_qc(st, report, verbose):
     :param report: Report object.
     :param verbose: Verbosity level.
     """
-    quals_iter = st['qualities'].iteritems()
+    quals_iter = six.iteritems(st['qualities'])
     if verbose:
         print("Generating per-reference plots.")
         quals_iter = tqdm.tqdm(quals_iter, total=len(st['qualities']))

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import six
 import sys
 from collections import defaultdict, OrderedDict
 import tqdm
@@ -12,9 +13,9 @@ from wub.util import seq as seq_util
 def _frag_dict_to_array(fd, chrom_lengths):
     """ Convert fragment coverage dictionary into a numpy array. """
     res = {}
-    for ref, frags in fd.iteritems():
+    for ref, frags in six.iteritems(fd):
         cov = np.zeros((chrom_lengths[ref],), dtype=int)
-        for pos, count in frags.iteritems():
+        for pos, count in six.iteritems(frags):
             cov[pos] = count
         res[ref] = cov
     return res
@@ -165,9 +166,9 @@ def read_stats(bam, min_aqual=0, region=None, with_clipps=False, verbose=True):
         bs = stats_from_aligned_read(r, with_clipps)
         # bs is None for unaligned reads.
         if bs is not None:
-            for k in base_stats.iterkeys():
+            for k in six.iterkeys(base_stats):
                 base_stats[k] += bs[k]
-            for stat, value in bs.iteritems():
+            for stat, value in six.iteritems(bs):
                 read_stats[stat].append(value)
 
     # Calculate global identity and accuracy:
@@ -251,7 +252,7 @@ def _register_event(e, query, ref, qpos, rpos, etype, context_sizes, fixed_conte
 def _register_insert(insert, rpos, insertion_lengths, insertion_composition):
     """Register insertion length and base composition."""
     insertion_lengths[len(insert)] += 1
-    for base, count in seq_util.base_composition(insert).iteritems():
+    for base, count in six.iteritems(seq_util.base_composition(insert)):
         insertion_composition[base] += count
 
 

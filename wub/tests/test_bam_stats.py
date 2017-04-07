@@ -1,5 +1,6 @@
 import unittest
 
+import six
 from os import path
 from collections import OrderedDict
 from Bio import SeqIO
@@ -59,7 +60,7 @@ class TestBamStats(unittest.TestCase):
         bam = path.join(top, "data/test_bam_stats/stat_test.bam")
         ref = path.join(top, "data/test_bam_stats/stat_ref.fas")
         references = SeqIO.index(ref, format='fasta')
-        chrom_lengths = {name: len(so) for name, so in references.iteritems()}
+        chrom_lengths = {name: len(so) for name, so in six.iteritems(references)}
         res = stats.frag_coverage(bam, chrom_lengths, region=None, min_aqual=0, verbose=False)
 
         self.maxDiff = None

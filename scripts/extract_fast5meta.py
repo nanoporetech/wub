@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+import six
 import argparse
 import tqdm
 import concurrent.futures
@@ -81,7 +82,7 @@ if __name__ == '__main__':
             f5 = future_to_file[future]
             try:
                 data = future.result()
-                for name, value in data.iteritems():
+                for name, value in six.iteritems(data):
                     if value is None:
                         continue
                     stats[name].append(value)

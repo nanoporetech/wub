@@ -8,6 +8,7 @@ with open('README.md') as readme_file:
     readme = readme_file.read()
 
 requirements = [
+    'six',
     'pytest',
     'pycmd',
     'biopython',
@@ -51,6 +52,7 @@ setup(
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
     ],
     tests_require=test_requirements,
     scripts=[x for x in glob('scripts/*.py') if x != 'scripts/__init__.py']

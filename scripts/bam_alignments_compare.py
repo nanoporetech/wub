@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import six
 import argparse
-
 import os
 import pandas as pd
 from collections import OrderedDict
-
 from wub.util import misc
 from wub.bam import compare as bam_compare
 from wub.vis import report
@@ -102,6 +101,6 @@ if __name__ == '__main__':
         for bam in data_map['BamFiles']:
             del data_map[bam]
         del data_map['BamFiles']
-        data_map = OrderedDict((key, [value]) for key, value in data_map.iteritems())
+        data_map = OrderedDict((key, [value]) for key, value in six.iteritems(data_map))
         data_frame = pd.DataFrame(data_map)
         data_frame.to_csv(args.t, sep="\t", index=False)
