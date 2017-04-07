@@ -36,6 +36,6 @@ if __name__ == '__main__':
     # Normalise relative base frequencies to probabilities:
     base_frequencies = parse_util.normalise_array(base_frequencies)
 
-    simulation_iterator = (seq_util.new_dna_record(sim_seq.simulate_sequence(args.m, base_frequencies), "seq_{}".format(i)) for i in six.xrange(args.n))
+    simulation_iterator = (seq_util.new_dna_record(sim_seq.simulate_sequence(args.m, base_frequencies), "seq_{}".format(i)) for i in range(args.n))
 
     seq_util.write_seq_records(simulation_iterator, args.output_fasta, format='fasta')

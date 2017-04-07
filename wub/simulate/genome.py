@@ -29,7 +29,7 @@ def simulate_genome(number_chromosomes, mean_length, gamma_shape, low_truncation
     chrom_info = OrderedDict(
         ('chr' + str(i),
          int(dist.sample_truncated_gamma(mean_length, gamma_shape, low_truncation, high_truncation)))
-        for i in six.xrange(number_chromosomes))
+        for i in range(number_chromosomes))
     sim_iter = (seq_util.new_dna_record(sim_seq.simulate_sequence(length, base_frequencies), name)
                 for name, length in six.iteritems(chrom_info))
     return sim_iter

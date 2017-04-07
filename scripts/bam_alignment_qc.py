@@ -199,7 +199,7 @@ def read_qual_qc(st, report, qual_intervals=5):
     aq_map = OrderedDict()
 
     decimals = 3
-    for i in six.xrange(len(breaks) - 1):
+    for i in range(len(breaks) - 1):
         aq_map[(round(breaks[i], decimals), round(breaks[i + 1], decimals))] = []
     intervals = aq_map.keys()
 
