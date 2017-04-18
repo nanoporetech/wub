@@ -137,7 +137,7 @@ def write_seq_records(records_iterator, output_object, format='fasta'):
     :rtype: object
 
     """
-    if type(output_object) == file:
+    if type(output_object) != str:
         SeqIO.write(records_iterator, output_object, format)
     else:
         with open(output_object, 'w') as output_handle:
@@ -154,7 +154,7 @@ def read_seq_records(input_object, format='fasta'):
 
     """
     handle = input_object
-    if type(handle) != file:
+    if type(handle) == str:
         handle = open(handle, "rU")
     return SeqIO.parse(handle, format)
 

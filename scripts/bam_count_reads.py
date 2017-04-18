@@ -73,13 +73,13 @@ def _offline_counter(args):
         data['Length'] = [lengths[tr] for tr in six.iterkeys(counts)]
         data['GC_content'] = [gc_contents[tr] for tr in six.iterkeys(counts)]
 
-    data['Reference'] = counts.keys()
-    data['Count'] = counts.values()
+    data['Reference'] = list(counts.keys())
+    data['Count'] = list(counts.values())
 
     # Calculate word frequencies:
     if args.k is not None and args.z:
         for ks in calc_words:
-            for word in word_freqs[ks].values().next().keys():
+            for word in next(iter((word_freqs[ks].values()))).keys():
                 tmp = []
                 for ref in counts.keys():
                     tmp.append(word_freqs[ks][ref][word])
@@ -103,7 +103,7 @@ def _online_counter(args):
 
     for counts in counts_iter:
         data_frame = pd.DataFrame(
-            OrderedDict([('Reference', counts.keys()), ('Count', counts.values())]))
+            OrderedDict([('Reference', list(counts.keys())), ('Count', list(counts.values()))]))
         data_frame = data_frame.sort(['Count', 'Reference'], ascending=False)
 
         if args.t is not None:
