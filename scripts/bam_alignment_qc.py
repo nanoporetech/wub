@@ -42,7 +42,7 @@ parser = argparse.ArgumentParser(
         * Mean quality values across the reference.
         * Base coverage across the reference.
 
-    The tool saves the gathered statistics in a pickle file, whihc can be fed to `bam_multi_qc.py` to compare different samples.
+    The tool saves the gathered statistics in a pickle file, which can be fed to `bam_multi_qc.py` to compare different samples.
     """)
 parser.add_argument(
     '-f', metavar='reference', type=str, help="Reference fasta.", required=True)
