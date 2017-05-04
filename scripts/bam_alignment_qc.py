@@ -8,7 +8,7 @@ import tqdm
 
 import os
 import numpy as np
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 import itertools
 
 from wub.util import misc
