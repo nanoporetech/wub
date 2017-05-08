@@ -103,8 +103,8 @@ if __name__ == '__main__':
     plotter.pages.savefig()
 
     plotter.plt.clf()
-    correlations = pd.Series(correlations, name="Distribution of Spearman rank correlation coefficients")
-    sns.distplot(correlations, kde=False, rug=True)
+    correlations = pd.DataFrame({"Distribution of Spearman rank correlation coefficients": correlations})
+    sns.boxplot(correlations)
     plotter.plt.tight_layout()
     plotter.pages.savefig()
 
