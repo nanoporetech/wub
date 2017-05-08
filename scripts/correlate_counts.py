@@ -29,20 +29,31 @@ parser.add_argument(
 def load_counts(counts):
     """Load statistics from pickle files.
 
-    :param pickles: List of pickle files.
-    :returns: OrderedDict of stats per dataset.
+    :param pickles: List of count files.
+    :returns: OrderedDict of count data frames per dataset.
     :rtype: OrderedDict
     """
     stats = OrderedDict()
     for count_file in counts:
+        name = path.basename(count_file)
         stats[name] = pd.read_csv(count_file, sep="\t")
     return stats
 
+def _get_reference_set(dfs):
+    """Get list of all references."""
+    references = set()
+    for df in six.itervalues(dfs):
+        references = references.union(set(df['Reference']))
+    return sorted(list(references))
+
+def join_counts(counts):
+    references = _get_reference_set(counts)
 
 if __name__ == '__main__':
     args = parser.parse_args()
     plotter = report.Report(args.r)
 
     stats = load_counts(args.counts)
+    joint_df = join_counts(stats)
 
     plotter.close()
