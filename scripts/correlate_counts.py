@@ -78,6 +78,7 @@ def _corrfunc(x, y, **kws):
     Solution from http://stackoverflow.com/a/30942817
     """
     r, _ = stats.spearmanr(x, y)
+    correlations.append(r)
     ax = plotter.plt.gca()
     ax.annotate("R = {:.2f}".format(r),
                 xy=(.1, .9), xycoords=ax.transAxes)
@@ -89,6 +90,7 @@ if __name__ == '__main__':
 
     counts = load_counts(args.counts)
     joint_df = join_counts(counts)
+    correlations = []
 
     # Solution from http://stackoverflow.com/a/30942817
     g = sns.PairGrid(joint_df, palette=["red"])
@@ -97,7 +99,12 @@ if __name__ == '__main__':
     g.map_lower(sns.kdeplot, cmap="Blues_d")
     g.map_lower(_corrfunc)
     g.map_upper(_corrfunc)
+    plotter.plt.tight_layout()
+    plotter.pages.savefig()
 
+    plotter.plt.clf()
+    correlations = pd.Series(correlations, name="Distribution of Spearman rank correlation coefficients")
+    sns.distplot(correlations, kde=False, rug=True)
     plotter.plt.tight_layout()
     plotter.pages.savefig()
 
