@@ -35,9 +35,10 @@ def load_counts(counts):
     """
     stats = OrderedDict()
     for count_file in counts:
-        name = path.basename(count_file)
+        name = path.basename(count_file).rsplit('.', 1)[0]
         stats[name] = pd.read_csv(count_file, sep="\t")
     return stats
+
 
 def _get_reference_set(dfs):
     """Get list of all references."""
@@ -46,8 +47,31 @@ def _get_reference_set(dfs):
         references = references.union(set(df['Reference']))
     return sorted(list(references))
 
+
 def join_counts(counts):
+    """Join count data frames.
+    :param counts: Dicttionary of data frames.
+    :returns: Mergeid data frame.
+    :rtype: DataFrame
+    """
     references = _get_reference_set(counts)
+    res_dict = OrderedDict({'Reference': references})
+
+    for dataset in six.iterkeys(counts):
+        res_dict[dataset] = []
+
+    for i, ref in enumerate(references):
+        for dataset in six.iterkeys(counts):
+            tmp = counts[dataset][counts[dataset]['Reference'] == ref]
+            if len(tmp) == 0:
+                tmp = 0
+            elif len(tmp) == 1:
+                tmp = int(tmp['Count'])
+            else:
+                raise Exception("Multiple rows for single reference in {}".format(dataset))
+            res_dict[dataset].append(tmp)
+    return pd.DataFrame(res_dict)
+
 
 if __name__ == '__main__':
     args = parser.parse_args()
