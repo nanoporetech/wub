@@ -3,9 +3,7 @@
 
 import six
 import argparse
-import numpy as np
 import sys
-from scipy.stats import spearmanr
 from scipy import stats
 from collections import OrderedDict
 import pandas as pd
