@@ -4,6 +4,7 @@
 import six
 import argparse
 import numpy as np
+import sys
 from scipy.stats import spearmanr
 from scipy import stats
 from collections import OrderedDict
@@ -87,6 +88,10 @@ def _corrfunc(x, y, **kws):
 if __name__ == '__main__':
     args = parser.parse_args()
     plotter = report.Report(args.r)
+
+    if len(args.counts) == 0:
+        sys.stderr.write("No count files given!\n")
+        sys.exit(1)
 
     counts = load_counts(args.counts)
     joint_df = join_counts(counts)
