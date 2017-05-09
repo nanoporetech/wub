@@ -194,21 +194,22 @@ def read_qual_qc(st, report, qual_intervals=5):
                            'mapping_quals'])]), title="Distribution of mapping qualities", xlab="Mapping quality", ylab="Count", legend=False)
 
     # Process alignment qualities and lengths:
-    breaks = np.linspace(start=np.floor(np.min(st['aligned_quals'])), stop=np.ceil(
-        np.max(st['aligned_quals'])), num=qual_intervals + 1)
-    aq_map = OrderedDict()
+    if len(st['aligned_quals']) > 0:
+        breaks = np.linspace(start=np.floor(np.min(st['aligned_quals'])), stop=np.ceil(
+            np.max(st['aligned_quals'])), num=qual_intervals + 1)
+        aq_map = OrderedDict()
 
-    decimals = 3
-    for i in range(len(breaks) - 1):
-        aq_map[(round(breaks[i], decimals), round(breaks[i + 1], decimals))] = []
-    intervals = list(aq_map.keys())
+        decimals = 3
+        for i in range(len(breaks) - 1):
+            aq_map[(round(breaks[i], decimals), round(breaks[i + 1], decimals))] = []
+        intervals = list(aq_map.keys())
 
-    for i, aln_qual in enumerate(st['aligned_quals']):
-        index = np.searchsorted(breaks, aln_qual) - 1
-        aq_map[intervals[index]].append(st['alignment_lengths'][i])
+        for i, aln_qual in enumerate(st['aligned_quals']):
+            index = np.searchsorted(breaks, aln_qual) - 1
+            aq_map[intervals[index]].append(st['alignment_lengths'][i])
 
-    report.plot_boxplots(aq_map, title="Mean base qualities vs. alignment lengths",
-                         xlab="Mean base quality", ylab="Alignment lengths", xticks_rotation=45)
+        report.plot_boxplots(aq_map, title="Mean base qualities vs. alignment lengths",
+                             xlab="Mean base quality", ylab="Alignment lengths", xticks_rotation=45)
 
 
 def indel_dist_qc(st, report):

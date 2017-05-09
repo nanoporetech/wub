@@ -220,8 +220,9 @@ def pileup_stats(bam, region=None, verbose=True):
             if not pileupread.is_del and not pileupread.is_refskip:
                 # print pileupcolumn.reference_name, pileupcolumn.reference_pos,
                 # pileupread.alignment.query_qualities[pileupread.query_position]
-                st[pileupcolumn.reference_name][pileupcolumn.reference_pos].append(
-                    pileupread.alignment.query_qualities[pileupread.query_position])
+                if pileupread.alignment.query_qualities is not None:
+                    st[pileupcolumn.reference_name][pileupcolumn.reference_pos].append(
+                        pileupread.alignment.query_qualities[pileupread.query_position])
     samfile.close()
     return {'qualities': dict(st), 'coverage': dict(cst)}
 
