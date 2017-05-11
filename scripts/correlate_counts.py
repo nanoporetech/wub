@@ -22,6 +22,8 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bam_multi_qc.pdf).", default="correlate_counts.pdf")
 parser.add_argument(
+    '-c', metavar='corr_type', type=str, help="Correlation statistic - spearman or pearson (spearman).", default="spearman")
+parser.add_argument(
     'counts', metavar='input_counts', nargs='*', type=str, help="Input counts as tab separated files.")
 
 
@@ -76,10 +78,17 @@ def _corrfunc(x, y, **kws):
     """ Annotate grid with correaltion coefficient.
     Solution from http://stackoverflow.com/a/30942817
     """
-    r, _ = stats.spearmanr(x, y)
+    if args.c == 'spearman':
+        r, _ = stats.spearmanr(x, y)
+        corr_type = 'Rho'
+    elif args.c == 'pearson':
+        r, _ = stats.pearsonr(x, y)
+        corr_type = 'r'
+    else:
+        raise Exception('Invalid correlation statistic.')
     correlations.append(r)
     ax = plotter.plt.gca()
-    ax.annotate("R = {:.2f}".format(r),
+    ax.annotate("{} = {:.2f}".format(corr_type, r),
                 xy=(.1, .9), xycoords=ax.transAxes)
 
 
