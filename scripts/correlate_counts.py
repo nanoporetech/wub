@@ -4,6 +4,7 @@
 import six
 import argparse
 import sys
+import numpy as np
 from scipy import stats
 from collections import OrderedDict
 import pandas as pd
@@ -24,10 +25,12 @@ parser.add_argument(
 parser.add_argument(
     '-c', metavar='corr_type', type=str, help="Correlation statistic - spearman or pearson (spearman).", default="spearman")
 parser.add_argument(
+    '-L', action="store_true", help="Log transform data.", default=False)
+parser.add_argument(
     'counts', metavar='input_counts', nargs='*', type=str, help="Input counts as tab separated files.")
 
 
-def load_counts(counts):
+def load_counts(counts, log_transform):
     """Load statistics from pickle files.
 
     :param pickles: List of count files.
@@ -37,7 +40,10 @@ def load_counts(counts):
     stats = OrderedDict()
     for count_file in counts:
         name = path.basename(count_file).rsplit('.', 1)[0]
+        if log_transform:
+            name = 'log(' + name + '+1)'
         stats[name] = pd.read_csv(count_file, sep="\t")
+        stats[name]['Count'] = np.log(stats[name]['Count'] + 1)
     return stats
 
 
@@ -100,7 +106,7 @@ if __name__ == '__main__':
         sys.stderr.write("No count files given!\n")
         sys.exit(1)
 
-    counts = load_counts(args.counts)
+    counts = load_counts(args.counts, args.L)
     joint_df = join_counts(counts)
     correlations = []
 
@@ -115,7 +121,8 @@ if __name__ == '__main__':
     plotter.pages.savefig()
 
     plotter.plt.clf()
-    correlations = pd.DataFrame({"Distribution of Spearman rank correlation coefficients": correlations})
+    correlations = pd.DataFrame(
+        {"Distribution of correlation coefficients": correlations})
     sns.boxplot(correlations)
     plotter.plt.tight_layout()
     plotter.pages.savefig()
