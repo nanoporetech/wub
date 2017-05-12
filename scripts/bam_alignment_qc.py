@@ -253,7 +253,8 @@ def error_stat_qc(st, report, csizes, ommit_diagonal=False):
     z = np.zeros((len(bases_plus), len(contexts)), dtype=float)
     for conti, cont in enumerate(contexts):
         for bi, b in enumerate(bases_plus):
-            z[bi][conti] = nd[cont][b]
+            if b in nd[cont]:
+                z[bi][conti] = nd[cont][b]
             central_base = cont[csizes[0]:len(cont) - csizes[1]]
             if central_base == b:
                 if ommit_diagonal:
