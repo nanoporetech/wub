@@ -33,7 +33,12 @@ def record_filter(input_iter, in_format, to_alphabet):
     :rtype: generator
     """
     for record in input_iter:
-        yield record
+        if to_alphabet == 'DNA':
+            yield seq_util.rna_record_to_dna(record)
+        elif to_alphabet == 'RNA':
+            yield seq_util.dna_record_to_rna(record)
+        else:
+            raise Exception('Invalid alphabet type')
 
 
 if __name__ == '__main__':
@@ -42,8 +47,12 @@ if __name__ == '__main__':
     input_iterator = seq_util.read_seq_records(
         args.input_fastx, format=args.i)
 
+    to_alphabet = None
     if args.D and args.R:
         sys.stderr.write("-D and -R are mutually exclusive!\n")
+        sys.exit(1)
+    elif not args.D and not args.R:
+        sys.stderr.write("Either -D or -R must be specified!\n")
         sys.exit(1)
     elif args.D:
         to_alphabet = 'DNA'
