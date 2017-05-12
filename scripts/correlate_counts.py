@@ -71,9 +71,9 @@ def join_counts(counts):
         for dataset in six.iterkeys(counts):
             tmp = counts[dataset][counts[dataset]['Reference'] == ref]
             if len(tmp) == 0:
-                tmp = 0
+                tmp = 0.0
             elif len(tmp) == 1:
-                tmp = int(tmp['Count'])
+                tmp = float(tmp['Count'])
             else:
                 raise Exception("Multiple rows for single reference in {}".format(dataset))
             res_dict[dataset].append(tmp)
