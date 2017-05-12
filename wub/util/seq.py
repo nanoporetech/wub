@@ -5,7 +5,7 @@ import itertools
 from collections import namedtuple, OrderedDict, Counter
 import numpy as np
 from Bio import SeqIO
-from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA
+from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA, IUPACUnambiguousRNA
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio import AlignIO
@@ -125,6 +125,34 @@ def new_dna_record(sequence, name, qualities=None):
     if qualities is not None:
         seq_record.letter_annotations["phred_quality"] = qualities
     return seq_record
+
+
+def rna_record_to_dna(record):
+    """Convert an RNA SeqRecord into DNA SeqRecord.
+
+    :param record: RNA SeqRecord.
+    :returns: The DNA SeqRecord object.
+    :rtype: SeqRecord
+
+    """
+    new_record = SeqRecord(
+        Seq(str(record.seq).replace('U', 'T'), IUPACUnambiguousRNA), id=record.id, description=record.description, name=record.name)
+    new_record.letter_annotations["phred_quality"] = record.letter_annotations["phred_quality"]
+    return new_record
+
+
+def dna_record_to_rna(record):
+    """Convert a DNA SeqRecord into RNA SeqRecord.
+
+    :param record: DNA SeqRecord.
+    :returns: The RNA SeqRecord object.
+    :rtype: SeqRecord
+
+    """
+    new_record = SeqRecord(
+        Seq(str(record.seq).replace('T', 'U'), IUPACUnambiguousDNA), id=record.id, description=record.description, name=record.name)
+    new_record.letter_annotations["phred_quality"] = record.letter_annotations["phred_quality"]
+    return new_record
 
 
 def write_seq_records(records_iterator, output_object, format='fasta'):
