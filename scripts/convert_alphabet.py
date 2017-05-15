@@ -14,9 +14,9 @@ parser.add_argument(
 parser.add_argument(
     '-o', metavar='out_format', type=str, help="Output format (fastq).", default='fastq')
 parser.add_argument(
-    '-D', action='store_true', help="Reverse complement sequences.", default=False)
+    '-D', action='store_true', help="RNA->DNA alphabet conversion.", default=False)
 parser.add_argument(
-    '-R', action='store_true', help="Reverse complement sequences.", default=False)
+    '-R', action='store_true', help="DNA->RNA alphabet conversion.", default=False)
 parser.add_argument('input_fastx', nargs='?', help='Input file (default: stdin).',
                     type=argparse.FileType('r'), default=sys.stdin)
 parser.add_argument('output_fastx', nargs='?', help='Output file (default: stdout).',
