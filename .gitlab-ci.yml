@@ -10,7 +10,7 @@ before_script:
     - apt-get install -y software-properties-common
     - apt-add-repository universe
     - apt-get update
-    - apt-get install -y python-pip make python-numpy python-matplotlib python-biopython python-pandas mummer last-align
+    - apt-get install -y python-pip make python-numpy python-matplotlib python-biopython python-pandas mummer last-align cython zlib1g-dev lbzip2 libbz2-dev liblzma-dev libhdf5-serial-dev
     - pip install --upgrade sphinx sphinx-argparse sphinx_rtd_theme pytest pycmd futures packaging appdirs pysam
     - pip install -e ./
 
