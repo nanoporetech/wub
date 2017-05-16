@@ -1,0 +1,7 @@
+/nfs/vnx-home/bsipos/gt/r2/scripts/read_err.fas /nfs/vnx-home/bsipos/gt/r2/scripts/adapter.fas
+NUCMER
+
+    [S1]     [E1]  |     [S2]     [E2]  |  [LEN 1]  [LEN 2]  |  [% IDY]  | [TAGS]
+=====================================================================================
+     454      500  |        1       49  |       47       49  |    90.00  | seq_0	adapter
+     956     1003  |        3       50  |       48       48  |    92.00  | seq_0	adapter
