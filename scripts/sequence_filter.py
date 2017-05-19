@@ -54,8 +54,14 @@ def record_filter(input_iter, in_format, min_qual, min_len, max_len, rev_comp):
             record = record.reverse_complement()
         yield record
 
+
 if __name__ == '__main__':
     args = parser.parse_args()
+
+    if args.i == 'fasta' and args.o == 'fastq':
+        sys.stderr.write(
+            "Cannot produce fastq output from fasta! Use fasta_to_mock_fastq.py instead.\n")
+        sys.exit(1)
 
     input_iterator = seq_util.read_seq_records(
         args.input_fastx, format=args.i)
