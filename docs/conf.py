@@ -16,7 +16,7 @@ import sys
 import os
 import imp
 import subprocess
-from mock import Mock as MagicMock
+from unittest.mock import MagicMock
 
 class Mock(MagicMock):
     @classmethod
