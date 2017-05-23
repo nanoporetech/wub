@@ -6,3 +6,4 @@ biopython
 numpy
 pandas
 editdistance
+matplotlib
