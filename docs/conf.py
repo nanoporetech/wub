@@ -20,7 +20,7 @@ import subprocess
 
 # class Mock(MagicMock):
 #    @classmethod
-#    def __getattr__(cls, name):
+#    def __getattr__(cls, name): 
 #        return MagicMock()
 
 # MOCK_MODULES = ['pysam', 'tqdm', 'pandas', 'Bio', 'numpy', 'editdistance', '']
