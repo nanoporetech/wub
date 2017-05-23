@@ -8,4 +8,5 @@ pandas
 editdistance
 matplotlib
 h5py
+futures
 git+https://github.com/nanoporetech/wub.git
