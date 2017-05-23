@@ -16,6 +16,7 @@ import sys
 import os
 import imp
 import subprocess
+
 from unittest.mock import MagicMock
 
 class Mock(MagicMock):
