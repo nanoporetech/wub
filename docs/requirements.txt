@@ -7,3 +7,4 @@ numpy
 pandas
 editdistance
 matplotlib
+h5py
