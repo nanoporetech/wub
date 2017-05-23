@@ -1,3 +1,8 @@
 mock
 sphinx-argparse
 pysam
+tqdm
+biopython
+numpy
+pandas
+editdistance
