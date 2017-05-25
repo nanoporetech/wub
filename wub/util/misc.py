@@ -69,7 +69,10 @@ def pickle_load(fname):
     :rtype: object
 
     """
-    return pickle.load(open(fname, 'rb'))
+    fh = open(fname, 'rb')
+    data = pickle.load(fh)
+    fh.close()
+    return data
 
 
 def pickle_dump(obj, fname):
