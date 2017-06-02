@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import six
+from six.moves import reduce
 import sys
 from collections import defaultdict, OrderedDict
 import tqdm
