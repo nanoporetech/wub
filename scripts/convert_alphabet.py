@@ -8,7 +8,7 @@ from wub.util import seq as seq_util
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
-    description='Filter sequences by length and mean quality value.')
+    description='Convert between DNA and RNA alphabets.')
 parser.add_argument(
     '-i', metavar='in_format', type=str, help="Input format (fastq).", default='fastq')
 parser.add_argument(
