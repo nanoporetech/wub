@@ -43,7 +43,7 @@ lint: ## check style with flake8
 	@(flake8 --max-line-length=120 scripts/*.py | grep -v "E501 line too long") || true
 
 test: ## run tests quickly with the default Python
-	py.test
+	py.test -s
 
 coverage: ## check code coverage quickly with the default Python
 		coverage run --source $(MODULE) --omit="*/tests/*,*__init__.py" `which py.test`
