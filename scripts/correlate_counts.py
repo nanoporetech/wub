@@ -43,7 +43,8 @@ def load_counts(counts, log_transform):
         if log_transform:
             name = 'log(' + name + '+1)'
         stats[name] = pd.read_csv(count_file, sep="\t")
-        stats[name]['Count'] = np.log(stats[name]['Count'] + 1)
+        if log_transform:
+            stats[name]['Count'] = np.log(stats[name]['Count'] + 1)
     return stats
 
 
