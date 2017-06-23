@@ -9,7 +9,7 @@ from wub.parsers import mummer
 
 class TestNucmerCoordParse(unittest.TestCase):
 
-    """Test BAM statistics functions."""
+    """Test numcmer cooridnate parsing."""
 
     def test_nucmer_coord_parse(self):
         """Test parsing of nucmer coordinate files."""
