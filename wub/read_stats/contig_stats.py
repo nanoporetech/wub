@@ -4,17 +4,16 @@ import numpy as np
 from wub.util.misc import _getextension
 from wub.util.seq import mean_qscore
 
-# test = '/nfs/us-home/DATA/share/prughani/assemblies/arabidopsis/ref/cat_arabidopsis_thaliana.fasta'
-# test = '/home/OXFORDNANOLABS/prughani/md8/MD_8_Reads_7_28_16_basecalled_gt8_filtered.fastq'
 
 
 def readfast(fast):
-    '''
-    reads a fasta or fastq file
+    """ reads a fasta or fastq file.
 
     :param fast: fastq or fasta
     :return: list of records with attr
-    '''
+    :rtype: generator object
+
+    """
 
     extension = _getextension(fast)
     for rec in SeqIO.parse(open(fast), extension):
@@ -23,15 +22,15 @@ def readfast(fast):
 
 
 def N50(df, col, percent=50):
-    '''
-    Calculate the N50 by default however, by changing percent to 75, N75 can be calculated
+    """ Calculate the N50 by default however, by changing percent to 75, N75 can be calculated.
 
     :param df: dataframe with seqlen column
     :param col: column with sequence length
     :param percent: percentage to be calculated
     :return: N50 Value
     :rtype: int
-    '''
+
+    """
 
     csum = np.array(df[col], dtype=int)
     csum.sort()
@@ -46,28 +45,28 @@ def N50(df, col, percent=50):
 
 
 def L50(df, col, percent=50):
-    '''
-    Calculate the L50 by default however, by changing percent to 75, N75 can be calculated
+    """ Calculate the L50 by default however, by changing percent to 75, N75 can be calculated
 
     :param df: dataframe with seqlen column
     :param col: column with sequence length
     :param percent: percentage to be calculated
     :return: N50 Value
     :rtype: int
-    '''
+
+    """
 
     df1 = _cumsum(df, col).copy()
     return df1[df1 >= N50(df, col, percent)][col].count()
 
 
 def GC_per_read(seq_rec, fq=False):
-    ''' Calculates the number of bases per sequence, GC content and mean Q score if fastq is given
+    """ Calculates the number of bases per sequence, GC content and mean Q score if fastq is given
 
     :param seq_rec: sequence records with attr from biopython
     :param fq: boolean
     :return: dataframe
     :rtype: dataframe
-    '''
+    """
 
     d = []
 
@@ -95,13 +94,13 @@ def GC_per_read(seq_rec, fq=False):
 
 
 def get_stats(df):
-    '''
-    calcualtes the summary stats
+    """ Calcualtes the summary stats
 
     :param df: dataframe from GC_per_read
     :return: summary Series
     :rtype: Series
-    '''
+
+    """
 
     stats = pd.Series({})
     df = df.copy()
