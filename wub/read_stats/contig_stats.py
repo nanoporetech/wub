@@ -5,7 +5,6 @@ from wub.util.misc import _getextension
 from wub.util.seq import mean_qscore
 
 
-
 def readfast(fast):
     """ reads a fasta or fastq file.
 
@@ -20,6 +19,18 @@ def readfast(fast):
 
         yield rec
 
+def _cumsum(df, col):
+    '''
+    Calculates the cumulative sum of column
+
+    :param df: dataframe with sequence length
+    :param col: identify the sequence length
+    :return: dataframe with cumulative sum of length
+    :rtype: dataframe
+    '''
+    df = df.sort_values(by=col, ascending=False).reset_index(drop=True)
+    df['cumsum'] = df[col].cumsum()
+    return df
 
 def N50(df, col, percent=50):
     """ Calculate the N50 by default however, by changing percent to 75, N75 can be calculated.
@@ -31,18 +42,10 @@ def N50(df, col, percent=50):
     :rtype: int
 
     """
-
-    csum = np.array(df[col], dtype=int)
-    csum.sort()
-    csum = csum[::-1]
-    csum = csum.cumsum()
-    n50 = csum.max() * percent / 100
-    # result = df.where(df['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
-    for i, cs in enumerate(csum):
-        if cs >= n50:
-            break
-    return df[col][len(df[col]) - i - 1]
-
+    df1 = _cumsum(df, col)
+    df1['cumsum'] = df1[col].cumsum()
+    n50 = df1['cumsum'].max() * percent / 100
+    return df1.where(df1['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
 
 def L50(df, col, percent=50):
     """ Calculate the L50 by default however, by changing percent to 75, N75 can be calculated
@@ -54,10 +57,9 @@ def L50(df, col, percent=50):
     :rtype: int
 
     """
-
+    
     df1 = _cumsum(df, col).copy()
     return df1[df1 >= N50(df, col, percent)][col].count()
-
 
 def GC_per_read(seq_rec, fq=False):
     """ Calculates the number of bases per sequence, GC content and mean Q score if fastq is given
@@ -101,10 +103,8 @@ def get_stats(df):
     :rtype: Series
 
     """
-
     stats = pd.Series({})
     df = df.copy()
-
     Mbase = 1000000.0
 
     bases = ["A", "T", "C", "G", 'N']
