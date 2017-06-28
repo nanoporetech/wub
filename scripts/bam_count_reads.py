@@ -86,7 +86,7 @@ def _offline_counter(args):
                 data[word] = tmp
 
     data_frame = pd.DataFrame(data)
-    data_frame = data_frame.sort(['Count', 'Reference'], ascending=False)
+    data_frame = data_frame.sort_values(['Count', 'Reference'], ascending=False)
 
     if args.t is not None:
         data_frame.to_csv(args.t, sep='\t', index=False)
@@ -104,7 +104,7 @@ def _online_counter(args):
     for counts in counts_iter:
         data_frame = pd.DataFrame(
             OrderedDict([('Reference', list(counts.keys())), ('Count', list(counts.values()))]))
-        data_frame = data_frame.sort(['Count', 'Reference'], ascending=False)
+        data_frame = data_frame.sort_values(['Count', 'Reference'], ascending=False)
 
         if args.t is not None:
             data_frame.to_csv(args.t, sep='\t', index=False)

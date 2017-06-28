@@ -16,7 +16,7 @@ requirements = [
     'matplotlib',
     'seaborn',
     'editdistance',
-    'pandas',
+    'pandas>=0.20.2',
     'pysam',
     'tqdm',
     'h5py',

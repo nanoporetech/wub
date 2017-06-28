@@ -79,5 +79,5 @@ if __name__ == '__main__':
     if args.x:
         sort_by = 'aligned_read_bases'
 
-    df.sort([sort_by], ascending=[0], inplace=True)
+    df.sort_values([sort_by], ascending=[0], inplace=True)
     df.to_csv(args.t, sep="\t", index=False)
