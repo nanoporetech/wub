@@ -82,7 +82,8 @@ def _update_read_stats(r, res, min_aqual):
     """ Update read statistics. """
     if r.is_unmapped:
         res['unmapped'] += 1
-        res['unaligned_lengths'].append(r.infer_query_length(False))
+        res['unaligned_lengths'].append(r.query_length)
+
         if r.query_qualities is not None:
             res['unaligned_quals'].append(
                 seq_util.mean_qscore(r.query_qualities, qround=False))
