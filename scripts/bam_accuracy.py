@@ -6,6 +6,8 @@ import argparse
 import os
 import pandas as pd
 from collections import OrderedDict
+from scipy.stats import gaussian_kde
+from scipy.optimize import minimize_scalar
 
 from wub.util import misc
 from wub.vis import report
@@ -38,11 +40,36 @@ parser.add_argument(
     'bam', metavar='bam', type=str, help="Input BAM file.")
 
 
+def estimate_mode(acc):
+    """ Estimate the mode of a set of float values between 0 and 1.
+
+    :param acc: Data.
+    :returns: The mode of the sample
+    :rtype: float
+    """
+    # Taken from sloika.
+    if len(acc) > 1:
+        da = gaussian_kde(acc)
+        optimization_result = minimize_scalar(lambda x: -da(x), bounds=(0, 1), method='Bounded')
+        if optimization_result.success:
+            try:
+                mode = optimization_result.x[0]
+            except IndexError:
+                mode = optimization_result.x
+        else:
+            sys.stderr.write("Mode computation failed")
+            mode = 0
+    else:
+        mode = acc[0]
+    return mode
+
+
 def base_stats_qc(st, report):
     """ Plot base statistics.
 
     :param st: Statistics dict.
     :param report: Plotter object.
+    :returns: None
     """
 
     bs = st.copy()
@@ -51,7 +78,7 @@ def base_stats_qc(st, report):
     plotter.plot_bars_simple(
         bs, title="Basewise statistics", xlab="Type", ylab="Count")
     plotter.plot_bars_simple(OrderedDict([('Identity ({})'.format(st['identity']), st['identity']), ('Accuracy ({})'.format(
-        st['accuracy']), st['accuracy'])]), title="Precision statistics", xlab="Type", ylab="Count")
+        st['accuracy']), st['accuracy'])]), title="Precision statistics: length weighted means", xlab="Type", ylab="Count")
 
 
 def read_precision_qc(st, report):
@@ -59,11 +86,21 @@ def read_precision_qc(st, report):
 
     :param st: Statistics dict.
     :param report: Plotter object.
+    :returns: Mode of accuracy and identity.
+    :rtype: dict
     """
-    report.plot_histograms(OrderedDict([('Dummy', st[
-        'accuracy'])]), title="Distribution of per-read accuracies", xlab="Accuracy", ylab="Count", legend=False)
-    report.plot_histograms(OrderedDict([('Dummy', st[
-        'identity'])]), title="Distribution of per-read identitities", xlab="Identity", ylab="Count", legend=False)
+    accuracy_mode = estimate_mode(st['accuracy'])
+    report.plot_histograms(OrderedDict([('Accuracy', st[
+        'accuracy'])]), title="Distribution of per-read accuracies", xlab="Accuracy", ylab="Count", legend=True,
+        vlines={'Mode:{0:.4f}'.format(accuracy_mode): accuracy_mode})
+
+    identity_mode = estimate_mode(st['identity'])
+    report.plot_histograms(OrderedDict([('Identity', st[
+        'identity'])]), title="Distribution of per-read identitities", xlab="Identity", ylab="Count", legend=True,
+        vlines={'Mode:{0:.4f}'.format(identity_mode): identity_mode})
+
+    modes = {'accuracy_mode': accuracy_mode, 'identity_mode': identity_mode}
+    return modes
 
 
 if __name__ == '__main__':
@@ -79,13 +116,15 @@ if __name__ == '__main__':
     precision_stats = read_stats['read_stats']
 
     base_stats_qc(base_stats, plotter)
-    read_precision_qc(precision_stats, plotter)
+    modes = read_precision_qc(precision_stats, plotter)
 
     plotter.close()
 
     global_stats = OrderedDict([
         ('Accuracy', [read_stats['base_stats']['accuracy']]),
+        ('AccuracyMode', modes['accuracy_mode']),
         ('Identity', [read_stats['base_stats']['identity']]),
+        ('IdentityMode', modes['identity_mode']),
         ('Mapped', [read_stats['mapped']]),
         ('Unmapped', [read_stats['unmapped']]),
         ('Tag', [read_stats['tag']]), ])

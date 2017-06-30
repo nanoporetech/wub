@@ -169,7 +169,7 @@ def base_stats_qc(st, report):
     plotter.plot_bars_simple(
         bs, title="Basewise statistics", xlab="Type", ylab="Count")
     plotter.plot_bars_simple(OrderedDict([('Identity ({})'.format(st['identity']), st['identity']), ('Accuracy ({})'.format(
-        st['accuracy']), st['accuracy'])]), title="Precision statistics", xlab="Type", ylab="Count")
+        st['accuracy']), st['accuracy'])]), title="Precision statistics: length weighted means", xlab="Type", ylab="Count")
 
 
 def read_qual_qc(st, report, qual_intervals=5):
