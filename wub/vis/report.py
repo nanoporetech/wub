@@ -34,7 +34,7 @@ class Report:
         :param title: Figure title.
         :param xlab: X axis label.
         :param ylab: Y axis label.
-        :retuns: None
+        :returns: None
         :rtype: object
         """
         plt.xlabel(xlab)
