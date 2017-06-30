@@ -204,7 +204,7 @@ class Report:
 
         self._set_properties_and_close(fig, title, xlab, ylab)
 
-    def plot_histograms(self, data_map, title="", xlab="", ylab="", bins=50, alpha=0.7, legend_loc='best', legend=True):
+    def plot_histograms(self, data_map, title="", xlab="", ylab="", bins=50, alpha=0.7, legend_loc='best', legend=True, vlines=None):
         """Plot histograms of multiple data arrays.
 
         :param self: object.
@@ -215,6 +215,8 @@ class Report:
         :param bins: Number of bins.
         :param alpha: Transparency value for histograms.
         :param legend_loc: Location of legend.
+        :param legend: Plot legend if True.
+        :param vlines: Dictionary with labels and positions of vertical lines to draw.
         :returns: None
         :rtype: object
         """
@@ -223,6 +225,9 @@ class Report:
         for label, data in six.iteritems(data_map):
             if len(data) > 0:
                 plt.hist(data, bins=bins, label=label, alpha=alpha)
+        if vlines is not None:
+            for label, pos in six.iteritems(vlines):
+                plt.axvline(x=pos, label=label)
         if legend:
             plt.legend(loc=legend_loc)
 
