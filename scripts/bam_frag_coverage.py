@@ -131,7 +131,7 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
     # Plot reference coverage histogram:
     ref_cov = np.array(ref_cov, dtype=float)
     cov80_score = _calculate_coverage_score(ref_cov)
-    plotter.plot_histograms({'dummy': ref_cov}, title="{} cov80={}".format(hist_title, cov80_score),
+    plotter.plot_histograms({'dummy': ref_cov}, title="{} cov80={:.4f}".format(hist_title, cov80_score),
                             xlab="Reference coverage", ylab="Count", bins=100, legend=False)
 
     return {'global_cov_fwd': cov_fwd, 'global_cov_rev': cov_rev, 'ref_cov': ref_cov}
