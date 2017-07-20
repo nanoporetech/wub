@@ -43,8 +43,8 @@ def random_base_except(excluded, probs=uniform_probs):
     # Filter out excluded base:
     bp_dict = dict((x, y)
                    for x, y in zip(seq_util.bases, probs) if x != excluded)
-    filtered_bases = bp_dict.keys()
-    norm_probs = np.array(bp_dict.values(), dtype=float)
+    filtered_bases = list(bp_dict.keys())
+    norm_probs = np.array(list(bp_dict.values()), dtype=float)
     # Re-normalise probabilities:
     norm_probs = norm_probs / np.sum(norm_probs)
     return np.random.choice(filtered_bases, p=norm_probs)
@@ -68,7 +68,7 @@ def sample_error_type(error_weights):
     :returns: Error type
     :rtype: str
     """
-    return np.random.choice(error_weights.keys(), p=error_weights.values())
+    return np.random.choice(list(error_weights.keys()), p=list(error_weights.values()))
 
 
 def cigar_list_to_string(cigar_list):

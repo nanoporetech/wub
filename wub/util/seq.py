@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from six.moves import reduce
 import sys
 import itertools
 from collections import namedtuple, OrderedDict, Counter
