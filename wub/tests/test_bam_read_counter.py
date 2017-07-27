@@ -15,7 +15,7 @@ class TestBamReadCounter(unittest.TestCase):
 
     def _generate_test_data(self):
         """Generate test data for dnadiff test."""
-        fh_sam = tempfile.NamedTemporaryFile(suffix=".sam", delete=False)
+        fh_sam = tempfile.NamedTemporaryFile(suffix=".sam", delete=False, mode='w')
         self.sam = fh_sam.name
 
         data = """@SQ	SN:chr0	LN:827

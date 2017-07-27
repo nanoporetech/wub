@@ -1,3 +1,4 @@
+import six
 import unittest
 import tempfile
 import os
@@ -14,9 +15,9 @@ ref_length = 1000
 class TestMappersLastal(unittest.TestCase):
 
     def setUp(self):
-        fh_ref = tempfile.NamedTemporaryFile(suffix=".fas", delete=False)
+        fh_ref = tempfile.NamedTemporaryFile(suffix=".fas", delete=False, mode='w')
         self.ref_fasta = fh_ref.name
-        fh_target = tempfile.NamedTemporaryFile(suffix=".fas", delete=False)
+        fh_target = tempfile.NamedTemporaryFile(suffix=".fas", delete=False, mode='w')
         self.target_fasta = fh_target.name
 
         self.ref = sim_seq.simulate_sequence(ref_length)
@@ -48,7 +49,7 @@ a score=23 EG2=3.8e+06 E=5.2e-13
 s Simulomonas 0 23 + 23 ATGCGGGGGATAGGACCATATCT
 s tig00000000 0 23 + 23 ATGCGGGGGATAGGACCATATCT
         """
-        parsed = lastal.parse_lastal(raw).next()
+        parsed = six.next(lastal.parse_lastal(raw))
         acc = seq_util.alignment_stats(parsed.r_aln, parsed.q_aln).accuracy
         self.assertEqual(acc, 1.0)
         self.assertEqual(parsed.score, 23)
@@ -60,7 +61,7 @@ a score=23 EG2=3.8e+06 E=5.2e-13
 s Simulomonas 0 23 + 23 TTGCGGGGGATAGGACCATATCT
 s tig00000000 0 23 + 23 ATGCGGGGGATAGGACCATATCT
         """
-        parsed = lastal.parse_lastal(raw).next()
+        parsed = six.next(lastal.parse_lastal(raw))
         acc = seq_util.alignment_stats(parsed.r_aln, parsed.q_aln).accuracy
         self.assertAlmostEqual(acc, 0.9565, places=3)
 
@@ -71,13 +72,14 @@ a score=23 EG2=3.8e+06 E=5.2e-13
 s Simulomonas 0 23 + 23 CCCTCCCCCCCCCCCTTCCCCAC
 s tig00000000 0 23 + 23 ATGCGGGGGATAGGACCATATCT
         """
-        parsed = lastal.parse_lastal(raw).next()
+        parsed = six.next(lastal.parse_lastal(raw))
         acc = seq_util.alignment_stats(parsed.r_aln, parsed.q_aln).accuracy
         self.assertAlmostEqual(acc, 0.0, places=3)
 
     @unittest.skipIf(not cmd_util.find_executable('lastal'),
                      "Lastal binary not found, skipping integration tests.")
     def test_lastal_compare_genomes(self):
-        substs = lastal.compare_genomes_lastal(
-            self.ref_fasta, self.target_fasta)['substitutions'][0]
+        tmp = lastal.compare_genomes_lastal(
+            self.ref_fasta, self.target_fasta)
+        substs = tmp['substitutions'][0]
         self.assertEqual(int(ref_length * error_rate), substs)

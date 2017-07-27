@@ -17,9 +17,9 @@ class TestWrappersDnadiff(unittest.TestCase):
 
     def _generate_test_data(self):
         """Generate test data for dnadiff test."""
-        fh_ref = tempfile.NamedTemporaryFile(suffix=".fas", delete=False)
+        fh_ref = tempfile.NamedTemporaryFile(suffix=".fas", delete=False, mode='w')
         self.ref_fasta = fh_ref.name
-        fh_target = tempfile.NamedTemporaryFile(suffix=".fas", delete=False)
+        fh_target = tempfile.NamedTemporaryFile(suffix=".fas", delete=False, mode='w')
         self.target_fasta = fh_target.name
 
         self.ref = sim_seq.simulate_sequence(ref_length)

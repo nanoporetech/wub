@@ -120,7 +120,7 @@ def lastal_align(database, query, executable='lastal', **kwargs):
     p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 
     # FIXME: reading whole alignment in memory, might not always be a good idea:
-    return p.stdout.read()
+    return p.stdout.read().decode('utf-8')
 
 
 def parse_lastal(res):
@@ -215,8 +215,7 @@ def compare_genomes_lastal(ref_fasta, target_fasta, filter_alns=True, lastal_opt
         stats['insertions'].append(aln_stats.insertions)
     column_order = ['reference', 'target', 'accuracy',
                     'coverage', 'ref_len', 'ref_aln_len', 'target_len', 'target_aln_len', 'aln_length', 'substitutions', 'deletions', 'insertions']
-    stats_frame = pd.DataFrame(stats)
-    stats_frame = stats_frame[column_order]
+    stats_frame = pd.DataFrame(stats, columns=column_order)
 
     # Cleanup:
     if cleanup:

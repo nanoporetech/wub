@@ -12,7 +12,7 @@ class TestBamCompare(unittest.TestCase):
 
     def _generate_test_data(self):
         """Generate test data for dnadiff test."""
-        fh_sam_one = tempfile.NamedTemporaryFile(suffix=".sam", delete=False)
+        fh_sam_one = tempfile.NamedTemporaryFile(suffix=".sam", delete=False, mode='w')
         self.sam_one = fh_sam_one.name
 
         data = """@SQ	SN:chr0	LN:827
@@ -50,7 +50,7 @@ r8_chr0_661_711_-/q11/s0/d3/i1	4	*	0	0	*	*	0	0	GTCTGAGGCGCCATATTAGGCGGGCAAAATGGA
 r9_chr0_523_573_-/q14/s0/d1/i1	16	chr0	726	59	4M25M1D21M	*	0	0	AGCGGGGACCCACACCCCCATCCCCCGCGAATAATTCAACGTTCGCATTA	IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII	NM:i:2	MD:Z:28^A21	AS:i:39	XS:i:0
 r10_chr1_2417_2467_-/q12/s1/d1/i1	16	chr1	2420	41	2H4M1D37M1I6M	*	0	0	CCGATCATCCCGTCCCTGTTCACTCCTACGTCTTGGCTTGGAAAGTGT	IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII	NM:i:3	MD:Z:6^G27G15	AS:i:34	XS:i:0
 """
-        fh_sam_two = tempfile.NamedTemporaryFile(suffix=".sam", delete=False)
+        fh_sam_two = tempfile.NamedTemporaryFile(suffix=".sam", delete=False, mode='w')
         self.sam_two = fh_sam_two.name
 
         fh_sam_two.write(data)
