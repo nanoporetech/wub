@@ -176,8 +176,13 @@ def read_stats(bam, min_aqual=0, region=None, with_clipps=False, verbose=True):
     # Calculate global identity and accuracy:
     base_stats['identity'] = float(
         base_stats['match']) / (base_stats['match'] + base_stats['mismatch'])
+
+    clipps = 0
+    if with_clipps:
+        clipps = base_stats['clipps']
+
     base_stats['accuracy'] = 1.0 - (float(base_stats['insertion'] +
-                                          base_stats['deletion'] + base_stats['mismatch'] + base_stats['clipps']) / base_stats['aln_length'])
+                                          base_stats['deletion'] + base_stats['mismatch'] + clipps) / base_stats['aln_length'])
     res['base_stats'] = base_stats
     res['read_stats'] = read_stats
     bam_reader.close()
@@ -431,13 +436,18 @@ def stats_from_aligned_read(read, with_clipps=False):
     # NM is edit distance: NM = INS + DEL + SUB
     sub = tags['NM'] - ins - delt
     length = match + ins + delt
-    clipps = 0
+
+    # Count clips:
+    clipps = reduce(
+        lambda x, y: x + y[1] if (y[0] == 4 or y[0] == 5) else x, read.cigar, 0)
     if with_clipps:
-        clipps = reduce(
-            lambda x, y: x + y[1] if (y[0] == 4 or y[0] == 5) else x, read.cigar, 0)
         length += clipps
+
     iden = float(match - sub) / match
-    acc = 1.0 - (float(tags['NM'] + clipps) / length)
+    if with_clipps:
+        acc = 1.0 - (float(tags['NM'] + clipps) / length)
+    else:
+        acc = 1.0 - (float(tags['NM']) / length)
     coverage = float(read.query_alignment_length) / read.infer_query_length()
     direction = '-' if read.is_reverse else '+'
     results = OrderedDict([
