@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Compares alignments in two BAM files."""
 
+from six.moves import zip, zip_longest
 import tqdm
-from itertools import izip, izip_longest, chain
+from itertools import chain
 from collections import OrderedDict
 from wub.bam import common as bam_common
 
@@ -65,7 +66,7 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
         ('AlignedSimilarity', 0.0),
         ])
 
-    records_iter = izip(
+    records_iter = zip(
         aln_iter_one.fetch(until_eof=True), aln_iter_two.fetch(until_eof=True))
 
     if verbose and in_format == "BAM":
@@ -170,7 +171,7 @@ def calc_consistency_score(segment_one, segment_two, offset_one, offset_two):
         segment_two.get_aligned_pairs(), offset_two)
 
     score = 0
-    for matches in izip_longest(matches_one, matches_two, fillvalue=False):
+    for matches in zip_longest(matches_one, matches_two, fillvalue=False):
         if matches[0] == matches[1]:
             score += 1
 
