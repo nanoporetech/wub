@@ -41,7 +41,7 @@ parser.add_argument(
 parser.add_argument(
     '-q', metavar='aqual', type=int, default=0, help="Minimum alignment quality (0).")
 parser.add_argument(
-    '-r', metavar='report_pdf', type=str, help="Report PDF (bam_alignment_qc.pdf).", default="bam_frag_coverage.pdf")
+    '-r', metavar='report_pdf', type=str, help="Report PDF (bam_frag_coverage.pdf).", default="bam_frag_coverage.pdf")
 parser.add_argument(
     '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (bam_alignment_qc.pk).", default="bam_frag_coverage.pk")
 parser.add_argument(
