@@ -189,12 +189,13 @@ def read_stats(bam, min_aqual=0, region=None, with_clipps=False, verbose=True):
     return res
 
 
-def pileup_stats(bam, region=None, verbose=True):
+def pileup_stats(bam, region=None, verbose=True, with_quals=True):
     """ Parse pileup columns and extract quality values.
 
     :param bam: Input BAM file.
     :param region: samtools region.
     :param verbose: Show progress bar.
+    :param with_quals: Return quality values per position.
     :returns: Dictionaries per reference with per-base coverage and quality values.
     :rtype: dict
     """
@@ -227,7 +228,7 @@ def pileup_stats(bam, region=None, verbose=True):
             if not pileupread.is_del and not pileupread.is_refskip:
                 # print pileupcolumn.reference_name, pileupcolumn.reference_pos,
                 # pileupread.alignment.query_qualities[pileupread.query_position]
-                if pileupread.alignment.query_qualities is not None:
+                if (pileupread.alignment.query_qualities is not None) and with_quals:
                     st[pileupcolumn.reference_name][pileupcolumn.reference_pos].append(
                         pileupread.alignment.query_qualities[pileupread.query_position])
     samfile.close()

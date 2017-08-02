@@ -37,7 +37,7 @@ if __name__ == '__main__':
     references = SeqIO.index(args.f, format='fasta')
     chrom_lengths = {name: len(so) for name, so in six.iteritems(references)}
     # Parse fragments:
-    st = bam_stats.pileup_stats(args.bam, region=args.c, verbose=verbose)['coverage']
+    st = bam_stats.pileup_stats(args.bam, region=args.c, verbose=verbose, with_quals=False)['coverage']
 
     res = {}
     for chrom, chrom_length in six.iteritems(chrom_lengths):
