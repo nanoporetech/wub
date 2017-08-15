@@ -1,14 +1,10 @@
 import unittest
 
-import six
 from os import path
-from collections import OrderedDict
-from Bio import SeqIO
 from wub.parsers import blastn
 
 
 class TestBlastnCoordParse(unittest.TestCase):
-
 
     def test_nucmer_coord_parse(self):
         """Test blastn outfmt 6 cooridnate parsing."""

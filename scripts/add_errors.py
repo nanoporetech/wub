@@ -36,10 +36,12 @@ def add_fixed_errors(input_iter, nr_errors, error_type):
         record.seq = Seq(mutated_seq)
         yield record
 
+
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    input_iterator = seq_util.read_seq_records(args.input_fasta, format='fasta')
+    input_iterator = seq_util.read_seq_records(
+        args.input_fasta, format='fasta')
 
     simulation_iterator = add_fixed_errors(input_iterator, args.n, args.t)
 

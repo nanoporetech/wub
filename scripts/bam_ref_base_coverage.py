@@ -3,7 +3,6 @@
 
 import six
 import argparse
-import tqdm
 import os
 import pandas as pd
 from Bio import SeqIO

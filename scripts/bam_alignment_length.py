@@ -3,12 +3,10 @@
 
 import argparse
 
-import os
 import sys
 import pandas as pd
 from collections import OrderedDict
 import tqdm
-import pandas as pd
 
 from wub.bam import common as bam_common
 

@@ -41,6 +41,7 @@ def simulate_errors(input_iter, error_rate, error_weights):
         record.seq = Seq(mutated_seq)
         yield record
 
+
 if __name__ == '__main__':
     args = parser.parse_args()
 

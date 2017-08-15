@@ -1,9 +1,6 @@
 import unittest
 
-import six
 from os import path
-from collections import OrderedDict
-from Bio import SeqIO
 from wub.parsers import mummer
 
 

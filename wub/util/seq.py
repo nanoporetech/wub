@@ -206,21 +206,6 @@ def count_records(input_object, format='fasta'):
     return counter
 
 
-def read_seq_records(input_object, format='fasta'):
-    """Read SeqRecord objects from a file in the specified format.
-
-    :param input_object: A file object or a file name.
-    :param format: Input format (fasta by default).
-    :returns: A dictionary with the parsed SeqRecord objects.
-    :rtype: generator
-
-    """
-    handle = input_object
-    if type(handle) == str:
-        handle = open(handle, "rU")
-    return SeqIO.parse(handle, format)
-
-
 def read_seq_records_dict(input_object, format='fasta'):
     """Read SeqRecord objects to a dictionary from a file in the specified format.
 

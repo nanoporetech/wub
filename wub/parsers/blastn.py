@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Parser functions for blastn outfmt 6. """
 
-import six
-
 
 def _parse_coord_line(line):
     """ Parse a line from a blast outfmt 6 file. """
@@ -25,8 +23,10 @@ def _parse_coord_line(line):
 
     if aln_record['ref_start'] > aln_record['ref_end']:
         aln_record['strand'] = '-'
-        aln_record['ref_start'], aln_record['ref_end'] = aln_record['ref_end'], aln_record['ref_start']
+        aln_record['ref_start'], aln_record['ref_end'] = aln_record[
+            'ref_end'], aln_record['ref_start']
     return aln_record
+
 
 def parse_coords(input_object):
     """ Parse coordinates file produced by blastn outfmt 6.

@@ -139,6 +139,7 @@ def simulate_sequencing(chromosomes, mean_length, gamma_shape, low_truncation,
 
         yield seq_util.new_dna_record(read_seq, read_name, mock_qualities), sam
 
+
 if __name__ == '__main__':
     args = parser.parse_args()
 

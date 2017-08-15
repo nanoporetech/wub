@@ -25,6 +25,7 @@ def reverse_seq_records(input_iterator):
     for record in input_iterator:
         yield record[::-1]
 
+
 if __name__ == '__main__':
     args = parser.parse_args()
 

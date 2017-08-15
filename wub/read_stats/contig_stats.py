@@ -1,6 +1,5 @@
 from Bio import SeqIO
 import pandas as pd
-import numpy as np
 from wub.util.misc import _getextension
 from wub.util.seq import mean_qscore
 
@@ -19,6 +18,7 @@ def readfast(fast):
 
         yield rec
 
+
 def _cumsum(df, col):
     '''
     Calculates the cumulative sum of column
@@ -31,6 +31,7 @@ def _cumsum(df, col):
     df = df.sort_values(by=col, ascending=False).reset_index(drop=True)
     df['cumsum'] = df[col].cumsum()
     return df
+
 
 def N50(df, col, percent=50):
     """ Calculate the N50 by default however, by changing percent to 75, N75 can be calculated.
@@ -47,6 +48,7 @@ def N50(df, col, percent=50):
     n50 = df1['cumsum'].max() * percent / 100
     return df1.where(df1['cumsum'] >= n50)[col].dropna().head(1).tolist()[0]
 
+
 def L50(df, col, percent=50):
     """ Calculate the L50 by default however, by changing percent to 75, N75 can be calculated
 
@@ -57,9 +59,10 @@ def L50(df, col, percent=50):
     :rtype: int
 
     """
-    
+
     df1 = _cumsum(df, col).copy()
     return df1[df1 >= N50(df, col, percent)][col].count()
+
 
 def GC_per_read(seq_rec, fq=False):
     """ Calculates the number of bases per sequence, GC content and mean Q score if fastq is given

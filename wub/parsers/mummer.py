@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Parser functions for mummer. """
 
-import six
-
 
 def _parse_coord_line(line):
     """ Parse a line from a mummer coordinate file. """
