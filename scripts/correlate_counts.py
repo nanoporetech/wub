@@ -124,7 +124,7 @@ if __name__ == '__main__':
     plotter.plt.clf()
     correlations = pd.DataFrame(
         {"Distribution of correlation coefficients": correlations})
-    sns.boxplot(correlations)
+    sns.boxplot(data=correlations)
     plotter.plt.tight_layout()
     plotter.pages.savefig()
 
