@@ -90,13 +90,13 @@ if __name__ == '__main__':
 
     # Plot GC content of aligned read portion vs. mean quality.
     plotter = report.Report(args.r)
-    sns.jointplot("GC_content", "MeanQuality", kind="hex", data=data)
+    sns.jointplot("GC_content", "MeanQuality", kind="reg", data=data)
     plotter.plt.tight_layout()
     plotter.pages.savefig()
     plotter.plt.clf()
 
     # Plot GC content of aligned reference portion vs. mean quality.
-    sns.jointplot("GC_content_ref", "MeanQuality", kind="hex", data=data)
+    sns.jointplot("GC_content_ref", "MeanQuality", kind="reg", data=data)
     plotter.plt.tight_layout()
     plotter.pages.savefig()
     plotter.plt.clf()
