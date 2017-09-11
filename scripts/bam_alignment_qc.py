@@ -185,7 +185,7 @@ def read_qual_qc(st, report, qual_intervals=5):
     report.plot_histograms(OrderedDict([('Unmapped', st[
                            'unaligned_lengths'])]), title="Distribution of read lengths in the unmapped fraction", xlab="Read length", ylab="Count", legend=False)
     report.plot_histograms(OrderedDict([('Mapped', st[
-                           'alignment_lengths'])]), title="Distribution of read lengths in the mapped fraction", xlab="Read length", ylab="Count", legend=False)
+                           'aligned_lengths'])]), title="Distribution of read lengths in the mapped fraction", xlab="Read length", ylab="Count", legend=False)
     report.plot_histograms(OrderedDict([('Mapped', st[
                            'mqfail_alignment_lengths'])]), title="Distribution of read lengths in the mapping with quality less than {}".format(args.q), xlab="Read length", ylab="Count", legend=False)
     report.plot_histograms(OrderedDict([('Mapped', st[
