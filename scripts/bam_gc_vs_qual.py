@@ -28,6 +28,8 @@ parser.add_argument(
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bam_gc_vs_qual.pdf).", default="bam_gc_vs_qual.pdf")
 parser.add_argument(
+    '-t', metavar='tsv', type=str, help="Tab separated file to save results (bam_gc_vs_qual.tsv).", default="bam_gc_vs_qual.tsv")
+parser.add_argument(
     '-Q', action="store_true", help="Be quiet and do not show progress bars.", default=False)
 parser.add_argument(
     'bam', metavar='bam', type=str, help="Input BAM file.")
@@ -57,6 +59,7 @@ def _process_reads(alignment_file, refs, in_format='BAM', min_aln_qual=0, verbos
             aln_iter = tqdm.tqdm(aln_iter, total=total_reads)
 
     rgcs, gcs, quals = [], [], []
+    ref_lengths = []
     for segment in aln_iter:
         if segment.is_unmapped:
             continue
@@ -68,6 +71,7 @@ def _process_reads(alignment_file, refs, in_format='BAM', min_aln_qual=0, verbos
             # Calculate GC content of aligned reference:
             ref_seq = refs[segment.reference_name].seq[segment.reference_start:segment.reference_end]
             rgcs.append(seq_util.gc_content(ref_seq))
+            ref_lengths.append(segment.reference_length)
 
             # Calculate mean quality score of aligned read portion:
             aln_quals = segment.query_alignment_qualities
@@ -75,7 +79,7 @@ def _process_reads(alignment_file, refs, in_format='BAM', min_aln_qual=0, verbos
 
     aln_iter.close()
 
-    df = pd.DataFrame({'GC_content': gcs, 'MeanQuality': quals, 'GC_content_ref': rgcs})
+    df = pd.DataFrame({'GC_content': gcs, 'MeanQuality': quals, 'GC_content_ref': rgcs, 'RefAlnLength': ref_lengths})
 
     return df
 
@@ -87,6 +91,8 @@ if __name__ == '__main__':
 
     references = seq_util.read_seq_records_dict(args.f)
     data = _process_reads(args.bam, references, min_aln_qual=args.q, verbose=verbose)
+
+    data.to_csv(args.t, sep="\t", index=False)
 
     # Plot GC content of aligned read portion vs. mean quality.
     plotter = report.Report(args.r)
