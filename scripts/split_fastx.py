@@ -61,7 +61,8 @@ if __name__ == '__main__':
         # Splitting one record per file:
         for record in input_iterator:
             bn = path.basename(args.input_fastx.name)
-            fh = open(path.join(args.output_dir, "{}_{}".format(record.id, bn)), 'w')
+            ext = bn.rsplit('.', 1)[-1]
+            fh = open(path.join(args.output_dir, "{}.{}".format(record.id, ext)), 'w')
             seq_util.write_seq_records([record], fh, format=args.o)
             fh.flush()
             fh.close()
