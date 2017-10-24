@@ -43,7 +43,7 @@ class Report:
         self.pages.savefig(fig)
         plt.close(fig)
 
-    def plot_arrays(self, data_map, title="", xlab="", ylab="", marker='.', legend_loc='best', legend=True):
+    def plot_arrays(self, data_map, title="", xlab="", ylab="", marker='.', legend_loc='best', legend=True, vlines=None, vlcolor='green', vlwitdh=0.5):
         """Plot multiple pairs of data arrays.
 
         :param self: object.
@@ -54,6 +54,9 @@ class Report:
         :param marker: Marker passed to the plot function.
         :param legend_loc: Location of legend.
         :param legend: Plot legend if True
+        :param vlines: Dictionary with labels and positions of vertical lines to draw.
+        :param vlcolor: Color of vertical lines drawn.
+        :param vlwidth: Width of vertical lines drawn.
         :returns: None
         :rtype: object
         """
@@ -61,7 +64,9 @@ class Report:
 
         for label, data_arrays in six.iteritems(data_map):
             plt.plot(data_arrays[0], data_arrays[1], marker, label=label)
-
+        if vlines is not None:
+            for label, pos in six.iteritems(vlines):
+                plt.axvline(x=pos, label=label, color=vlcolor, lw=vlwitdh)
         if legend:
             plt.legend(loc=legend_loc)
         self._set_properties_and_close(fig, title, xlab, ylab)
