@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import numpy as np
 from collections import OrderedDict
 import pandas as pd
 from wub.vis import report
@@ -17,8 +16,7 @@ _ = sns
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
-    description="""Compare alignment QC statistics of multiple samples.
-    """)
+    description="""Plot a gffcompare stats file.""")
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (plot_gffcmp_stats.pdf).", default="plot_gffcmp_stats.pdf")
 parser.add_argument(
@@ -27,26 +25,8 @@ parser.add_argument(
     'input', metavar='input_txt', type=str, help="Input gffcompare stats file.")
 
 
-def plot_bars_sns(data_map, title, xlab, ylab, plotter):
-    """Barplot using seaborn backend.
-    :param data_map: A dictionary of labels and values.
-    :param title: Plot title.
-    :param xlab: X axis label.
-    :param ylab: Y axis label.
-    :param plotter: A wub.vis.report.Report instance.
-    """
-    data = pd.DataFrame({'Value': list(data_map.values()), 'Label': list(data_map.keys()),
-                         'x': np.arange(len(data_map))})
-    ax = sns.barplot(x="x", y="Value", hue="Label", data=data, hue_order=list(data_map.keys()))
-    ax.set_title(title)
-    ax.set_xlabel(xlab)
-    ax.set_ylabel(ylab)
-    ax.set_xticks([])
-    plotter.pages.savefig()
-    plotter.plt.clf()
-
-
 def _parse_stat_line(sl):
+    """Parse a stats line."""
     res = {}
     tmp = sl.split(':')[1]
     tmp = tmp.split('|')
@@ -56,11 +36,13 @@ def _parse_stat_line(sl):
 
 
 def _parse_matching_line(l):
+    """Parse a metching line."""
     tmp = l.split(':')[1].strip()
     return int(tmp)
 
 
 def _parse_mn_line(l):
+    """Parse a miss or novel line."""
     res = {}
     tmp = l.split(':')[1].strip()
     tmp = tmp.split('/')
@@ -72,6 +54,7 @@ def _parse_mn_line(l):
 
 
 def _parse_total_line(l):
+    """Parse a total line."""
     res = {}
     tmp = l.split(':')[1].strip()
     tmp = tmp.split('in')
@@ -84,7 +67,11 @@ def _parse_total_line(l):
 
 
 def parse_gffcmp_stats(txt):
-
+    """Parse a gffcompare stats file.
+    :param txt: Path to the gffcompare stats file.
+    :returns: Return as tuple of dataframes containing:  perfromance statistics, match statistics, miss statistics, novel statistics, total statistics.
+    :rtype: tuple
+    """
     sensitivity = []
     precision = []
     level = []
