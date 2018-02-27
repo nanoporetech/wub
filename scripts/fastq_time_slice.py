@@ -33,7 +33,9 @@ def _time_slice(input_iter, start_perc, end_perc, time_df):
     e = first + ((last - first) * end_perc) / 100.0
 
     for rec in input_iter:
-        start_time = time_df[time_df.Read == rec.id].index[0]
+        desc = rec.description.split()
+        tmp_start = desc[4].split("=")[1]
+        start_time = datetime.datetime.strptime(tmp_start, "%Y-%m-%dT%H:%M:%SZ")
         if start_time >= s and start_time <= e:
             yield rec
 
