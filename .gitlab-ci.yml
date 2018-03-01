@@ -10,7 +10,7 @@ before_script:
     - apt-get install -y software-properties-common
     - apt-add-repository universe
     - apt-get update
-    - apt-get install -y python-pip make python-numpy python-matplotlib python-biopython python-pandas mummer last-align cython zlib1g-dev lbzip2 libbz2-dev liblzma-dev libhdf5-serial-dev
+    - apt-get install -y python3-pip make python3-numpy python3-matplotlib python3-biopython python3-pandas mummer last-align cython zlib1g-dev lbzip2 libbz2-dev liblzma-dev libhdf5-serial-dev
     - pip install --upgrade sphinx sphinx-argparse sphinx_rtd_theme pytest pycmd futures packaging appdirs pysam
     - pip install -e ./
 
@@ -18,7 +18,7 @@ before_script:
 do_testing:
   stage: test
   script:
-    - make test
+    - alias python=python3;make test
   except:
     - tags
     
