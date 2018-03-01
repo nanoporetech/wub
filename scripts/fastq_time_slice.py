@@ -5,7 +5,6 @@ import argparse
 import sys
 
 import pandas as pd
-from collections import OrderedDict
 from wub.util import seq as seq_util
 import datetime
 

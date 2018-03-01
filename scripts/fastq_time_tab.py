@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import sys
 
 import pandas as pd
 from collections import OrderedDict
@@ -29,7 +28,7 @@ if __name__ == '__main__':
         read.append(rec.id)
         length.append(len(rec.seq))
         desc = rec.description.split()
-        
+
         # Parse out read number:
         tmp_read_nr = int(desc[2].split("=")[1])
         read_nr.append(tmp_read_nr)
