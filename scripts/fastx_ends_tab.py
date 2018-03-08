@@ -27,7 +27,6 @@ if __name__ == '__main__':
     input_iterator = seq_util.read_seq_records(
         args.input_fastx, format=args.i)
 
-    args.output_tsv.write("Read\tStarSeq\tEndSeq\n")
     for rec in input_iterator:
         args.output_tsv.write("{}\t{}\t{}\n".format(rec.id, rec.seq[0:args.n], rec.seq[-args.n:]))
 
