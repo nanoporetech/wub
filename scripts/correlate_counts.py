@@ -31,9 +31,9 @@ parser.add_argument(
 
 
 def load_counts(counts, log_transform):
-    """Load statistics from pickle files.
+    """Load statistics from tsv files.
 
-    :param pickles: List of count files.
+    :param counts: List of count files.
     :returns: OrderedDict of count data frames per dataset.
     :rtype: OrderedDict
     """
