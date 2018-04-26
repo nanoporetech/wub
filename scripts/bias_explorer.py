@@ -20,6 +20,8 @@ parser = argparse.ArgumentParser(
     """)
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bias_explorer.pdf).", default="bias_explorer.pdf")
+parser.add_argument('-x', action="store_true",
+                    help="Exclude transcripts with zero counts.", default=False)
 parser.add_argument(
     'count_file', metavar='count_file', type=str, help="Input counts file with length ang GC content features.")
 
@@ -29,6 +31,9 @@ if __name__ == '__main__':
 
     data = pd.read_csv(args.count_file, sep="\t")
     data["logCount"] = np.log(np.array(data["Count"]) + 1.0)
+
+    if args.x:
+        data = data[data.Count > 0]
 
     plotter = report.Report(args.r)
 
