@@ -10,6 +10,8 @@ from collections import OrderedDict
 import pandas as pd
 from os import path
 from wub.vis import report
+from functools import reduce
+
 import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
@@ -42,9 +44,13 @@ def load_counts(counts, log_transform):
         name = path.basename(count_file).rsplit('.', 1)[0]
         if log_transform:
             name = 'log(' + name + '+1)'
-        stats[name] = pd.read_csv(count_file, sep="\t")
+
+        tmp = pd.read_csv(count_file, sep="\t")[["Reference", "Count"]]
+        tmp = tmp[tmp.Count > 0]
+        tmp = tmp.rename(columns={"Count": name})
+        stats[name] = tmp
         if log_transform:
-            stats[name]['Count'] = np.log(stats[name]['Count'] + 1)
+            stats[name][name] = np.log(stats[name][name] + 1)
     return stats
 
 
@@ -58,27 +64,13 @@ def _get_reference_set(dfs):
 
 def join_counts(counts):
     """Join count data frames.
-    :param counts: Dicttionary of data frames.
-    :returns: Mergeid data frame.
+    :param counts: Dictionary of data frames.
+    :returns: Merged data frame.
     :rtype: DataFrame
     """
-    references = _get_reference_set(counts)
-    res_dict = OrderedDict({'Reference': references})
-
-    for dataset in six.iterkeys(counts):
-        res_dict[dataset] = []
-
-    for i, ref in enumerate(references):
-        for dataset in six.iterkeys(counts):
-            tmp = counts[dataset][counts[dataset]['Reference'] == ref]
-            if len(tmp) == 0:
-                tmp = 0.0
-            elif len(tmp) == 1:
-                tmp = float(tmp['Count'])
-            else:
-                raise Exception("Multiple rows for single reference in {}".format(dataset))
-            res_dict[dataset].append(tmp)
-    return pd.DataFrame(res_dict)
+    df_merged = reduce(lambda left, right: pd.merge(left, right, how="outer", on=["Reference"]), counts.values())
+    df_merged = df_merged.fillna(0.0)
+    return df_merged
 
 
 def _corrfunc(x, y, **kws):
