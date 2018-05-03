@@ -3,20 +3,24 @@
 import sys
 
 import pysam
+import numpy as np
 from collections import defaultdict
+from wub.util import seq as seq_util
 import tqdm
 
 
-def count_reads(alignment_file, in_format='BAM', min_aln_qual=0, verbose=False):
+def count_reads(alignment_file, in_format='BAM', min_aln_qual=0, verbose=False, reads_gc=False):
     """Count reads mapping to references in a BAM file.
 
     :param alignment_file: BAM file.
     :param min_aln_qual: Minimum mapping quality.
-    :param verbose: Minimum mapping quality.
-    :returns: Dictionary with read counts per reference.
-    :rtype: dict
+    :param verbose: Verbose if True.
+    :param read_gc: Calculate mean GC content of reads for each reference.
+    :returns: Dictionary with read counts per reference and read GC contents.
+    :rtype: tuple of dicts
     """
     counts = defaultdict(int)
+    gc_means = defaultdict(list)
     if in_format == 'BAM':
         mode = "rb"
     elif in_format == 'SAM':
@@ -41,10 +45,17 @@ def count_reads(alignment_file, in_format='BAM', min_aln_qual=0, verbose=False):
             continue
         if segment.mapping_quality >= min_aln_qual:
             counts[segment.reference_name] += 1
+            if reads_gc:
+                gc_means[segment.reference_name].append(seq_util.gc_content(segment.query_alignment_sequence))
 
+    gc_cont = {}
+    if reads_gc:
+        # Calculate mean of mean GC contents:
+        for trs, gc_ms in gc_means.items():
+            gc_cont[trs] = np.mean(gc_ms)
     aln_iter.close()
 
-    return dict(counts)
+    return dict(counts), gc_cont
 
 
 def count_reads_realtime(alignment_file='-', in_format='SAM', min_aln_qual=0, yield_freq=1, verbose=False):
