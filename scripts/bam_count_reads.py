@@ -22,7 +22,9 @@ parser.add_argument(
 parser.add_argument(
     '-z', metavar='ref_fasta', type=str, help="Reference fasta. GC content and length columns are added if present (None).", default=None)
 parser.add_argument(
-    '-k', metavar="words", type=str, help="Include word frequencies of specifed length in output (1,2).", default="1,2")
+    '-k', metavar="words", type=str, help="Include word frequencies of specifed length in output (None).", default=None)
+parser.add_argument(
+    '-g', action="store_true", help="Include mean GC content of reads mapped to each reference (False).", default=False)
 parser.add_argument(
     '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
 parser.add_argument(
@@ -40,11 +42,12 @@ parser.add_argument('bam', nargs='?', help='Input file (default: stdin).',
 def _offline_counter(args):
     """ Offline counting from SAM/BAM file. """
     # Offline counting from SAM/BAM file:
-    counts = read_counter.count_reads(
-        args.bam.name, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q)
+    counts, gc_means = read_counter.count_reads(
+        args.bam.name, in_format=args.f, min_aln_qual=args.a, verbose=not args.Q, reads_gc=args.g)
     counts = OrderedDict(six.iteritems(counts))
 
-    calc_words = [int(k) for k in args.k.split(",")]
+    if args.k is not None:
+        calc_words = [int(k) for k in args.k.split(",")]
 
     data = OrderedDict()
 
@@ -86,7 +89,13 @@ def _offline_counter(args):
                 data[word] = tmp
 
     data_frame = pd.DataFrame(data)
+
+    if args.g:
+        gc_frame = pd.DataFrame({'Reference': list(gc_means.keys()), 'ReadGC': list(gc_means.values())})
+        data_frame = pd.merge(data_frame, gc_frame, how='inner', on='Reference')
+
     data_frame = data_frame.sort_values(['Count', 'Reference'], ascending=False)
+    data_frame = data_frame[data_frame.Count > 0]
 
     if args.t is not None:
         data_frame.to_csv(args.t, sep='\t', index=False)
