@@ -45,6 +45,6 @@ r9_chr0_523_573_-/q14/s0/d1/i1	16	chr0	524	59	3M1I25M1D21M	*	0	0	AGCGGGGACCCACAC
         """Test read_counter wrapper."""
         self._generate_test_data()
         res = read_counter.count_reads(self.sam, in_format='SAM')
-        self.assertEqual(res['chr0'], 3)
-        self.assertEqual(res['chr1'], 4)
+        self.assertEqual(res[0]['chr0'], 3)
+        self.assertEqual(res[0]['chr1'], 4)
         self._cleanup_test_data()
