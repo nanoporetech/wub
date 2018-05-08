@@ -29,6 +29,8 @@ parser.add_argument(
 parser.add_argument(
     '-L', action="store_true", help="Log transform data.", default=False)
 parser.add_argument(
+    '-o', action="store_true", help="Omit lower diagonal.", default=False)
+parser.add_argument(
     'counts', metavar='input_counts', nargs='*', type=str, help="Input counts as tab separated files.")
 
 
@@ -107,8 +109,9 @@ if __name__ == '__main__':
     g = sns.PairGrid(joint_df, palette=["red"])
     g.map_upper(plotter.plt.scatter, s=10)
     g.map_diag(sns.distplot, kde=False)
-    g.map_lower(sns.kdeplot, cmap="Blues_d")
-    g.map_lower(_corrfunc)
+    if not args.o:
+        g.map_lower(sns.kdeplot, cmap="Blues_d")
+        g.map_lower(_corrfunc)
     g.map_upper(_corrfunc)
     plotter.plt.tight_layout()
     plotter.pages.savefig()
