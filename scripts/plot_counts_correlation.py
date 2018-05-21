@@ -59,6 +59,7 @@ if __name__ == '__main__':
     plotter = report.Report(args.r)
 
     g = sns.jointplot(tags[0], tags[1], data=data_merged, stat_func=spearmanr, kind="reg")
+    plt.tight_layout()
     plotter.pages.savefig()
 
     plotter.close()
