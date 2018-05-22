@@ -59,7 +59,7 @@ def frag_coverage(bam, chrom_lengths, region=None, min_aqual=0, ref_cov=True, ve
         if r.is_unmapped:
             continue
         # Skip if mapping quality is too low:
-        if r.mapq <= min_aqual:
+        if r.mapq < min_aqual:
             continue
         pos = r.reference_start
         ref = r.reference_name
