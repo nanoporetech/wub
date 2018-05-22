@@ -7,6 +7,7 @@ import os
 import sys
 from collections import defaultdict, OrderedDict
 from wub.vis import report
+from matplotlib import pyplot as plt
 import seaborn as sns
 from scipy.stats import spearmanr
 import numpy as np
@@ -48,7 +49,7 @@ if __name__ == '__main__':
         t1 = os.path.basename(args.counts_one).rsplit(".", 1)[0]
         t2 = os.path.basename(args.counts_two).rsplit(".", 1)[0]
         tags = [t1, t2]
-    
+
     # Set column names:
     data_one = _create_tagged_column(data_one, tags[0])
     data_two = _create_tagged_column(data_two, tags[1])
