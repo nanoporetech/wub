@@ -43,7 +43,7 @@ parser.add_argument(
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bam_frag_coverage.pdf).", default="bam_frag_coverage.pdf")
 parser.add_argument(
-    '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (bam_alignment_qc.pk).", default="bam_frag_coverage.pk")
+    '-p', metavar='results_pickle', type=str, help="Save pickled results in this file (None).", default=None)
 parser.add_argument(
     '-Q', action="store_true", help="Be quiet and do not show progress bars.", default=False)
 parser.add_argument(
@@ -108,7 +108,6 @@ def _plot_frag_coverage(st, chroms, plotter, scale_pos=True, scale_cov=False, ti
                 plotter, cov=st['frags_rev'][chrom], strand='rev', scale_pos=scale_pos, scale_cov=scale_cov)
             cov_rev += np.interp(x, rx, ry)
     plot_fwd, plot_rev = cov_fwd, cov_rev
-
     if (np.sum(cov_fwd) + np.sum(cov_rev)) == 0:
         return {'global_cov_fwd': None, 'global_cov_rev': None, 'ref_cov': None}
 
@@ -209,4 +208,5 @@ if __name__ == '__main__':
     plotter.close()
 
     # Dump results of parsing into output pickle:
-    misc.pickle_dump(res, args.p)
+    if args.p is not None:
+        misc.pickle_dump(res, args.p)
