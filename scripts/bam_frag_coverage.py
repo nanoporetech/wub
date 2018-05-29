@@ -7,6 +7,7 @@ import argparse
 import tqdm
 import os
 import numpy as np
+import pandas as pd
 from collections import OrderedDict
 from Bio import SeqIO
 from wub.util import misc
@@ -40,6 +41,10 @@ parser.add_argument(
     '-t', metavar='bam_tag', type=str, default=None, help="Dataset tag (BAM basename).", required=False)
 parser.add_argument(
     '-q', metavar='aqual', type=int, default=0, help="Minimum alignment quality (0).")
+parser.add_argument(
+    '-l', metavar='cov80_tsv', type=str, help="Tab separated file with per-chromosome cov80 scores (None). Requires the -x option to be specified.", default=None)
+parser.add_argument(
+    '-g', metavar='glob_cov80_tsv', type=str, help="Tab separated file with global cov80 score (None).", default=None)
 parser.add_argument(
     '-r', metavar='report_pdf', type=str, help="Report PDF (bam_frag_coverage.pdf).", default="bam_frag_coverage.pdf")
 parser.add_argument(
@@ -210,3 +215,19 @@ if __name__ == '__main__':
     # Dump results of parsing into output pickle:
     if args.p is not None:
         misc.pickle_dump(res, args.p)
+
+    # Gather per-chromosome coverage scores:
+    if args.l is not None:
+        trs, cov80 = [], []
+        for tr, r in res['chrom_covs'].items():
+            trs.append(tr)
+            if 'cov80' in r:
+                cov80.append(r['cov80'])
+            else:
+                cov80.append(0.0)
+        df = pd.DataFrame(OrderedDict([('Reference', trs), ('Cov80', cov80)]))
+        df.to_csv(args.l, sep="\t", index=False)
+    # Save global cov80 score:
+    if args.g is not None:
+        df = pd.DataFrame({'GlobalCov80': [res['global_cov']['cov80']]})
+        df.to_csv(args.g, sep="\t", index=False)
