@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import six
 import argparse
 import sys
-from os import path
 
 from wub.util import seq as seq_util
 

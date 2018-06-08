@@ -4,13 +4,11 @@
 import argparse
 import pandas as pd
 import os
-import sys
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict
 from wub.vis import report
 from matplotlib import pyplot as plt
 import seaborn as sns
 from scipy.stats import spearmanr
-import numpy as np
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
