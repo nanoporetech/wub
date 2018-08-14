@@ -203,7 +203,7 @@ def pileup_stats(bam, region=None, verbose=True, with_quals=True):
     cst = defaultdict(lambda: defaultdict(int))
     samfile = bam_common.pysam_open(bam, in_format='BAM')
 
-    pileup_iter = samfile.pileup(region=region)
+    pileup_iter = samfile.pileup(region=region, min_base_quality=0)
     start, end = None, None
     if region is not None:
         tmp = region.split(":")
