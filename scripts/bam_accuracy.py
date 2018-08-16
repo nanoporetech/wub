@@ -57,6 +57,8 @@ def estimate_mode(acc):
                 mode = optimization_result.x[0]
             except IndexError:
                 mode = optimization_result.x
+            except TypeError:
+                mode = optimization_result.x
         else:
             sys.stderr.write("Mode computation failed")
             mode = 0
