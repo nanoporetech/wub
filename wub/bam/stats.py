@@ -297,7 +297,7 @@ def _update_events(r, ref, events, indel_dists, context_sizes, base_stats):
     for t in aligned_pairs:
         if t[0] is None:
             # deletion
-            # Increse delelted base count:
+            # Increse deleted base count:
             base_stats['deletion'] += 1
 
             if deletion[0] == 0:
