@@ -21,6 +21,7 @@ with warnings.catch_warnings():
     import seaborn as sns
 warnings.resetwarnings()
 _ = sns
+from matplotlib import pyplot as plt
 
 # Parse command line arguments:
 parser = argparse.ArgumentParser(
@@ -168,6 +169,8 @@ if __name__ == '__main__':
         st, chrom_lengths, plotter, title="Global fragment coverage for {}".format(tag), hist_title="Global reference coverage for {}".format(tag), log_scale=not args.o, bins=args.b)
 
     # Plot coverage in intervals:
+    ref_cov_df = []
+    ref_cov_int = []
     for interval in intervals:
         # Filter transcripts falling in the specified
         # length interval:
@@ -175,12 +178,25 @@ if __name__ == '__main__':
         for ref, length in six.iteritems(chrom_lengths):
             if length < interval[0]:
                 continue
-            if interval[1] != 0 and length > interval[1]:
+            if interval[1] != 0 and length >= interval[1]:
                 continue
             int_chroms[ref] = length
         # Generate coverage plot:
-        _plot_frag_coverage(
+        tmp = _plot_frag_coverage(
             st, int_chroms, plotter, title="Coverage in interval [{},{}) for {} ".format(interval[0], interval[1], tag), hist_title="Reference coverage in interval [{},{}) for {}".format(interval[0], interval[1], tag), log_scale=not args.o, bins=args.b)
+
+        int_str = "[{}, {})".format(interval[0], interval[1])
+        ref_cov_df.extend(tmp['ref_cov'])
+        ref_cov_int.extend([int_str] * len(tmp['ref_cov']))
+
+    if len(intervals) > 0:
+        rfdf = pd.DataFrame({'Reference coverage': ref_cov_df, 'Interval': ref_cov_int})
+        sns.violinplot(x="Interval", y="Reference coverage", data=rfdf)
+        plotter.pages.savefig()
+
+        plt.clf()
+        sns.boxplot(x="Interval", y="Reference coverage", data=rfdf)
+        plotter.pages.savefig()
 
     def _get_coverage(chrom, st):
         """ Utility function for sorting references by coverage. """
