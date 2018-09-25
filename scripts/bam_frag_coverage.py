@@ -171,6 +171,7 @@ if __name__ == '__main__':
     # Plot coverage in intervals:
     ref_cov_df = []
     ref_cov_int = []
+    int_strs = []
     for interval in intervals:
         # Filter transcripts falling in the specified
         # length interval:
@@ -186,6 +187,7 @@ if __name__ == '__main__':
             st, int_chroms, plotter, title="Coverage in interval [{},{}) for {} ".format(interval[0], interval[1], tag), hist_title="Reference coverage in interval [{},{}) for {}".format(interval[0], interval[1], tag), log_scale=not args.o, bins=args.b)
 
         int_str = "[{}, {})".format(interval[0], interval[1])
+        int_strs.append(int_str)
         ref_cov_df.extend(tmp['ref_cov'])
         ref_cov_int.extend([int_str] * len(tmp['ref_cov']))
 
@@ -196,6 +198,17 @@ if __name__ == '__main__':
 
         plt.clf()
         sns.boxplot(x="Interval", y="Reference coverage", data=rfdf)
+        plotter.pages.savefig()
+
+        crdf = rfdf.groupby("Interval").count()
+        crdf = crdf.rename(columns={'Reference coverage': 'Read count'})
+        crdf = crdf.reset_index()
+        crdf.Interval = pd.Categorical(crdf.Interval, int_strs)
+        crdf = crdf.sort_values(by="Interval")
+        crdf = crdf.set_index("Interval")
+
+        ax = crdf.plot(kind="bar")
+        plt.setp(ax.get_xticklabels(), rotation=45, fontsize=5)
         plotter.pages.savefig()
 
     def _get_coverage(chrom, st):
