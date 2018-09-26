@@ -19,7 +19,6 @@ requirements = [
     'pandas>=0.20.2',
     'pysam',
     'tqdm',
-    'h5py',
     'statsmodels'
 ]
 
