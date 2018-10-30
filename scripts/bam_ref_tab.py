@@ -17,10 +17,12 @@ parser.add_argument(
 parser.add_argument(
     '-Q', action="store_true", help="Be quiet and do not print progress bar (False).", default=False)
 parser.add_argument(
+    '-s', action="store_true", help="Save read strand in output (False).", default=False)
+parser.add_argument(
     'bam', metavar='bam', type=str, help="Input BAM file.")
 
 
-def process_reads(alignment_file, in_format='BAM', verbose=False):
+def process_reads(alignment_file, in_format='BAM', save_strand=False, verbose=False):
     """Process reads and extract the corresponding reference.
 
     :param alignment_file: BAM file.
@@ -28,7 +30,7 @@ def process_reads(alignment_file, in_format='BAM', verbose=False):
     :returns: pandas dataframe with reads and references.
     :rtype: dict
     """
-    reads, refs = [], []
+    reads, refs, strands = [], [], []
     if in_format == 'BAM':
         mode = "rb"
     elif in_format == 'SAM':
@@ -53,10 +55,15 @@ def process_reads(alignment_file, in_format='BAM', verbose=False):
             continue
         refs.append(segment.reference_name)
         reads.append(segment.query_name)
+        if save_strand:
+            strand = "-" if segment.is_reverse else "+"
+            strands.append(strand)
 
     aln_iter.close()
 
     data = OrderedDict([('Read', reads), ('Reference', refs)])
+    if save_strand:
+        data['Strand'] = strands
     df = pd.DataFrame(data)
 
     return df
@@ -66,6 +73,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     verbose = not args.Q
 
-    df = process_reads(args.bam, verbose=verbose)
+    df = process_reads(args.bam, save_strand=args.s, verbose=verbose)
     df.sort_values(['Reference'], ascending=[0], inplace=True)
     df.to_csv(args.t, sep="\t", index=False)
