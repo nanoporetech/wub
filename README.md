@@ -1,10 +1,20 @@
+![ONT_logo](/ONT_logo.png)
+-----------------------------
+
 Tools and software library developed by the ONT Applications group
 ==================================================================
 
 [![CircleCI](https://circleci.com/gh/nanoporetech/wub.svg?style=svg)](https://circleci.com/gh/nanoporetech/wub) [![Documentation Status](https://readthedocs.org/projects/wub/badge/?version=latest)](http://wub.readthedocs.io/en/latest/?badge=latest) [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io/recipes/wub/README.html)
 
-Installation
-------------
+1\. Introduction:
+-----------------
+
+Various tools for basespace analysis of long reads.
+
+2\. Getting Started:
+-------------------
+
+## Installation:
 
 Set up a virtual environment 
 
@@ -62,13 +72,13 @@ make docs
 
 Issue `make help` to get a list of `make` targets.
 
-Documentation
--------------
+3\. Documentation
+-----------------
 
 Online documentation is avalaible at [wub.readthedocs.io](http://wub.readthedocs.io/en/latest/).
 
-Contributing
-------------
+4\. Contributing
+----------------
 
 - Please fork the repository and create a merge request to contribute.
 - Please respect the structure outlined in `scripts/_template_script.py` from command line tools so documentation can be generated automatically.
@@ -77,6 +87,14 @@ Contributing
 - Use [bumpversion](http://bit.ly/2cSUryt) to manage package versioning.
 - The code should be [PEP8](https://www.python.org/dev/peps/pep-0008) compliant, which can be tested by `make lint`.
 
-TODO
-----
+5\. Help:
+---------
+
+## Licence and Copyright:
+
+(c) 2016 Oxford Nanopore Technologies Ltd.
+
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
