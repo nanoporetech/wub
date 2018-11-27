@@ -11,6 +11,17 @@ Tools and software library developed by the ONT Applications group
 
 Various tools for basespace analysis of long reads.
 
+## Features:
+
+- Simple sequence and error simulation tools.
+- Tools to visualise basic sequence properties.
+- Fastq and fasta utilities.
+- Tools to calculate read and genome assembly accuracy.
+- Transcriptome alignment QC tools.
+- Read couting and related utilities.
+- BAM utilities.
+- Miscellaneous utilities.
+
 2\. Getting Started:
 -------------------
 
