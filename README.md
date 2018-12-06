@@ -1,15 +1,12 @@
 ![ONT_logo](/ONT_logo.png)
 -----------------------------
 
-Tools and software library developed by the ONT Applications group
+Wub
 ==================================================================
 
 [![CircleCI](https://circleci.com/gh/nanoporetech/wub.svg?style=svg)](https://circleci.com/gh/nanoporetech/wub) [![Documentation Status](https://readthedocs.org/projects/wub/badge/?version=latest)](http://wub.readthedocs.io/en/latest/?badge=latest) [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io/recipes/wub/README.html)
 
-1\. Introduction:
------------------
-
-Various tools for basespace analysis of long reads.
+Tools and software library developed by the Oxford Nanopore Technologies Applications group.
 
 ## Features:
 
@@ -22,10 +19,10 @@ Various tools for basespace analysis of long reads.
 - BAM utilities.
 - Miscellaneous utilities.
 
-2\. Getting Started:
--------------------
+Getting Started
+===============
 
-## Installation:
+## Installation
 
 Set up a virtual environment 
 
@@ -83,12 +80,12 @@ make docs
 
 Issue `make help` to get a list of `make` targets.
 
-3\. Documentation
+Documentation
 -----------------
 
 Online documentation is avalaible at [wub.readthedocs.io](http://wub.readthedocs.io/en/latest/).
 
-4\. Contributing
+Contributing
 ----------------
 
 - Please fork the repository and create a merge request to contribute.
@@ -98,10 +95,10 @@ Online documentation is avalaible at [wub.readthedocs.io](http://wub.readthedocs
 - Use [bumpversion](http://bit.ly/2cSUryt) to manage package versioning.
 - The code should be [PEP8](https://www.python.org/dev/peps/pep-0008) compliant, which can be tested by `make lint`.
 
-5\. Help:
----------
+Help
+====
 
-## Licence and Copyright:
+## Licence and Copyright
 
 (c) 2016 Oxford Nanopore Technologies Ltd.
 
