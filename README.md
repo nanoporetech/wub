@@ -1,12 +1,12 @@
 ![ONT_logo](/ONT_logo.png)
 -----------------------------
 
-Wub: Tools and software library developed by the ONT Applications group
+Wub
 ==================================================================
 
 [![CircleCI](https://circleci.com/gh/nanoporetech/wub.svg?style=svg)](https://circleci.com/gh/nanoporetech/wub) [![Documentation Status](https://readthedocs.org/projects/wub/badge/?version=latest)](http://wub.readthedocs.io/en/latest/?badge=latest) [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io/recipes/wub/README.html)
 
-Various tools for basespace analysis of long reads.
+Tools and software library developed by the Oxford Nanopore Technologies Applications group.
 
 ## Features:
 
@@ -20,7 +20,7 @@ Various tools for basespace analysis of long reads.
 - Miscellaneous utilities.
 
 Getting Started
--------------------
+===============
 
 ## Installation
 
@@ -96,7 +96,7 @@ Contributing
 - The code should be [PEP8](https://www.python.org/dev/peps/pep-0008) compliant, which can be tested by `make lint`.
 
 Help
----------
+====
 
 ## Licence and Copyright
 
