@@ -38,7 +38,7 @@ def bam_compare(aln_one, aln_two, coarse_tolerance=50, strict_flags=False, in_fo
 
     total = None
     if in_format == "BAM":
-        total_one = aln_iter_one.mapped + aln_iter_two.unmapped
+        total_one = aln_iter_one.mapped + aln_iter_one.unmapped
         total_two = aln_iter_two.mapped + aln_iter_two.unmapped
 
         if total_one != total_two:
