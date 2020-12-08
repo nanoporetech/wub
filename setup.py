@@ -31,7 +31,7 @@ test_requirements = [
 
 setup(
     name='Wub',
-    version='0.4.0',
+    version='0.5.0',
     description="Tools and software components developed by the ONT Applications group.",
     long_description=readme,
     author="ONT Applications Group",
