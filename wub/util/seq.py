@@ -6,11 +6,12 @@ import itertools
 from collections import namedtuple, OrderedDict, Counter
 import numpy as np
 from Bio import SeqIO
-from Bio.Alphabet.IUPAC import IUPACUnambiguousDNA, IUPACAmbiguousDNA, IUPACUnambiguousRNA
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio import AlignIO
 import pysam
+
+IUPAC_DNA = "ACGTRYSWKMBDHVN-"
 
 """ Utilities manipulating biological sequences and formats. Extensions to biopython functionality.
 """
@@ -23,8 +24,8 @@ comp = {
 }
 
 # Shortcut to the list of DNA bases:
-bases = sorted(list(IUPACUnambiguousDNA().letters))
-ambiguous_bases = sorted(list(IUPACAmbiguousDNA().letters))
+bases = sorted(['A', 'T', 'G', 'C'])
+ambiguous_bases = sorted(list(IUPAC_DNA))
 
 
 def base_complement(k):
@@ -122,7 +123,7 @@ def new_dna_record(sequence, name, qualities=None):
 
     """
     seq_record = SeqRecord(
-        Seq(sequence, IUPACUnambiguousDNA), id=name, description="", name="")
+        Seq(sequence), id=name, description="", name="")
     if qualities is not None:
         seq_record.letter_annotations["phred_quality"] = qualities
     return seq_record
@@ -137,7 +138,7 @@ def rna_record_to_dna(record):
 
     """
     new_record = SeqRecord(
-        Seq(str(record.seq).replace('U', 'T'), IUPACUnambiguousRNA), id=record.id, description=record.description, name=record.name)
+        Seq(str(record.seq).replace('U', 'T')), id=record.id, description=record.description, name=record.name)
     new_record.letter_annotations["phred_quality"] = record.letter_annotations["phred_quality"]
     return new_record
 
@@ -151,7 +152,7 @@ def dna_record_to_rna(record):
 
     """
     new_record = SeqRecord(
-        Seq(str(record.seq).replace('T', 'U'), IUPACUnambiguousDNA), id=record.id, description=record.description, name=record.name)
+        Seq(str(record.seq).replace('T', 'U')), id=record.id, description=record.description, name=record.name)
     new_record.letter_annotations["phred_quality"] = record.letter_annotations["phred_quality"]
     return new_record
 
@@ -184,7 +185,7 @@ def read_seq_records(input_object, format='fasta'):
     """
     handle = input_object
     if type(handle) == str:
-        handle = open(handle, "rU")
+        handle = open(handle, "r")
     return SeqIO.parse(handle, format)
 
 
@@ -199,7 +200,7 @@ def count_records(input_object, format='fasta'):
     """
     handle = input_object
     if type(handle) == str:
-        handle = open(handle, "rU")
+        handle = open(handle, "r")
     counter = 0
     for _ in SeqIO.parse(handle, format):
         counter += 1
@@ -217,7 +218,7 @@ def read_seq_records_dict(input_object, format='fasta'):
     """
     handle = input_object
     if type(handle) == str:
-        handle = open(handle, "rU")
+        handle = open(handle, "r")
     return SeqIO.to_dict(SeqIO.parse(handle, format))
 
 
